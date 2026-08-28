@@ -1,91 +1,45 @@
-# Installer Release Doctor verification handoff — FAIL
+# Installer Release Doctor repair handoff — PASS
 
-## Verification 3 result
-
-Candidate `0e205e9063285b7750ef41771a3a454d522e8cdd` at <https://installer-release-doctor.sociobot.in> **FAILS** independent release verification.
-
-### Blocking defect
-
-**P1 — no real HTTP 404.** `https://installer-release-doctor.sociobot.in/definitely-missing-qa-path` returns HTTP 200. The client renders a 404-looking screen, but `site/public/staticwebapp.config.json` has no 404 response override and no deployed 404 document. Implement a real 404 response and add a live regression before accepting this candidate.
-
-### Verified successful evidence
-
-- After `npm ci`, all 12 mandatory claims passed verbatim, along with typecheck, lint, the full 42-test browser suite, production build, locked release build, and crate package.
-- The packed crate installed into a clean consumer; demo JSON gave its intended one blocker (exit 1) and bad input gave the documented exit 2.
-- Live JS/CSS exactly match the candidate; live demo, offline reload, keyboard path, reduced motion, response security headers, cache policies, installer checksum/install, and Playwright axe checks passed.
-- API rate limiting was observed at request 31 (`429`, `Retry-After: 4`).
-
-See [verification-3.md](verification-3.md) for exact commands, evidence, limitations, and the full claim table.
-
----
-
-# Prior repair handoff (superseded by verification 3)
-
-- Work order: `installer-release-doctor-repair-2`
-- Verifier report commit: `4896cb83505a30a65d6ae6ac5295c26bfcbb08e2`
-- Failed candidate: `2e8fdf10bae5c95031bc5d44cc9a72aeb084f257`
-- Repair implementation: `9e04aa0`, `4ee5566`, `fcf92e1`
+- Work order: `installer-release-doctor-repair-3`
+- Failed verifier commit: `9889d0119cf6de9a89cbd949aae686260d0bea16`
+- Repaired candidate base: `0e205e9063285b7750ef41771a3a454d522e8cdd`
+- Product repair commit: `9fac506eed9b29a9aa3ac26736f0ab67f0f40c8e`
 - Live URL: <https://installer-release-doctor.sociobot.in>
 
-## Repaired findings
+## Repaired release blocker
 
-- Created the public `B-Divyesh/homebrew-installer-release-doctor` tap and published the v0.1.1 formula at `Formula/installer-release-doctor.rb`.
-- Configured `TAP_GITHUB_TOKEN` as a repository Actions secret. No secret is stored in the repository.
-- Release publication now fails when the tap token is absent. Existing formulas are updated with their GitHub blob SHA instead of an invalid create-only request.
-- Added a required macOS consumer job after release publication. A separate smoke workflow also installs the documented formula from a clean `macos-latest` runner and exercises the installed CLI.
-- Replaced broad safety copy with two observable guarantees: signature checks need only the manifest public key, and a default check does not change release inputs.
-- Registered both guarantees and the Homebrew channel in `.factory/claims.json`, each with one tagged regression.
-- Fixed the stale `www.sociobot.in` footer destination discovered during the final link pass.
-- Advanced the service-worker cache to `release-doctor-v4` so existing visitors receive the repaired shell.
+Unknown URLs previously fell through `navigationFallback` to the SPA shell and returned HTTP 200. The static deployment now has explicit shell rewrites only for `/demo`, `/privacy`, and `/terms`, plus a `responseOverrides.404` rewrite to a shipped `404.html` with status 404. The recovery page has the product header/footer, a skip link, one main landmark and one h1, a visible return action, the existing neo-brutalist tokens, mobile layout, and reduced-motion support.
+
+The service-worker cache advanced from `release-doctor-v4` to `release-doctor-v5`. This prevents a client that cached an old unknown-path shell response from retaining that response after it receives the repair.
 
 ## Exact regression coverage
 
-- `@claim:homebrew-tap` resolves the public Git repository, downloads the formula, then downloads both macOS archives and checks their SHA-256 values against the formula.
-- `tests::verifies_with_public_key_only` builds a complete passing release with no private or signing-key file and asserts signature verification passes.
-- `@claim:public-key-only` runs that Rust regression through the claims gate.
-- `tests::default_check_does_not_change_inputs` snapshots every manifest and artifact byte before and after diagnosis and asserts exact equality.
-- `@claim:read-only-check` runs that Rust regression through the claims gate.
-- The release-automation regression asserts tap publication cannot be silently skipped and supports updates to an existing formula.
-- The footer regression checks both its exact destination and a successful HTTPS response.
-- Offline/update coverage asserts the active worker is `/sw.js` and the cache is `release-doctor-v4`.
+- The built-site deployment-policy regression asserts there is no catch-all navigation fallback, each real SPA route rewrites to `index.html`, the 404 response override is exactly `{"rewrite":"/404.html","statusCode":404}`, and the shipped document contains its h1 and recovery link.
+- `npm run test:live` is a dedicated production regression. It requests `/definitely-missing-qa-path`, asserts HTTP 404, HTML content type, the 404 h1, and the recovery link.
+- The same live suite runs at desktop and 390 px. It loads the 404 document in a browser, verifies the 404 navigation response, one main/h1, the skip-link keyboard path, no horizontal overflow, and no serious/critical Playwright Axe findings.
+- Existing offline/update coverage now asserts cache `release-doctor-v5`.
 
 ## Verification evidence
 
-- Clean `npm ci`: 59 packages installed; 0 vulnerabilities. `npm audit --audit-level=high`: 0 vulnerabilities.
+- Clean install: `npm ci` installed 59 packages; npm audit reported 0 vulnerabilities.
 - `npm run typecheck`: passed.
-- `npm run lint`: `cargo fmt --check` and Clippy with warnings denied passed.
-- Final `npm test`: 7 Rust tests, 2 Vitest tests, and 42 Playwright runs passed across 1366×900 and 390×844.
-- Every command in `.factory/claims.json` passed verbatim; `/tmp/ird-final-claims.log` records `CLAIM_FAILURES=0`.
-- `npm run build`: passed and produced `dist/site`. JS is 15.31 kB / 5.75 kB gzip; CSS is 9.85 kB / 2.79 kB gzip.
+- `npm run lint`: passed (`cargo fmt --check`; Clippy with warnings denied).
+- `npm test`: passed — 7 Rust tests, 2 Vitest tests, and 42 Playwright runs across 1366×900 and 390×844. This includes all 12 tagged claims, keyboard, Axe, privacy, offline, reduced-motion, and service-worker update coverage.
+- `npm run build`: passed; `dist/site` contains JS 15.31 kB (5.75 kB gzip) and CSS 9.85 kB (2.79 kB gzip).
 - `cargo build --release --locked`: passed.
-- `cargo package --locked --allow-dirty --no-verify`: passed; crate size 136.2 KiB compressed.
-- A fresh extracted-crate consumer installed with `cargo install --path ... --root ... --locked`. It reported v0.1.1; demo exited 1 with one expected blocker; missing manifest exited 2 with an actionable error.
-- The live shell installer verified its download and installed v0.1.1 into an isolated directory. The published Linux archive SHA-256 is `e90c6b75d137667d6da7b672ff1aca953f8d318d082f9f5e63b9d1340ffeb6b6`, matching `SHA256SUMS`.
-- Public tap HEAD is `46d36dcca035b93682f67ba9dae69e9fabbb5a2e`; formula SHA-256 is `478a657678078105d8ee1d46d48f4a40f708f4047b4ed243f571c241de8c102d`.
-- Clean macOS Homebrew workflow run `33181535675`: install and installed-binary exercise passed.
-- Final main CI run `33181890883`: passed.
-- YAML lint passed for all three GitHub Actions workflows.
-- `/opt/fleet/lib/verify-url.sh` passed locally and live: HTTP 200, correct title/lang/main, alt text, named buttons, and no console errors.
-- Axe via Playwright found zero serious or critical issues on `/`, `/demo`, `/privacy`, `/terms`, and the designed 404 at desktop and 390 px. Each route has one h1, one main, no horizontal overflow, and no sub-44 px visible controls.
-- Keyboard smoke: first Tab focuses “Skip to main content”; demo navigation focuses its h1; reset works.
-- Privacy smoke: the complete sample-demo flow made no cross-origin request.
-- Offline/update smoke: a fresh 390 px context was controlled by `/sw.js`, used only `release-doctor-v4`, updated successfully, and reloaded `/demo` offline.
-- Reduced-motion smoke showed the final result without a scan delay.
-- Live mobile Lighthouse: Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 1.354 s, CLS 0, TBT 8 ms, transfer 113,238 bytes.
-- Live HTML and `sw.js` return `Cache-Control: no-cache`; hashed JS/CSS return `public, max-age=31536000, immutable`.
-- Live CSP, HSTS, `nosniff`, referrer policy, and permissions policy are present. License verification returns `Cache-Control: no-store` and the expected invalid verdict. The observed rate-limit threshold was request 31 with `Retry-After: 3`.
-
-## Deployment and identity
-
-- Azure Static Web Apps production deployment `0b3de541-8a7f-4e66-95bf-969ac1ae04a7` succeeded.
-- The live and local script name is `index-C5oynRwy.js`.
-- Local and live script SHA-256 are both `8d05987182487e22970f02f9cb595d5e43a0deb3b1eaa04b8b99fd93ab013905`.
-- The original `cli-installers` artifact class and static deployment class are unchanged.
+- `cargo package --locked --allow-dirty --no-verify`: passed; 136.3 KiB compressed crate.
+- A fresh extracted-crate consumer installed with `cargo install --path … --root … --locked`; `release-doctor --version` reported 0.1.1; `demo --format json` produced the expected single blocker and exit 1; a missing manifest produced the documented actionable message and exit 2.
+- GitHub CI for the repair commit passed: <https://github.com/B-Divyesh/sf-installer-release-doctor/actions/runs/33188657354>.
+- Production deployment used Azure Static Web Apps CLI 2.0.10 to deploy `dist/site` to `sf-installer-release-doctor` production.
+- Live response check: `GET /definitely-missing-qa-path` returned `HTTP/2 404`, `content-type: text/html`, and the expected `This package went to the wrong path` h1.
+- `npm run test:live`: 4/4 passed (response policy and browser/Axe/keyboard smoke at desktop and 390 px).
+- `/opt/fleet/lib/verify-url.sh https://installer-release-doctor.sociobot.in <temp evidence dir>` passed: HTTP 200 at root, title, `lang=en`, h1, main landmark, image alt text, named controls, and zero browser console/page errors.
+- Live `/sw.js` starts with `const CACHE = 'release-doctor-v5';`.
+- Local and live `assets/index-C5oynRwy.js` SHA-256 both equal `8d05987182487e22970f02f9cb595d5e43a0deb3b1eaa04b8b99fd93ab013905`.
 
 ## Known limits and operator actions
 
 - macOS and Windows packages remain unsigned until the owner supplies signing certificates.
-- The ready winget manifests still need submission to `microsoft/winget-pkgs`.
-- The Sociobot checkout endpoint currently returns 404 because the policy-pack product is not enabled in billing. The free checker and license verification remain available. An operator must enable the existing factory product before paid sales open.
-- Native `.deb`, `.rpm`, and `.pkg` internals remain opaque and receive the documented native-validator warning.
-- This release validates the documented Ed25519 envelope and matching SBOM/provenance digests; it does not validate a DSSE transparency log or certificate chain.
+- Winget manifests are ready but still need owner submission to `microsoft/winget-pkgs`.
+- The policy-pack checkout remains unavailable until the existing Sociobot billing product is enabled. The free checker and license verification are unaffected.
+- Native `.deb`, `.rpm`, and `.pkg` internals retain the documented native-validator warning.
