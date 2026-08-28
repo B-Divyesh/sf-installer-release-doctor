@@ -130,6 +130,13 @@ test('routes have one h1 and no serious accessibility findings', async ({ page }
   expect(errors).toEqual([]);
 });
 
+test('footer links to the live Param Factory site', async ({ page, request }) => {
+  await page.goto('/');
+  const link = page.getByRole('link', { name: /Built by Param Factory/ });
+  await expect(link).toHaveAttribute('href', 'https://sociobot.in/');
+  expect((await request.get('https://sociobot.in/')).ok()).toBe(true);
+});
+
 test('keyboard path enters and resets the demo', async ({ page }) => {
   await page.goto('/');
   await page.keyboard.press('Tab');
