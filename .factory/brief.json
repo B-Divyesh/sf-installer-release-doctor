@@ -1,0 +1,8 @@
+{
+  "slug": "installer-release-doctor",
+  "title": "Installer Release Doctor",
+  "summary": "Check installer artifacts before release channels reject them.",
+  "artifact_class": "cli-installers",
+  "monetization": "freemium",
+  "smallest_useful_product": "Read release artifacts and a channel manifest, check archive layout, signatures, SBOM, provenance, package metadata and upgrade paths, then emit annotations and a channel matrix."
+}
