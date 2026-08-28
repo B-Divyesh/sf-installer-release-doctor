@@ -28,28 +28,26 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: x86_64-unknown-linux-musl,aarch64-unknown-linux-musl,x86_64-unknown-linux-gnu
-      - uses: taiki-e/install-action@cross
+          targets: x86_64-unknown-linux-musl,x86_64-unknown-linux-gnu
+      - name: Install musl compiler
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
       - name: Install nFPM
         run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@v2.43.4
       - name: Build binaries
         run: |
-          cross build --release --locked --target x86_64-unknown-linux-musl
-          cross build --release --locked --target aarch64-unknown-linux-musl
+          cargo build --release --locked --target x86_64-unknown-linux-musl
           cargo build --release --locked --target x86_64-unknown-linux-gnu
       - name: Package assets
         env:
           VERSION: ${{ github.event.inputs.version || github.ref_name }}
         run: |
           VERSION=$(echo "$VERSION" | sed 's/^v//')
-          mkdir -p release/x64 release/arm64
+          mkdir -p release/x64
           cp target/x86_64-unknown-linux-musl/release/release-doctor release/x64/
-          cp target/aarch64-unknown-linux-musl/release/release-doctor release/arm64/
           tar -C release/x64 -czf release/release-doctor-v$VERSION-linux-x86_64.tar.gz release-doctor
-          tar -C release/arm64 -czf release/release-doctor-v$VERSION-linux-aarch64.tar.gz release-doctor
           VERSION=$VERSION nfpm package --config nfpm.yaml --packager deb --target release/release-doctor_$VERSION_amd64.deb
           VERSION=$VERSION nfpm package --config nfpm.yaml --packager rpm --target release/release-doctor-$VERSION.x86_64.rpm
-          rm -rf release/x64 release/arm64
+          rm -rf release/x64
       - uses: actions/upload-artifact@v4
         with: {name: linux-assets, path: release/*}
   macos:

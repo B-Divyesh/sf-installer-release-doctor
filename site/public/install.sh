@@ -6,7 +6,6 @@ OS=$(uname -s)
 ARCH=$(uname -m)
 case "$OS:$ARCH" in
   Linux:x86_64) MATCH="linux-x86_64.tar.gz" ;;
-  Linux:aarch64|Linux:arm64) MATCH="linux-aarch64.tar.gz" ;;
   Darwin:x86_64) MATCH="darwin-x86_64.tar.gz" ;;
   Darwin:arm64) MATCH="darwin-aarch64.tar.gz" ;;
   *) echo "Unsupported platform: $OS $ARCH" >&2; exit 1 ;;
