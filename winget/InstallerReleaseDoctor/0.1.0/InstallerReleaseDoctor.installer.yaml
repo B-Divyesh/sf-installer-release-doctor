@@ -8,6 +8,6 @@ NestedInstallerFiles:
 Installers:
   - Architecture: x64
     InstallerUrl: https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.0/release-doctor-v0.1.0-windows-x86_64.zip
-    InstallerSha256: UPDATE_AFTER_RELEASE
+    InstallerSha256: 1FC54CF3EC35526AF9B0F13648D2B4F5C840E0F85DB1508914FCD13AE1946C70
 ManifestType: installer
 ManifestVersion: 1.6.0

@@ -40,6 +40,10 @@ The deploy root is `dist/site`, with `index.html` at that root.
 - Responsive hero: 27 KiB at 640 px; large hero: 97 KiB; Open Graph image: 84 KiB.
 - Visual review completed at 1366 px and 390 px.
 - Every `.factory/claims.json` test passed from the documented sandbox.
+- GitHub Actions release run `33168442516`: passed across verify, Linux, macOS, Windows, and publish jobs.
+- GitHub Release `v0.1.0`: published 7 platform/package artifacts plus `SHA256SUMS`, `latest.json`, and the Homebrew formula.
+- Downloaded `release-doctor-v0.1.0-linux-x86_64.tar.gz`: published SHA-256 verified successfully and the archive contains `release-doctor`.
+- Scoop and winget manifests now contain the published Windows ZIP SHA-256.
 
 ## Artwork provenance
 
@@ -54,8 +58,7 @@ The final raster assets are `site/public/assets/release-inspection.webp`, its 64
 
 ## Needs operator action
 
-- Confirm the v0.1.0 GitHub workflow completed and copy its released SHA-256 values into the committed Scoop and winget manifests before submitting them upstream.
 - Create `B-Divyesh/homebrew-installer-release-doctor` if it does not exist. Add `TAP_GITHUB_TOKEN` to publish the generated formula automatically.
-- Submit the winget manifests to `microsoft/winget-pkgs` after replacing `UPDATE_AFTER_RELEASE`.
+- Submit the ready winget manifests to `microsoft/winget-pkgs`.
 - Register the paid product in the Sociobot billing system. The site intentionally contains no hardcoded billing product ID beyond the product slug.
 - macOS and Windows packages are unsigned. Signing later requires the owner's Apple installer certificate and Windows Authenticode certificate. Until then, keep the unsigned notice visible.
