@@ -1,0 +1,21 @@
+class InstallerReleaseDoctor < Formula
+  desc "Check installer artifacts before release channels reject them"
+  homepage "https://installer-release-doctor.sociobot.in"
+  version "@VERSION@"
+  license "MIT"
+  on_macos do
+    if Hardware::CPU.arm?
+      url "https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v@VERSION@/release-doctor-v@VERSION@-darwin-aarch64.tar.gz"
+      sha256 "@SHA_ARM@"
+    else
+      url "https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v@VERSION@/release-doctor-v@VERSION@-darwin-x86_64.tar.gz"
+      sha256 "@SHA_X64@"
+    end
+  end
+  def install
+    bin.install "release-doctor"
+  end
+  test do
+    assert_match version.to_s, shell_output(bin/"release-doctor" + " --version")
+  end
+end

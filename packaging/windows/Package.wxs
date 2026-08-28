@@ -1,0 +1,8 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="Installer Release Doctor" Manufacturer="Sociobot" Version="$(var.Version)" UpgradeCode="499F7F20-2B38-4AFA-A098-A6D19F55F931">
+    <MajorUpgrade DowngradeErrorMessage="A newer version is already installed."/>
+    <MediaTemplate EmbedCab="yes"/>
+    <StandardDirectory Id="ProgramFiles64Folder"><Directory Id="INSTALLFOLDER" Name="Installer Release Doctor"><Component Id="ReleaseDoctor" Guid="8BE47D7E-B994-4FE6-9443-5FBE345A4785"><File Source="$(var.Binary)" KeyPath="yes"/></Component></Directory></StandardDirectory>
+    <Feature Id="Main" Title="Installer Release Doctor"><ComponentRef Id="ReleaseDoctor"/></Feature>
+  </Package>
+</Wix>

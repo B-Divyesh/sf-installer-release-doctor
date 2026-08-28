@@ -1,0 +1,16 @@
+name: release-doctor
+arch: amd64
+platform: linux
+version: "$${VERSION}"
+section: utils
+priority: optional
+maintainer: Param Factory <hello@sociobot.in>
+description: Check installer artifacts before release channels reject them.
+vendor: Sociobot
+homepage: https://installer-release-doctor.sociobot.in
+license: MIT
+contents:
+  - src: target/x86_64-unknown-linux-gnu/release/release-doctor
+    dst: /usr/bin/release-doctor
+    file_info:
+      mode: 0755

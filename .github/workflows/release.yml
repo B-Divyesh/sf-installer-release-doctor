@@ -1,0 +1,123 @@
+name: Release
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v4
+        with: {node-version: 22, cache: npm}
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm test
+  linux:
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-musl,aarch64-unknown-linux-musl,x86_64-unknown-linux-gnu
+      - uses: taiki-e/install-action@cross
+      - uses: goreleaser/nfpm-action@v2
+        with: {install-only: true}
+      - name: Build binaries
+        run: |
+          cross build --release --locked --target x86_64-unknown-linux-musl
+          cross build --release --locked --target aarch64-unknown-linux-musl
+          cargo build --release --locked --target x86_64-unknown-linux-gnu
+      - name: Package assets
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          VERSION=$(echo "$VERSION" | sed 's/^v//')
+          mkdir -p release/x64 release/arm64
+          cp target/x86_64-unknown-linux-musl/release/release-doctor release/x64/
+          cp target/aarch64-unknown-linux-musl/release/release-doctor release/arm64/
+          tar -C release/x64 -czf release/release-doctor-v$VERSION-linux-x86_64.tar.gz release-doctor
+          tar -C release/arm64 -czf release/release-doctor-v$VERSION-linux-aarch64.tar.gz release-doctor
+          VERSION=$VERSION nfpm package --config nfpm.yaml --packager deb --target release/release-doctor_$VERSION_amd64.deb
+          VERSION=$VERSION nfpm package --config nfpm.yaml --packager rpm --target release/release-doctor-$VERSION.x86_64.rpm
+          rm -rf release/x64 release/arm64
+      - uses: actions/upload-artifact@v4
+        with: {name: linux-assets, path: release/*}
+  macos:
+    needs: verify
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+      - run: |
+          cargo build --release --locked --target aarch64-apple-darwin
+          cargo build --release --locked --target x86_64-apple-darwin
+      - name: Package assets
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          VERSION=$(echo "$VERSION" | sed 's/^v//')
+          mkdir -p release/arm64 release/x64 pkgroot/usr/local/bin
+          cp target/aarch64-apple-darwin/release/release-doctor release/arm64/
+          cp target/x86_64-apple-darwin/release/release-doctor release/x64/
+          tar -C release/arm64 -czf release/release-doctor-v$VERSION-darwin-aarch64.tar.gz release-doctor
+          tar -C release/x64 -czf release/release-doctor-v$VERSION-darwin-x86_64.tar.gz release-doctor
+          cp target/aarch64-apple-darwin/release/release-doctor pkgroot/usr/local/bin/
+          pkgbuild --root pkgroot --identifier in.sociobot.installer-release-doctor --version "$VERSION" release/release-doctor-v$VERSION-darwin-aarch64.pkg
+          rm -rf release/arm64 release/x64 pkgroot
+      - uses: actions/upload-artifact@v4
+        with: {name: macos-assets, path: release/*}
+  windows:
+    needs: verify
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --release --locked
+      - name: Package ZIP and MSI
+        shell: pwsh
+        run: |
+          $Version = "${{ github.ref_name }}".TrimStart("v")
+          New-Item -ItemType Directory release | Out-Null
+          Compress-Archive target/release/release-doctor.exe "release/release-doctor-v$Version-windows-x86_64.zip"
+          dotnet tool install --global wix
+          wix build packaging/windows/Package.wxs -d Version=$Version -d Binary="$PWD/target/release/release-doctor.exe" -o "release/release-doctor-v$Version-windows-x86_64.msi"
+      - uses: actions/upload-artifact@v4
+        with: {name: windows-assets, path: release/*}
+  publish:
+    needs: [linux, macos, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: {path: gathered}
+      - name: Create checksums, manifest, and formula
+        env:
+          VERSION: ${{ github.ref_name }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          VERSION=$(echo "$VERSION" | sed 's/^v//')
+          mkdir release
+          find gathered -type f -exec cp {} release/ \;
+          (cd release && sha256sum release-doctor-* > SHA256SUMS)
+          node scripts/make-latest.mjs "$VERSION" "$REPOSITORY" release
+          SHA_ARM=$(awk '/darwin-aarch64.tar.gz/{print $1}' release/SHA256SUMS)
+          SHA_X64=$(awk '/darwin-x86_64.tar.gz/{print $1}' release/SHA256SUMS)
+          sed -e "s/@VERSION@/$VERSION/g" -e "s/@SHA_ARM@/$SHA_ARM/g" -e "s/@SHA_X64@/$SHA_X64/g" packaging/homebrew/installer-release-doctor.rb.in > release/installer-release-doctor.rb
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          generate_release_notes: true
+      - name: Update Homebrew tap
+        if: ${{ secrets.TAP_GITHUB_TOKEN != '' }}
+        env:
+          GH_TOKEN: ${{ secrets.TAP_GITHUB_TOKEN }}
+        run: |
+          CONTENT=$(base64 -w0 release/installer-release-doctor.rb)
+          gh api --method PUT repos/B-Divyesh/homebrew-installer-release-doctor/contents/Formula/installer-release-doctor.rb -f message="publish formula" -f content="$CONTENT"
