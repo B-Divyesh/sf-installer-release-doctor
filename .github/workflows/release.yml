@@ -93,6 +93,8 @@ jobs:
   publish:
     needs: [linux, macos, windows]
     runs-on: ubuntu-latest
+    env:
+      TAP_GITHUB_TOKEN: ${{ secrets.TAP_GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -115,9 +117,9 @@ jobs:
           files: release/*
           generate_release_notes: true
       - name: Update Homebrew tap
-        if: ${{ secrets.TAP_GITHUB_TOKEN != '' }}
+        if: ${{ env.TAP_GITHUB_TOKEN != '' }}
         env:
-          GH_TOKEN: ${{ secrets.TAP_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ env.TAP_GITHUB_TOKEN }}
         run: |
           CONTENT=$(base64 -w0 release/installer-release-doctor.rb)
           gh api --method PUT repos/B-Divyesh/homebrew-installer-release-doctor/contents/Formula/installer-release-doctor.rb -f message="publish formula" -f content="$CONTENT"
