@@ -24,11 +24,15 @@ macOS or Linux:
 curl -fsSL https://installer-release-doctor.sociobot.in/install.sh | sh
 ```
 
+The installer verifies the release checksum, installs to `~/.local/bin`, and adds that directory to your login-shell PATH. Open a new terminal after it finishes.
+
 Windows PowerShell:
 
 ```powershell
 irm https://installer-release-doctor.sociobot.in/install.ps1 | iex
 ```
+
+The PowerShell installer verifies the checksum, adds its install directory to your user PATH, and runs the installed binary before it exits.
 
 Homebrew:
 
@@ -131,6 +135,6 @@ The factory owns publishing credentials. Do not publish registry packages from a
 
 ## Privacy and license
 
-The core checker has no telemetry. The website stores a paid license token only when a buyer supplies one. Read the [privacy notice](https://installer-release-doctor.sociobot.in/privacy) and [terms](https://installer-release-doctor.sociobot.in/terms).
+The core checker has no telemetry. The website does not store release data or account data. Read the [privacy notice](https://installer-release-doctor.sociobot.in/privacy) and [terms](https://installer-release-doctor.sociobot.in/terms).
 
 MIT © 2026 Sociobot (Param Factory). See [LICENSE](LICENSE).

@@ -25,5 +25,27 @@ tar -xzf "$TMP_DIR/package.tar.gz" -C "$TMP_DIR"
 DEST="${INSTALL_DIR:-$HOME/.local/bin}"
 mkdir -p "$DEST"
 install -m 755 "$TMP_DIR/release-doctor" "$DEST/release-doctor"
+case ":$PATH:" in
+  *":$DEST:"*) ;;
+  *) export PATH="$DEST:$PATH" ;;
+esac
+if [ -z "${INSTALL_DIR:-}" ]; then
+  case "${SHELL:-}" in
+    */zsh) PROFILE="$HOME/.zprofile" ;;
+    */bash) PROFILE="$HOME/.bash_profile" ;;
+    *) PROFILE="$HOME/.profile" ;;
+  esac
+  if ! grep -Fq '# Added by Installer Release Doctor' "$PROFILE" 2>/dev/null; then
+    {
+      printf '\n# Added by Installer Release Doctor\n'
+      printf 'case ":$PATH:" in\n'
+      printf '  *":$HOME/.local/bin:"*) ;;\n'
+      printf '  *) export PATH="$HOME/.local/bin:$PATH" ;;\n'
+      printf 'esac\n'
+    } >> "$PROFILE"
+  fi
+  echo "Added $DEST to PATH in $PROFILE for future login shells."
+fi
 echo "Installed release-doctor to $DEST/release-doctor"
-echo "Add $DEST to PATH if the command is not found."
+release-doctor --version
+echo "Open a new terminal to use release-doctor from PATH."

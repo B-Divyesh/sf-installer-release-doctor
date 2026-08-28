@@ -14,7 +14,7 @@ const titles: Record<string, string> = {
 function shell(content: string, demo = false) {
   const banner = demo ? '<aside class="demo-banner"><span><strong>Demo</strong> — sample data, nothing is saved</span><span><button data-reset>Reset demo</button><a href="/" data-link>Start for real</a></span></aside>' : '';
   return banner +
-    '<header class="site-header"><a class="wordmark" href="/" data-link aria-label="Installer Release Doctor home"><span aria-hidden="true">IR/DR</span><b>Installer<br>Release Doctor</b></a><nav aria-label="Main navigation"><a href="/demo" data-link>Demo</a><a href="/#install">Install</a><a href="/#pricing">Policy pack</a><a href="/privacy" data-link>Privacy</a></nav></header>' +
+    '<header class="site-header"><a class="wordmark" href="/" data-link aria-label="Installer Release Doctor home"><span aria-hidden="true">IR/DR</span><b>Installer<br>Release Doctor</b></a><nav aria-label="Main navigation"><a href="/demo" data-link>Demo</a><a href="/#install">Install</a><a href="/privacy" data-link>Privacy</a></nav></header>' +
     '<main id="main" tabindex="-1">' + content + '</main>' +
     '<footer><p><strong>Installer Release Doctor</strong><br>Check installer artifacts before upload.</p><nav aria-label="Footer navigation"><a href="/privacy" data-link>Privacy</a><a href="/terms" data-link>Terms</a><a href="https://sociobot.in/" rel="external">Built by Param Factory <span class="sr-only">(external site)</span></a></nav><p>v0.1.1 · build 2026.08</p></footer>';
 }
@@ -36,7 +36,7 @@ function home() {
     '<section class="section how" aria-labelledby="how-title"><div class="section-label">02 / HOW IT WORKS</div><div><h2 id="how-title">Inspect a release in three steps</h2><ol class="steps"><li><span>1</span><div><h3>Describe channels</h3><p>List each artifact and its required evidence in one YAML manifest.</p></div></li><li><span>2</span><div><h3>Run local checks</h3><p>The CLI reads archives safely. Signature checks use the public key in your manifest.</p></div></li><li><span>3</span><div><h3>Repair blockers</h3><p>Use the channel matrix or GitHub Actions annotations before upload.</p></div></li></ol></div></section>' +
     '<section class="section boundaries" aria-labelledby="boundaries-title"><div class="section-label">03 / BOUNDARIES</div><div><h2 id="boundaries-title">The checker stays in its lane</h2><p>It checks files you already built. A default check reports findings without changing those files.</p><a href="/privacy" data-link>Read the privacy note</a></div></section>' +
     '<section id="install" class="section install" aria-labelledby="install-title"><div class="section-label">04 / INSTALL</div><div><h2 id="install-title">Install the local checker</h2><div id="download-state" aria-live="polite"><p>Checking published builds…</p></div><div class="install-tabs"><div><h3>macOS and Linux</h3><code>curl -fsSL https://installer-release-doctor.sociobot.in/install.sh | sh</code></div><div><h3>Windows PowerShell</h3><code>irm https://installer-release-doctor.sociobot.in/install.ps1 | iex</code></div><div><h3>Homebrew</h3><code>brew install B-Divyesh/installer-release-doctor/installer-release-doctor</code></div></div><p class="fine">macOS and Windows builds are unsigned in v0.1.1. Inspect checksums before installation.</p></div></section>' +
-    '<section id="pricing" class="section pricing" aria-labelledby="pricing-title"><div class="section-label">05 / POLICY PACK</div><div><h2 id="pricing-title">Add company policy checks</h2><div class="price-lockup"><div><p class="price">$49</p><p>One-time purchase</p></div><ul><li>Versioned compliance policy pack</li><li>Custom rule templates</li><li>Priority setup support</li></ul></div><p>The free local checker stays useful. The policy pack adds company controls.</p><div class="paid-actions"><a class="button primary" href="https://api.sociobot.in/api/v1/products/installer-release-doctor/checkout">Buy the policy pack</a><button class="button secondary" data-restore>Restore a license</button></div><form class="license-form" hidden><label for="license">License token</label><div><input id="license" name="license" autocomplete="off"><button type="submit">Verify license</button></div><p class="form-status" aria-live="polite"></p></form><p class="fine">Sociobot/Dodo is the merchant of record. Refunds are handled there. See <a href="/terms" data-link>terms</a>.</p></div></section>'
+    '<section class="section availability" aria-labelledby="availability-title"><div class="section-label">05 / AVAILABILITY</div><div><h2 id="availability-title">Use the free checker today</h2><p>The local checker is available now. It checks release evidence before you upload.</p><p class="fine">Company policy packs are not offered from this site until checkout is available.</p></div></section>'
   );
 }
 
@@ -51,10 +51,10 @@ function demo() {
 }
 
 function privacy() {
-  return shell('<article class="legal"><p class="eyebrow">LEGAL / PLAIN WORDS</p><h1>Your release files stay local</h1><p>Last updated August 28, 2026.</p><h2>Local checker</h2><p>The CLI reads the paths you give it. It sends no artifacts, manifests, keys, or results over the network.</p><h2>Website</h2><p>The demo uses bundled sample data. Demo state stays in memory and is discarded when you leave.</p><h2>Licenses</h2><p>If you buy the policy pack, the browser stores your license token and cached verdict. The Sociobot billing API receives the token during verification.</p><h2>Contact</h2><p>Email <a href="mailto:privacy@sociobot.in">privacy@sociobot.in</a> for privacy questions.</p></article>');
+  return shell('<article class="legal"><p class="eyebrow">LEGAL / PLAIN WORDS</p><h1>Your release files stay local</h1><p>Last updated August 28, 2026.</p><h2>Local checker</h2><p>The CLI reads the paths you give it. It sends no artifacts, manifests, keys, or results over the network.</p><h2>Website</h2><p>The demo uses bundled sample data. Demo state stays in memory and is discarded when you leave.</p><h2>Contact</h2><p>Email <a href="mailto:privacy@sociobot.in">privacy@sociobot.in</a> for privacy questions.</p></article>');
 }
 function terms() {
-  return shell('<article class="legal"><p class="eyebrow">LEGAL / PLAIN WORDS</p><h1>Terms for using the checker</h1><p>Last updated August 28, 2026.</p><h2>License</h2><p>The core checker is MIT-licensed. Paid policy files are licensed to the buyer.</p><h2>No release guarantee</h2><p>Channel rules change. A passing report reduces known blockers but does not guarantee acceptance.</p><h2>Payments and refunds</h2><p>Sociobot/Dodo is the merchant of record. A refunded or revoked purchase disables its license.</p><h2>Liability</h2><p>The software is provided without warranty. You remain responsible for signing, publishing, and protecting credentials.</p></article>');
+  return shell('<article class="legal"><p class="eyebrow">LEGAL / PLAIN WORDS</p><h1>Terms for using the checker</h1><p>Last updated August 28, 2026.</p><h2>License</h2><p>The core checker is MIT-licensed.</p><h2>No release guarantee</h2><p>Channel rules change. A passing report reduces known blockers but does not guarantee acceptance.</p><h2>Liability</h2><p>The software is provided without warranty. You remain responsible for signing, publishing, and protecting credentials.</p></article>');
 }
 function notFound() {
   return shell('<section class="not-found"><p class="error-code">404 / MISROUTED</p><h1>This package went to the wrong path</h1><p>The page does not exist. The checker has not changed any files.</p><a class="button primary" href="/" data-link>Return to the workbench</a></section>');
@@ -98,15 +98,6 @@ function bind() {
     };
     matchMedia('(prefers-reduced-motion: reduce)').matches ? finish() : window.setTimeout(finish, 700);
   });
-  document.querySelector('[data-restore]')?.addEventListener('click', function () {
-    const form = document.querySelector<HTMLFormElement>('.license-form')!;
-    form.hidden = false;
-    form.querySelector('input')?.focus();
-  });
-  document.querySelector('.license-form')?.addEventListener('submit', async function (event) {
-    event.preventDefault();
-    await verifyLicense(document.querySelector<HTMLInputElement>('#license')!.value.trim(), true);
-  });
   if (location.pathname === '/') void loadRelease();
 }
 
@@ -132,36 +123,6 @@ async function loadRelease() {
   }
 }
 
-const licenseKey = 'sb_license:installer-release-doctor';
-async function verifyLicense(token: string, save = false) {
-  const status = document.querySelector<HTMLElement>('.form-status');
-  if (!token) { if (status) status.textContent = 'Paste a license token first.'; return; }
-  if (save) localStorage.setItem(licenseKey, token);
-  try {
-    const response = await fetch('https://api.sociobot.in/api/v1/products/installer-release-doctor/verify?license=' + encodeURIComponent(token));
-    const data = await response.json();
-    localStorage.setItem(licenseKey + ':verdict', JSON.stringify({ valid: Boolean(data.valid), checked: Date.now() }));
-    if (status) status.textContent = data.valid ? 'Policy pack license is active.' : 'License no longer active. Check the token or buy a new license.';
-  } catch {
-    if (status) status.textContent = 'License verification is offline. The free checker still works.';
-  }
-}
-function receiveLicense() {
-  const url = new URL(location.href);
-  const token = url.searchParams.get('license');
-  if (token) {
-    localStorage.setItem(licenseKey, token);
-    url.searchParams.delete('license');
-    history.replaceState({}, '', url.pathname + url.search);
-    void verifyLicense(token);
-  } else {
-    const verdict = JSON.parse(localStorage.getItem(licenseKey + ':verdict') || 'null');
-    const saved = localStorage.getItem(licenseKey);
-    if (saved && (!verdict || Date.now() - verdict.checked > 86400000)) void verifyLicense(saved);
-  }
-}
-
 window.addEventListener('popstate', function () { navigate(location.pathname, true); });
-receiveLicense();
 navigate(location.pathname, true, false);
 if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); });

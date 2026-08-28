@@ -21,8 +21,18 @@ try {
   $Dest = if ($env:INSTALL_DIR) { $env:INSTALL_DIR } else { Join-Path $env:LOCALAPPDATA "Programs\release-doctor" }
   New-Item -ItemType Directory -Force $Dest | Out-Null
   Copy-Item (Join-Path $Temp "release-doctor.exe") $Dest -Force
+  $UserPath = [Environment]::GetEnvironmentVariable("Path", "User")
+  $PathItems = @($UserPath -split ";" | Where-Object { $_ })
+  if (-not ($PathItems | Where-Object { $_.TrimEnd("\\") -ieq $Dest.TrimEnd("\\") })) {
+    $UpdatedPath = (@($PathItems) + $Dest) -join ";"
+    [Environment]::SetEnvironmentVariable("Path", $UpdatedPath, "User")
+  }
+  if (-not (($env:Path -split ";") | Where-Object { $_.TrimEnd("\\") -ieq $Dest.TrimEnd("\\") })) {
+    $env:Path = "$Dest;$env:Path"
+  }
   Write-Host "Installed release-doctor.exe to $Dest"
-  Write-Host "Add that directory to PATH if the command is not found."
+  & (Join-Path $Dest "release-doctor.exe") --version
+  Write-Host "Added $Dest to your user PATH. New PowerShell windows can run release-doctor."
 } finally {
   Remove-Item $Temp -Recurse -Force -ErrorAction SilentlyContinue
 }

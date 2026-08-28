@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdtempSync, readFileSync, readdirSync } from 'node:fs';
+import { chmodSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import AxeBuilder from '@axe-core/playwright';
@@ -165,6 +165,7 @@ test('deployment policy caches hashed assets immutably and revalidates the shell
   expect(notFound).toContain('<h1 id="not-found-title">This package went to the wrong path</h1>');
   expect(notFound).toContain('href="/">Return to the workbench</a>');
   expect(readdirSync('dist/site/assets').some(function (name) { return /^index-[\w-]+\.js$/.test(name); })).toBe(true);
+  expect(config.globalHeaders['Content-Security-Policy']).not.toContain('api.sociobot.in');
 });
 
 test('release automation cannot silently skip or overwrite the Homebrew tap', async () => {
@@ -182,7 +183,7 @@ test('service worker installs and updates the versioned demo cache', async ({ pa
     return { script: registration.active?.scriptURL, cacheNames: await caches.keys() };
   });
   expect(worker.script).toMatch(/\/sw\.js$/);
-  expect(worker.cacheNames).toContain('release-doctor-v5');
+  expect(worker.cacheNames).toContain('release-doctor-v6');
 });
 
 test('reduced motion shows the final demo result without a scan delay', async ({ page }) => {
@@ -204,9 +205,68 @@ test('visible controls meet the 44 pixel touch target baseline', async ({ page }
   }
 });
 
-test('license return is stored and removed from the address bar', async ({ page }) => {
-  await page.route('https://api.sociobot.in/**', function (route) { return route.fulfill({ json: { valid: true, reason: 'ok' } }); });
-  await page.goto('/?license=test-token');
-  await expect(page).toHaveURL('/');
-  expect(await page.evaluate(function () { return localStorage.getItem('sb_license:installer-release-doctor'); })).toBe('test-token');
+test('unavailable policy-pack checkout is not exposed', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('link', { name: /Buy the policy pack/i })).toHaveCount(0);
+  await expect(page.locator('a[href*="api.sociobot.in"]')).toHaveCount(0);
+  await expect(page.getByText('$49', { exact: true })).toHaveCount(0);
+  expect(readFileSync('site/src/main.ts', 'utf8')).not.toContain('https://api.sociobot.in');
+  expect(readFileSync('site/public/staticwebapp.config.json', 'utf8')).not.toContain('api.sociobot.in');
+});
+
+test('shell installer adds its default directory to a fresh login shell PATH', async () => {
+  const fixture = mkdtempSync(join(tmpdir(), 'release-doctor-installer-'));
+  const home = join(fixture, 'home');
+  const source = join(fixture, 'source');
+  const fakeBin = join(fixture, 'bin');
+  const archive = join(fixture, 'release-doctor-v0.1.1-linux-x86_64.tar.gz');
+  const checksums = join(fixture, 'SHA256SUMS');
+  mkdirSync(home);
+  mkdirSync(source);
+  mkdirSync(fakeBin);
+  const binary = join(source, 'release-doctor');
+  writeFileSync(binary, '#!/bin/sh\necho "release-doctor 0.1.1"\n');
+  chmodSync(binary, 0o755);
+  expect(spawnSync('tar', ['-C', source, '-czf', archive, 'release-doctor'], { encoding: 'utf8' }).status).toBe(0);
+  writeFileSync(checksums, createHash('sha256').update(readFileSync(archive)).digest('hex') + '  ' + archive.split('/').pop() + '\n');
+  const fakeCurl = join(fakeBin, 'curl');
+  writeFileSync(fakeCurl, `#!/bin/sh
+out=""
+url=""
+next_out=0
+for arg in "$@"; do
+  if [ "$next_out" = 1 ]; then out="$arg"; next_out=0; continue; fi
+  if [ "$arg" = "-o" ]; then next_out=1; continue; fi
+  case "$arg" in -*) ;; *) url="$arg" ;; esac
+done
+case "$url" in
+  *releases/latest) printf '%s' '{"browser_download_url":"https://fixture.invalid/release-doctor-v0.1.1-linux-x86_64.tar.gz"}' ;;
+  *SHA256SUMS) cp "$INSTALLER_FIXTURE_DIR/SHA256SUMS" "$out" ;;
+  *linux-x86_64.tar.gz) cp "$INSTALLER_FIXTURE_DIR/release-doctor-v0.1.1-linux-x86_64.tar.gz" "$out" ;;
+  *) exit 1 ;;
+esac
+`);
+  chmodSync(fakeCurl, 0o755);
+  const install = spawnSync('sh', ['site/public/install.sh'], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    env: { ...process.env, HOME: home, SHELL: '/bin/sh', PATH: fakeBin + ':' + process.env.PATH, INSTALLER_FIXTURE_DIR: fixture }
+  });
+  expect(install.status, install.stderr).toBe(0);
+  expect(install.stdout).toContain('Added ' + join(home, '.local/bin') + ' to PATH');
+  expect(readFileSync(join(home, '.profile'), 'utf8')).toContain('# Added by Installer Release Doctor');
+  const freshLogin = spawnSync('sh', ['-lc', 'command -v release-doctor && release-doctor --version'], {
+    encoding: 'utf8',
+    env: { ...process.env, HOME: home, SHELL: '/bin/sh' }
+  });
+  expect(freshLogin.status, freshLogin.stderr).toBe(0);
+  expect(freshLogin.stdout).toContain(join(home, '.local/bin/release-doctor'));
+  expect(freshLogin.stdout).toContain('release-doctor 0.1.1');
+});
+
+test('PowerShell installer persists its destination and checks the installed binary', async () => {
+  const installer = readFileSync('site/public/install.ps1', 'utf8');
+  expect(installer).toContain('[Environment]::SetEnvironmentVariable("Path", $UpdatedPath, "User")');
+  expect(installer).toContain('$env:Path = "$Dest;$env:Path"');
+  expect(installer).toContain('& (Join-Path $Dest "release-doctor.exe") --version');
 });
