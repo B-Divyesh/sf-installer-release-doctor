@@ -154,8 +154,16 @@ test('keyboard path enters and resets the demo', async ({ page }) => {
 
 test('deployment policy caches hashed assets immutably and revalidates the shell', async () => {
   const config = JSON.parse(readFileSync('dist/site/staticwebapp.config.json', 'utf8'));
+  expect(config.navigationFallback).toBeUndefined();
+  expect(config.routes).toContainEqual({ route: '/demo', rewrite: '/index.html' });
+  expect(config.routes).toContainEqual({ route: '/privacy', rewrite: '/index.html' });
+  expect(config.routes).toContainEqual({ route: '/terms', rewrite: '/index.html' });
   expect(config.routes).toContainEqual({ route: '/assets/*', headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } });
   expect(config.routes).toContainEqual({ route: '/sw.js', headers: { 'Cache-Control': 'no-cache' } });
+  expect(config.responseOverrides).toEqual({ '404': { rewrite: '/404.html', statusCode: 404 } });
+  const notFound = readFileSync('dist/site/404.html', 'utf8');
+  expect(notFound).toContain('<h1 id="not-found-title">This package went to the wrong path</h1>');
+  expect(notFound).toContain('href="/">Return to the workbench</a>');
   expect(readdirSync('dist/site/assets').some(function (name) { return /^index-[\w-]+\.js$/.test(name); })).toBe(true);
 });
 
@@ -174,7 +182,7 @@ test('service worker installs and updates the versioned demo cache', async ({ pa
     return { script: registration.active?.scriptURL, cacheNames: await caches.keys() };
   });
   expect(worker.script).toMatch(/\/sw\.js$/);
-  expect(worker.cacheNames).toContain('release-doctor-v4');
+  expect(worker.cacheNames).toContain('release-doctor-v5');
 });
 
 test('reduced motion shows the final demo result without a scan delay', async ({ page }) => {

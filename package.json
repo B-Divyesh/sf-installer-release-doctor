@@ -12,6 +12,7 @@
     "test": "cargo test && npm run test:unit && npm run build:site && playwright test",
     "test:unit": "vitest run --config site/vitest.config.ts",
     "test:e2e": "playwright test",
+    "test:live": "playwright test --config=playwright.live.config.ts",
     "preview": "vite preview --config site/vite.config.ts"
   },
   "devDependencies": {
