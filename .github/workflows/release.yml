@@ -45,7 +45,7 @@ jobs:
           mkdir -p release/x64
           cp target/x86_64-unknown-linux-musl/release/release-doctor release/x64/
           tar -C release/x64 -czf release/release-doctor-v$VERSION-linux-x86_64.tar.gz release-doctor
-          VERSION=$VERSION "$(go env GOPATH)/bin/nfpm" package --config nfpm.yaml --packager deb --target release/release-doctor_$VERSION_amd64.deb
+          VERSION=$VERSION "$(go env GOPATH)/bin/nfpm" package --config nfpm.yaml --packager deb --target release/release-doctor-$VERSION-amd64.deb
           VERSION=$VERSION "$(go env GOPATH)/bin/nfpm" package --config nfpm.yaml --packager rpm --target release/release-doctor-$VERSION.x86_64.rpm
           rm -rf release/x64
       - uses: actions/upload-artifact@v4
