@@ -1,0 +1,13 @@
+PackageIdentifier: Sociobot.InstallerReleaseDoctor
+PackageVersion: 0.1.1
+InstallerType: zip
+NestedInstallerType: portable
+NestedInstallerFiles:
+  - RelativeFilePath: release-doctor.exe
+    PortableCommandAlias: release-doctor
+Installers:
+  - Architecture: x64
+    InstallerUrl: https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.1/release-doctor-v0.1.1-windows-x86_64.zip
+    InstallerSha256: BF956A2434A97965EC7130BA9FE32F7952E486B3E80844636D49A431FF571F65
+ManifestType: installer
+ManifestVersion: 1.6.0
