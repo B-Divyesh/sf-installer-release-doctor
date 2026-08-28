@@ -21,3 +21,15 @@ test('the deployed 404 page is keyboard-accessible and has no serious axe findin
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations.filter(function (item) { return item.impact === 'critical' || item.impact === 'serious'; })).toEqual([]);
 });
+
+test('the deployed site does not expose the unavailable policy-pack checkout', async ({ page }) => {
+  const billingRequests: string[] = [];
+  page.on('request', function (request) {
+    if (new URL(request.url()).origin === 'https://api.sociobot.in') billingRequests.push(request.url());
+  });
+  await page.goto('/');
+  await expect(page.getByRole('link', { name: /Buy the policy pack/i })).toHaveCount(0);
+  await expect(page.locator('a[href*="api.sociobot.in"]')).toHaveCount(0);
+  await expect(page.getByText('$49', { exact: true })).toHaveCount(0);
+  expect(billingRequests).toEqual([]);
+});
