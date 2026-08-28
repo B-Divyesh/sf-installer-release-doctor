@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://installer-release-doctor.sociobot.in/sitemap.xml
