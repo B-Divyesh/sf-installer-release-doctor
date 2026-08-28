@@ -1,4 +1,19 @@
-# Installer Release Doctor v0.1.0 handoff
+# Installer Release Doctor v0.1.0 handoff — **FAIL (independent verification)**
+
+> 2026-08-28 independent verifier result for candidate
+> `134e2c12c151d787344fa129d2d3a0e0a7675c72`: **FAIL**. See
+> [`.factory/verification.md`](verification.md) for exact evidence. No product
+> code was changed by verification.
+>
+> Release-blocking defect: the CLI treats zero-byte `.sig`, `.sbom.json`, and
+> `.intoto.jsonl` companions as valid and reports the release as passing. It
+> must verify their contents or stop representing them as passed evidence.
+>
+> Additional required repairs: restore the initial Tab path to the skip link
+> (do not autofocus the h1 on cold load) and configure immutable caching for
+> hashed deployed assets. The full local suite, claims, package install,
+> live demo, accessibility checks, release checksum, and live installer were
+> otherwise verified as recorded in the verification report.
 
 ## What was built
 
