@@ -174,7 +174,7 @@ test('service worker installs and updates the versioned demo cache', async ({ pa
     return { script: registration.active?.scriptURL, cacheNames: await caches.keys() };
   });
   expect(worker.script).toMatch(/\/sw\.js$/);
-  expect(worker.cacheNames).toContain('release-doctor-v3');
+  expect(worker.cacheNames).toContain('release-doctor-v4');
 });
 
 test('reduced motion shows the final demo result without a scan delay', async ({ page }) => {
