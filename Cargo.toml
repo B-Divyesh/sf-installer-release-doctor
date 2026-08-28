@@ -1,0 +1,46 @@
+[package]
+name = "installer-release-doctor"
+version = "0.1.0"
+edition = "2024"
+description = "Check installer artifacts before release channels reject them"
+license = "MIT"
+repository = "https://github.com/B-Divyesh/sf-installer-release-doctor"
+include = [
+  "src/**",
+  "examples/demo/**",
+  "Cargo.toml",
+  "Cargo.lock",
+  "README.md",
+  "CHANGELOG.md",
+  "LICENSE",
+  "release-doctor.example.yml"
+]
+
+[[bin]]
+name = "release-doctor"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+flate2 = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml = "0.9"
+sha2 = "0.10"
+tar = "0.4"
+tempfile = "3"
+zip = { version = "4", default-features = false, features = ["deflate"] }
+
+[profile.release]
+strip = true
+lto = "thin"
+codegen-units = 1
+
+[package.metadata.deb]
+maintainer = "Param Factory <hello@sociobot.in>"
+copyright = "2026, Sociobot"
+license-file = ["LICENSE", "0"]
+extended-description = "Local release-readiness checks for CLI installer artifacts."
+section = "utils"
+priority = "optional"
+assets = [["target/release/release-doctor", "usr/bin/", "755"]]

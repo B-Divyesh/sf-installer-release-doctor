@@ -1,0 +1,20 @@
+policy_version: 2026-08-01
+product:
+  name: your-cli
+  version: 0.1.0
+  binary: your-cli
+checks:
+  require_signature: true
+  require_sbom: true
+  require_provenance: true
+  require_checksums: true
+channels:
+  - name: homebrew
+    artifact: your-cli_0.1.0_darwin_arm64.tar.gz
+    format: tar.gz
+    required_files: [LICENSE, README.md]
+    package:
+      identifier: in.sociobot.your-cli
+      architecture: arm64
+    upgrade:
+      previous_version: 0.0.9

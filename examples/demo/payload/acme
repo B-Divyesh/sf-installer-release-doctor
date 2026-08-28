@@ -1,0 +1,2 @@
+#!/bin/sh
+printf '%s\n' 'acme 1.4.0'
