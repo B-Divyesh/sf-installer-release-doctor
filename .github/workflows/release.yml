@@ -3,6 +3,11 @@ on:
   push:
     tags: ['v*']
   workflow_dispatch:
+    inputs:
+      version:
+        description: Release version without the v prefix
+        required: true
+        default: 0.1.0
 permissions:
   contents: write
 jobs:
@@ -25,8 +30,8 @@ jobs:
         with:
           targets: x86_64-unknown-linux-musl,aarch64-unknown-linux-musl,x86_64-unknown-linux-gnu
       - uses: taiki-e/install-action@cross
-      - uses: goreleaser/nfpm-action@v2
-        with: {install-only: true}
+      - name: Install nFPM
+        run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@v2.43.4
       - name: Build binaries
         run: |
           cross build --release --locked --target x86_64-unknown-linux-musl
@@ -34,7 +39,7 @@ jobs:
           cargo build --release --locked --target x86_64-unknown-linux-gnu
       - name: Package assets
         env:
-          VERSION: ${{ github.ref_name }}
+          VERSION: ${{ github.event.inputs.version || github.ref_name }}
         run: |
           VERSION=$(echo "$VERSION" | sed 's/^v//')
           mkdir -p release/x64 release/arm64
@@ -60,7 +65,7 @@ jobs:
           cargo build --release --locked --target x86_64-apple-darwin
       - name: Package assets
         env:
-          VERSION: ${{ github.ref_name }}
+          VERSION: ${{ github.event.inputs.version || github.ref_name }}
         run: |
           VERSION=$(echo "$VERSION" | sed 's/^v//')
           mkdir -p release/arm64 release/x64 pkgroot/usr/local/bin
@@ -83,7 +88,7 @@ jobs:
       - name: Package ZIP and MSI
         shell: pwsh
         run: |
-          $Version = "${{ github.ref_name }}".TrimStart("v")
+          $Version = "${{ github.event.inputs.version || github.ref_name }}".TrimStart("v")
           New-Item -ItemType Directory release | Out-Null
           Compress-Archive target/release/release-doctor.exe "release/release-doctor-v$Version-windows-x86_64.zip"
           dotnet tool install --global wix
@@ -101,7 +106,7 @@ jobs:
         with: {path: gathered}
       - name: Create checksums, manifest, and formula
         env:
-          VERSION: ${{ github.ref_name }}
+          VERSION: ${{ github.event.inputs.version || github.ref_name }}
           REPOSITORY: ${{ github.repository }}
         run: |
           VERSION=$(echo "$VERSION" | sed 's/^v//')
