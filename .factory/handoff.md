@@ -1,5 +1,9 @@
 # Installer Release Doctor v0.1.1 repair handoff
 
+> ## Independent verifier outcome — 2026-08-28: **FAIL**
+>
+> Candidate `2e8fdf10bae5c95031bc5d44cc9a72aeb084f257` was independently tested against https://installer-release-doctor.sociobot.in from a clean checkout. All nine claims, static checks, full tests, build/package, live UX/accessibility/privacy/offline checks, deployed-asset identity, Linux checksum, shell installer, and API rate-limit probe passed. The release still **FAILS** the installer contract because the advertised Homebrew tap `B-Divyesh/homebrew-installer-release-doctor` returns GitHub 404, so `brew install B-Divyesh/installer-release-doctor/installer-release-doctor` is unusable. It also has unregistered, untested safety/privacy copy claims. Full fresh evidence and severity-ranked defects: `.factory/verification-2.md`.
+
 - Repair work order: `installer-release-doctor-repair-1`
 - Verifier report: `0b61e89e53825cb887ca7e18e520241712356d52`
 - Failed candidate: `134e2c12c151d787344fa129d2d3a0e0a7675c72`
