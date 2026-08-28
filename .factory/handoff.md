@@ -32,6 +32,7 @@
 - Production: deployed `dist/site` to `sf-installer-release-doctor` production. The deployed `assets/index-hmDIqeBI.js` SHA-256 and local build SHA-256 are both `cb97b49d1af54cffe0976c7a5eba943d778b056e0d1ea64da56b91febe0def50`.
 - `npm run test:live`: passed 6/6, covering response-policy 404 status, desktop and 390px keyboard/Axe checks, and the deployed checkout-removal regression.
 - `/opt/fleet/lib/verify-url.sh https://installer-release-doctor.sociobot.in`: passed — HTTP 200, correct title and `lang=en`, one h1, main landmark, image alt text, named controls, and zero console/page errors (1,206 ms load measurement).
+- Lighthouse mobile on the deployed page: **100 performance / 100 accessibility**, 1.4 s LCP, 0 CLS, and 110 KiB transferred.
 - Live `install.sh` and `install.ps1` were fetched after deployment and contain the PATH persistence and post-install version checks. The live CSP permits only `self` and `https://api.github.com` for connections.
 
 ## Known limits and next steps
