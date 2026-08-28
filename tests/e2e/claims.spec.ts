@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { mkdtempSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -66,6 +67,40 @@ test('@claim:evidence-validation rejects empty and mismatched release evidence',
   expect(result.stdout).toContain('test tests::rejects_empty_evidence_companions ... ok');
 });
 
+test('@claim:public-key-only verifies signatures without a signing key', async () => {
+  const result = spawnSync('cargo', ['test', 'verifies_with_public_key_only'], { cwd: process.cwd(), encoding: 'utf8' });
+  expect(result.status).toBe(0);
+  expect(result.stdout).toContain('test tests::verifies_with_public_key_only ... ok');
+});
+
+test('@claim:read-only-check leaves every input byte unchanged', async () => {
+  const result = spawnSync('cargo', ['test', 'default_check_does_not_change_inputs'], { cwd: process.cwd(), encoding: 'utf8' });
+  expect(result.status).toBe(0);
+  expect(result.stdout).toContain('test tests::default_check_does_not_change_inputs ... ok');
+});
+
+test('@claim:homebrew-tap resolves to a valid current formula', async ({ request }) => {
+  const remote = spawnSync('git', ['ls-remote', 'https://github.com/B-Divyesh/homebrew-installer-release-doctor.git'], { encoding: 'utf8' });
+  expect(remote.status).toBe(0);
+  expect(remote.stdout).toContain('refs/heads/main');
+
+  const response = await request.get('https://raw.githubusercontent.com/B-Divyesh/homebrew-installer-release-doctor/main/Formula/installer-release-doctor.rb');
+  expect(response.ok()).toBe(true);
+  const formula = await response.text();
+  expect(formula).toContain('class InstallerReleaseDoctor < Formula');
+  expect(formula).toContain('version "0.1.1"');
+
+  const urls = [...formula.matchAll(/url "([^"]+darwin-[^"]+\.tar\.gz)"/g)].map((match) => match[1]);
+  const checksums = [...formula.matchAll(/sha256 "([a-f0-9]{64})"/g)].map((match) => match[1]);
+  expect(urls).toHaveLength(2);
+  expect(checksums).toHaveLength(2);
+  for (let index = 0; index < urls.length; index += 1) {
+    const archive = await request.get(urls[index]);
+    expect(archive.ok()).toBe(true);
+    expect(createHash('sha256').update(await archive.body()).digest('hex')).toBe(checksums[index]);
+  }
+});
+
 test('@claim:matrix-annotations CLI writes a matrix and GitHub annotations', async () => {
   const matrix = join(mkdtempSync(join(tmpdir(), 'release-doctor-test-')), 'matrix.md');
   const result = spawnSync('cargo', ['run', '--quiet', '--', 'check', '--manifest', 'examples/demo/release-doctor.yml', '--artifacts', 'examples/demo/artifacts', '--github', '--matrix', matrix], { cwd: process.cwd(), encoding: 'utf8' });
@@ -115,6 +150,13 @@ test('deployment policy caches hashed assets immutably and revalidates the shell
   expect(config.routes).toContainEqual({ route: '/assets/*', headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } });
   expect(config.routes).toContainEqual({ route: '/sw.js', headers: { 'Cache-Control': 'no-cache' } });
   expect(readdirSync('dist/site/assets').some(function (name) { return /^index-[\w-]+\.js$/.test(name); })).toBe(true);
+});
+
+test('release automation cannot silently skip or overwrite the Homebrew tap', async () => {
+  const workflow = readFileSync('.github/workflows/release.yml', 'utf8');
+  expect(workflow).toContain('TAP_GITHUB_TOKEN is required');
+  expect(workflow).toContain('FORMULA_SHA=');
+  expect(workflow).not.toContain("if: ${{ env.TAP_GITHUB_TOKEN != '' }}");
 });
 
 test('service worker installs and updates the versioned demo cache', async ({ page }) => {

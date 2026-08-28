@@ -1,0 +1,26 @@
+name: Homebrew consumer smoke
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/homebrew-smoke.yml'
+      - '.github/workflows/release.yml'
+      - 'packaging/homebrew/**'
+permissions:
+  contents: read
+jobs:
+  install:
+    runs-on: macos-latest
+    steps:
+      - name: Install from the documented public tap
+        run: brew install B-Divyesh/installer-release-doctor/installer-release-doctor
+      - name: Exercise the installed binary
+        run: |
+          release-doctor --version | grep '0.1.1'
+          set +e
+          release-doctor demo --format json > demo.json
+          status=$?
+          set -e
+          test "$status" -eq 1
+          python3 -c 'import json; report=json.load(open("demo.json")); assert report["summary"]["failures"] == 1'

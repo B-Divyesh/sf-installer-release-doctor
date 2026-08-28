@@ -120,9 +120,36 @@ jobs:
           files: release/*
           generate_release_notes: true
       - name: Update Homebrew tap
-        if: ${{ env.TAP_GITHUB_TOKEN != '' }}
         env:
           GH_TOKEN: ${{ env.TAP_GITHUB_TOKEN }}
         run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::TAP_GITHUB_TOKEN is required to publish the advertised Homebrew channel"
+            exit 1
+          fi
           CONTENT=$(base64 -w0 release/installer-release-doctor.rb)
-          gh api --method PUT repos/B-Divyesh/homebrew-installer-release-doctor/contents/Formula/installer-release-doctor.rb -f message="publish formula" -f content="$CONTENT"
+          FORMULA_SHA=$(gh api repos/B-Divyesh/homebrew-installer-release-doctor/contents/Formula/installer-release-doctor.rb --jq .sha 2>/dev/null || true)
+          if [ -n "$FORMULA_SHA" ]; then
+            gh api --method PUT repos/B-Divyesh/homebrew-installer-release-doctor/contents/Formula/installer-release-doctor.rb -f message="publish formula ${{ github.event.inputs.version || github.ref_name }}" -f content="$CONTENT" -f sha="$FORMULA_SHA"
+          else
+            gh api --method PUT repos/B-Divyesh/homebrew-installer-release-doctor/contents/Formula/installer-release-doctor.rb -f message="publish formula ${{ github.event.inputs.version || github.ref_name }}" -f content="$CONTENT"
+          fi
+
+  homebrew-consumer:
+    needs: publish
+    runs-on: macos-latest
+    steps:
+      - name: Install from the documented public tap
+        run: brew install B-Divyesh/installer-release-doctor/installer-release-doctor
+      - name: Exercise the installed binary
+        env:
+          EXPECTED_VERSION: ${{ github.event.inputs.version || github.ref_name }}
+        run: |
+          EXPECTED_VERSION=${EXPECTED_VERSION#v}
+          release-doctor --version | grep "$EXPECTED_VERSION"
+          set +e
+          release-doctor demo --format json > demo.json
+          status=$?
+          set -e
+          test "$status" -eq 1
+          python3 -c 'import json; report=json.load(open("demo.json")); assert report["summary"]["failures"] == 1'

@@ -4,7 +4,7 @@ Check installer artifacts before release channels reject them.
 
 Installer Release Doctor is for CLI authors who already build release files. It finds missing evidence, unsafe archive layouts, invalid metadata, and broken upgrade paths before upload.
 
-The checker runs on local files without network access or an account. It does not host packages, sign code, or store credentials.
+The checker runs on local files without network access or an account. A default check reports findings without changing release files. Signature checks use the public key stored in the manifest.
 
 ## Try the bundled demo
 
@@ -30,7 +30,7 @@ Windows PowerShell:
 irm https://installer-release-doctor.sociobot.in/install.ps1 | iex
 ```
 
-Homebrew, after the tap is published:
+Homebrew:
 
 ```sh
 brew install B-Divyesh/installer-release-doctor/installer-release-doctor

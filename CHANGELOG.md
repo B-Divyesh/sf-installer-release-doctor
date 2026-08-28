@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Publish the documented Homebrew tap and verify it on a clean macOS runner.
+- Fail releases when the tap cannot be updated, and update existing formulas safely.
+- Add claim tests for public-key-only verification and read-only checks.
+
 ## 0.1.1 — 2026-08-28
 
 - Verify Ed25519 signatures instead of checking only for a `.sig` file.

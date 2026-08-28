@@ -18,11 +18,11 @@ Checked August 28, 2026. Counts treat hyphenated terms as one word. No sentence 
 | Inspect a release in three steps | 6 | pass |
 | List each artifact and its required evidence in one YAML manifest. | 11 | pass |
 | The CLI reads archives safely. | 5 | pass |
-| It never reads a signing key. | 6 | pass |
+| Signature checks use the public key in your manifest. | 9 | pass |
 | Use the channel matrix or GitHub Actions annotations before upload. | 10 | pass |
 | The checker stays in its lane | 6 | pass |
 | It checks files you already built. | 6 | pass |
-| It does not host packages, store credentials, sign code, or replace native channel validation. | 14 | pass |
+| A default check reports findings without changing those files. | 9 | pass |
 | Install the local checker | 4 | pass |
 | Checking published builds… | 3 | pass |
 | macOS and Windows builds are unsigned in v0.1.1. | 8 | pass |

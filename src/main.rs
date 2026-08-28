@@ -21,7 +21,7 @@ const MAX_TOTAL_BYTES: u64 = 2 * 1024 * 1024 * 1024;
     name = "release-doctor",
     version,
     about = "Check installer artifacts before release channels reject them.",
-    long_about = "Inspect built release artifacts against a versioned channel manifest. No files are uploaded and signing keys are never read."
+    long_about = "Inspect built release artifacts against a versioned channel manifest. Checks use local files and the signature public key recorded in the manifest."
 )]
 struct Cli {
     #[command(subcommand)]
@@ -1239,6 +1239,25 @@ mod tests {
             .unwrap()
     }
 
+    fn fixture_bytes(root: &Path) -> BTreeMap<PathBuf, Vec<u8>> {
+        let mut files = BTreeMap::new();
+        let manifest = root.join("release-doctor.yml");
+        files.insert(
+            PathBuf::from("release-doctor.yml"),
+            fs::read(manifest).unwrap(),
+        );
+        for entry in fs::read_dir(root.join("artifacts")).unwrap() {
+            let path = entry.unwrap().path();
+            if path.is_file() {
+                files.insert(
+                    PathBuf::from("artifacts").join(path.file_name().unwrap()),
+                    fs::read(path).unwrap(),
+                );
+            }
+        }
+        files
+    }
+
     #[test]
     fn blocks_parent_paths() {
         assert!(clean_entry("../escape").is_err());
@@ -1285,6 +1304,39 @@ mod tests {
         for check in ["signature", "sbom", "provenance"] {
             assert_eq!(evidence_finding(&report, check).level, Level::Fail);
         }
+    }
+
+    #[test]
+    fn verifies_with_public_key_only() {
+        let root = evidence_fixture();
+        let files = fixture_bytes(root.path());
+        assert!(files.keys().all(|path| {
+            let name = path.to_string_lossy().to_ascii_lowercase();
+            !name.ends_with(".key") && !name.contains("private") && !name.contains("signing-key")
+        }));
+
+        let report = diagnose(
+            &root.path().join("release-doctor.yml"),
+            &root.path().join("artifacts"),
+        )
+        .unwrap();
+        assert_eq!(evidence_finding(&report, "signature").level, Level::Pass);
+        assert_eq!(report.summary.failures, 0);
+    }
+
+    #[test]
+    fn default_check_does_not_change_inputs() {
+        let root = evidence_fixture();
+        let before = fixture_bytes(root.path());
+
+        let report = diagnose(
+            &root.path().join("release-doctor.yml"),
+            &root.path().join("artifacts"),
+        )
+        .unwrap();
+
+        assert_eq!(report.summary.failures, 0);
+        assert_eq!(fixture_bytes(root.path()), before);
     }
 
     #[test]
