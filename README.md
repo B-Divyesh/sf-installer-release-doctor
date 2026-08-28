@@ -43,7 +43,7 @@ scoop bucket add installer-release-doctor https://github.com/B-Divyesh/sf-instal
 scoop install installer-release-doctor
 ```
 
-The release also includes `.deb`, `.rpm`, unsigned `.pkg`, unsigned `.msi`, and portable archives. Check `SHA256SUMS` before installing a downloaded file.
+The release also includes `.deb`, `.rpm`, an unsigned `.pkg`, and portable archives. Check `SHA256SUMS` before installing a downloaded file.
 
 ## Use
 

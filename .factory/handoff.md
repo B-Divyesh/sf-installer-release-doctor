@@ -11,7 +11,7 @@
 - A responsive static site with a one-click isolated demo, empty download state, error-safe GitHub release lookup, keyboard paths, reduced motion, offline shell, privacy, terms, and a 404 route.
 - A $49 one-time policy-pack offer using the Sociobot checkout, license return storage, daily verification cache, and paste-to-restore flow.
 - Checksum-verifying shell and PowerShell installers.
-- A tag-driven GitHub Actions release matrix for static Linux binaries, macOS arm64/x64 archives, Windows ZIP, `.deb`, `.rpm`, unsigned `.pkg`, unsigned `.msi`, `SHA256SUMS`, `latest.json`, and a generated Homebrew formula.
+- A tag-driven GitHub Actions release matrix for static Linux binaries, macOS arm64/x64 archives, Windows ZIP, `.deb`, `.rpm`, unsigned `.pkg`, `SHA256SUMS`, `latest.json`, and a generated Homebrew formula.
 - Scoop and winget manifests ready for their post-release SHA-256 values.
 
 ## How to run
