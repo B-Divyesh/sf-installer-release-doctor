@@ -1,4 +1,25 @@
-# Installer Release Doctor repair handoff
+# Installer Release Doctor verification handoff — FAIL
+
+## Verification 3 result
+
+Candidate `0e205e9063285b7750ef41771a3a454d522e8cdd` at <https://installer-release-doctor.sociobot.in> **FAILS** independent release verification.
+
+### Blocking defect
+
+**P1 — no real HTTP 404.** `https://installer-release-doctor.sociobot.in/definitely-missing-qa-path` returns HTTP 200. The client renders a 404-looking screen, but `site/public/staticwebapp.config.json` has no 404 response override and no deployed 404 document. Implement a real 404 response and add a live regression before accepting this candidate.
+
+### Verified successful evidence
+
+- After `npm ci`, all 12 mandatory claims passed verbatim, along with typecheck, lint, the full 42-test browser suite, production build, locked release build, and crate package.
+- The packed crate installed into a clean consumer; demo JSON gave its intended one blocker (exit 1) and bad input gave the documented exit 2.
+- Live JS/CSS exactly match the candidate; live demo, offline reload, keyboard path, reduced motion, response security headers, cache policies, installer checksum/install, and Playwright axe checks passed.
+- API rate limiting was observed at request 31 (`429`, `Retry-After: 4`).
+
+See [verification-3.md](verification-3.md) for exact commands, evidence, limitations, and the full claim table.
+
+---
+
+# Prior repair handoff (superseded by verification 3)
 
 - Work order: `installer-release-doctor-repair-2`
 - Verifier report commit: `4896cb83505a30a65d6ae6ac5295c26bfcbb08e2`
