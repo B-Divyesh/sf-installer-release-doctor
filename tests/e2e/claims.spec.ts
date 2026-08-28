@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import AxeBuilder from '@axe-core/playwright';
@@ -59,6 +59,13 @@ test('@claim:archive-safe archive paths cannot escape the inspection root', asyn
   expect(result.stdout).toContain('test tests::blocks_parent_paths ... ok');
 });
 
+test('@claim:evidence-validation rejects empty and mismatched release evidence', async () => {
+  const result = spawnSync('cargo', ['test', 'evidence'], { cwd: process.cwd(), encoding: 'utf8' });
+  expect(result.status).toBe(0);
+  expect(result.stdout).toContain('test tests::verifies_release_evidence ... ok');
+  expect(result.stdout).toContain('test tests::rejects_empty_evidence_companions ... ok');
+});
+
 test('@claim:matrix-annotations CLI writes a matrix and GitHub annotations', async () => {
   const matrix = join(mkdtempSync(join(tmpdir(), 'release-doctor-test-')), 'matrix.md');
   const result = spawnSync('cargo', ['run', '--quiet', '--', 'check', '--manifest', 'examples/demo/release-doctor.yml', '--artifacts', 'examples/demo/artifacts', '--github', '--matrix', matrix], { cwd: process.cwd(), encoding: 'utf8' });
@@ -74,23 +81,70 @@ test('@claim:free-core core checker is MIT licensed', async ({ page }) => {
 });
 
 test('routes have one h1 and no serious accessibility findings', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('console', function (message) { if (message.type() === 'error') errors.push(message.text()); });
+  page.on('pageerror', function (error) { errors.push(error.message); });
   for (const route of ['/', '/demo', '/privacy', '/terms', '/missing']) {
     await page.goto(route);
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('main')).toHaveCount(1);
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations.filter(function (item) { return item.impact === 'critical' || item.impact === 'serious'; })).toEqual([]);
+    expect(await page.evaluate(function () { return document.documentElement.scrollWidth <= window.innerWidth; })).toBe(true);
   }
+  expect(errors).toEqual([]);
 });
 
 test('keyboard path enters and resets the demo', async ({ page }) => {
   await page.goto('/');
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('link', { name: 'Skip to main content' })).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('link', { name: /Installer Release Doctor/ })).toBeFocused();
   await page.getByRole('link', { name: 'Try it with sample data' }).focus();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/demo$/);
+  await expect(page.getByRole('heading', { level: 1 })).toBeFocused();
   await page.getByRole('button', { name: 'Reset demo' }).focus();
   await page.keyboard.press('Enter');
   await expect(page.getByText('Ready to inspect the winget channel.')).toBeVisible();
+});
+
+test('deployment policy caches hashed assets immutably and revalidates the shell', async () => {
+  const config = JSON.parse(readFileSync('dist/site/staticwebapp.config.json', 'utf8'));
+  expect(config.routes).toContainEqual({ route: '/assets/*', headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } });
+  expect(config.routes).toContainEqual({ route: '/sw.js', headers: { 'Cache-Control': 'no-cache' } });
+  expect(readdirSync('dist/site/assets').some(function (name) { return /^index-[\w-]+\.js$/.test(name); })).toBe(true);
+});
+
+test('service worker installs and updates the versioned demo cache', async ({ page }) => {
+  await page.goto('/demo');
+  const worker = await page.evaluate(async function () {
+    const registration = await navigator.serviceWorker.ready;
+    await registration.update();
+    return { script: registration.active?.scriptURL, cacheNames: await caches.keys() };
+  });
+  expect(worker.script).toMatch(/\/sw\.js$/);
+  expect(worker.cacheNames).toContain('release-doctor-v3');
+});
+
+test('reduced motion shows the final demo result without a scan delay', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/demo');
+  await page.getByRole('button', { name: 'Run release check' }).click();
+  await expect(page.getByText('Finished: winget is blocked by 1 missing file.')).toBeVisible();
+});
+
+test('visible controls meet the 44 pixel touch target baseline', async ({ page }) => {
+  for (const route of ['/', '/demo', '/privacy', '/terms']) {
+    await page.goto(route);
+    const targets = page.locator('a, button, input, summary').filter({ visible: true });
+    for (let index = 0; index < await targets.count(); index += 1) {
+      const box = await targets.nth(index).boundingBox();
+      expect(box?.width).toBeGreaterThanOrEqual(44);
+      expect(box?.height).toBeGreaterThanOrEqual(44);
+    }
+  }
 });
 
 test('license return is stored and removed from the address bar', async ({ page }) => {

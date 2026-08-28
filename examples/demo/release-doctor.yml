@@ -5,6 +5,7 @@ product:
   binary: acme
 checks:
   require_signature: true
+  signature_public_key: 2oTWqREv7nr8iNhJ88JWcvh+bqJgd9xhMctOWm8yQlc=
   require_sbom: true
   require_provenance: true
   require_checksums: true

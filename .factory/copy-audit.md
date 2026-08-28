@@ -25,7 +25,7 @@ Checked August 28, 2026. Counts treat hyphenated terms as one word. No sentence 
 | It does not host packages, store credentials, sign code, or replace native channel validation. | 14 | pass |
 | Install the local checker | 4 | pass |
 | Checking published builds… | 3 | pass |
-| macOS and Windows builds are unsigned in v0.1.0. | 8 | pass |
+| macOS and Windows builds are unsigned in v0.1.1. | 8 | pass |
 | Inspect checksums before installation. | 4 | pass |
 | Add company policy checks | 4 | pass |
 | The free local checker stays useful. | 6 | pass |

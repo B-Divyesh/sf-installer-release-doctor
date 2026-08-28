@@ -74,11 +74,26 @@ Exit codes are stable:
 
 The manifest schema is shown in [`release-doctor.example.yml`](release-doctor.example.yml). Policy versions are dates because distribution rules change outside this project.
 
-## What v0.1 checks
+## Evidence format
+
+Set `checks.signature_public_key` to the base64 form of a 32-byte Ed25519 public key. The matching `.sig` file is JSON:
+
+```json
+{"algorithm":"ed25519-sha256","signature":"BASE64_SIGNATURE"}
+```
+
+The signature covers the artifact's 32 raw SHA-256 bytes. This keeps verification fast for large installers. The checker rejects missing keys, invalid JSON, unsupported algorithms, malformed signatures, and signature mismatches.
+
+CycloneDX SBOMs must include the artifact SHA-256 in `metadata.component.hashes`. SPDX SBOMs must include it in a checksum entry. In-toto JSONL provenance must name the artifact SHA-256 in a statement subject. Direct statements and DSSE envelopes are accepted.
+
+## What v0.1.1 checks
 
 - ZIP, tar, and tar.gz paths, links, individual entry size, and total expanded size.
 - Expected binary and companion files inside an archive.
-- Detached signature, SBOM, provenance, and `SHA256SUMS` companions.
+- Ed25519 signatures over the artifact digest.
+- CycloneDX or SPDX SBOM structure and artifact binding.
+- In-toto provenance structure and artifact binding.
+- `SHA256SUMS` entries and artifact hashes.
 - Reverse-DNS package identifiers and known architecture names.
 - Monotonic upgrade versions.
 - Opaque package formats receive a warning to run their native verifier.
@@ -91,6 +106,8 @@ Requirements: Rust 1.85 or newer and Node.js 22.
 
 ```sh
 npm ci
+npm run typecheck
+npm run lint
 npm test
 npm run build:site
 cargo build --release

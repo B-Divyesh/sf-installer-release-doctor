@@ -1,4 +1,6 @@
+use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
 use clap::{Parser, Subcommand, ValueEnum};
+use ed25519_dalek::{Signature, VerifyingKey};
 use flate2::read::GzDecoder;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -92,6 +94,8 @@ struct Product {
 struct Checks {
     #[serde(default)]
     require_signature: bool,
+    /// Base64-encoded Ed25519 public key used to verify `.sig` companions.
+    signature_public_key: Option<String>,
     #[serde(default)]
     require_sbom: bool,
     #[serde(default)]
@@ -154,6 +158,12 @@ struct Summary {
     passed: usize,
     warnings: usize,
     failures: usize,
+}
+
+#[derive(Debug, Deserialize)]
+struct SignatureEnvelope {
+    algorithm: String,
+    signature: String,
 }
 
 fn main() -> ExitCode {
@@ -418,30 +428,16 @@ fn inspect_channel(
             Some("Rebuild the archive without absolute paths, '..', links, or oversized entries."),
         ),
     }
-    companion(
+    inspect_signature(
         c,
         root,
-        &format!("{}.sig", c.artifact),
-        "signature",
+        &path,
         m.checks.require_signature,
+        m.checks.signature_public_key.as_deref(),
         out,
     );
-    companion(
-        c,
-        root,
-        &format!("{}.sbom.json", c.artifact),
-        "SBOM",
-        m.checks.require_sbom,
-        out,
-    );
-    companion(
-        c,
-        root,
-        &format!("{}.intoto.jsonl", c.artifact),
-        "provenance",
-        m.checks.require_provenance,
-        out,
-    );
+    inspect_sbom(c, root, &path, m.checks.require_sbom, out);
+    inspect_provenance(c, root, &path, m.checks.require_provenance, out);
     if m.checks.require_checksums {
         match sums.get(&c.artifact) {
             None => add(
@@ -564,41 +560,397 @@ fn safe_join(root: &Path, relative: &str) -> Option<PathBuf> {
         Some(root.join(p))
     }
 }
-fn companion(
+fn missing_companion(c: &Channel, name: &str, label: &str, required: bool, out: &mut Vec<Finding>) {
+    add(
+        out,
+        c,
+        &label.to_lowercase(),
+        if required {
+            Level::Fail
+        } else {
+            Level::Warning
+        },
+        if required {
+            format!("Missing {label} companion: {name}.")
+        } else {
+            format!("No {label} companion found.")
+        },
+        Some(&format!("Add {name} beside the artifact.")),
+    );
+}
+
+fn read_companion(root: &Path, name: &str) -> Result<Option<Vec<u8>>, String> {
+    let path = safe_join(root, name)
+        .ok_or_else(|| "Companion path leaves the release directory.".to_string())?;
+    if !path.is_file() {
+        return Ok(None);
+    }
+    fs::read(&path)
+        .map(Some)
+        .map_err(|e| format!("Could not read {name}: {e}"))
+}
+
+fn artifact_digest(path: &Path) -> Result<[u8; 32], String> {
+    let mut file = fs::File::open(path).map_err(|e| e.to_string())?;
+    let mut hash = Sha256::new();
+    io::copy(&mut file, &mut hash).map_err(|e| e.to_string())?;
+    Ok(hash.finalize().into())
+}
+
+fn inspect_signature(
     c: &Channel,
     root: &Path,
-    name: &str,
-    label: &str,
+    artifact: &Path,
+    required: bool,
+    public_key: Option<&str>,
+    out: &mut Vec<Finding>,
+) {
+    let name = format!("{}.sig", c.artifact);
+    let raw = match read_companion(root, &name) {
+        Ok(Some(raw)) => raw,
+        Ok(None) => return missing_companion(c, &name, "signature", required, out),
+        Err(error) => {
+            add(
+                out,
+                c,
+                "signature",
+                Level::Fail,
+                error,
+                Some("Check the signature file permissions and retry."),
+            );
+            return;
+        }
+    };
+    let result = (|| -> Result<(), String> {
+        if raw.is_empty() {
+            return Err("Signature companion is empty.".into());
+        }
+        let envelope: SignatureEnvelope = serde_json::from_slice(&raw)
+            .map_err(|e| format!("Signature companion is not valid JSON: {e}"))?;
+        if envelope.algorithm != "ed25519-sha256" {
+            return Err(format!(
+                "Unsupported signature algorithm '{}'.",
+                envelope.algorithm
+            ));
+        }
+        let public_key = public_key.ok_or_else(|| {
+            "Signature cannot be verified because checks.signature_public_key is missing."
+                .to_string()
+        })?;
+        let key_bytes = BASE64
+            .decode(public_key.trim())
+            .map_err(|_| "Signature public key is not valid base64.".to_string())?;
+        let key_bytes: [u8; 32] = key_bytes
+            .try_into()
+            .map_err(|_| "Signature public key must decode to 32 bytes.".to_string())?;
+        let key = VerifyingKey::from_bytes(&key_bytes)
+            .map_err(|_| "Signature public key is not a valid Ed25519 key.".to_string())?;
+        let signature_bytes = BASE64
+            .decode(envelope.signature.trim())
+            .map_err(|_| "Signature value is not valid base64.".to_string())?;
+        let signature = Signature::from_slice(&signature_bytes)
+            .map_err(|_| "Signature value must decode to 64 bytes.".to_string())?;
+        let digest = artifact_digest(artifact)?;
+        key.verify_strict(&digest, &signature)
+            .map_err(|_| "Signature does not match the artifact and public key.".to_string())
+    })();
+    match result {
+        Ok(()) => add(
+            out,
+            c,
+            "signature",
+            Level::Pass,
+            "Ed25519 signature matches the artifact SHA-256 digest.",
+            None,
+        ),
+        Err(error) => add(
+            out,
+            c,
+            "signature",
+            Level::Fail,
+            error,
+            Some(
+                "Create an ed25519-sha256 signature with the public key recorded in the manifest.",
+            ),
+        ),
+    }
+}
+
+fn matching_checksum(value: &serde_json::Value, expected: &str) -> bool {
+    match value {
+        serde_json::Value::Array(items) => {
+            items.iter().any(|item| matching_checksum(item, expected))
+        }
+        serde_json::Value::Object(object) => {
+            let cyclone = object.get("alg").and_then(|v| v.as_str()) == Some("SHA-256")
+                && object
+                    .get("content")
+                    .and_then(|v| v.as_str())
+                    .is_some_and(|v| v.eq_ignore_ascii_case(expected));
+            let spdx = object
+                .get("algorithm")
+                .and_then(|v| v.as_str())
+                .is_some_and(|v| v.eq_ignore_ascii_case("SHA256"))
+                && object
+                    .get("checksumValue")
+                    .and_then(|v| v.as_str())
+                    .is_some_and(|v| v.eq_ignore_ascii_case(expected));
+            cyclone
+                || spdx
+                || object
+                    .values()
+                    .any(|item| matching_checksum(item, expected))
+        }
+        _ => false,
+    }
+}
+
+fn validate_sbom(value: &serde_json::Value, digest: &str) -> Result<&'static str, String> {
+    let object = value
+        .as_object()
+        .ok_or_else(|| "SBOM root must be a JSON object.".to_string())?;
+    if object.get("bomFormat").and_then(|v| v.as_str()) == Some("CycloneDX") {
+        if object
+            .get("specVersion")
+            .and_then(|v| v.as_str())
+            .is_none_or(str::is_empty)
+            || object.get("version").and_then(|v| v.as_u64()).is_none()
+            || value
+                .pointer("/metadata/component/name")
+                .and_then(|v| v.as_str())
+                .is_none_or(str::is_empty)
+        {
+            return Err(
+                "CycloneDX SBOM is missing specVersion, version, or metadata.component.name."
+                    .into(),
+            );
+        }
+        if !value
+            .pointer("/metadata/component/hashes")
+            .is_some_and(|v| matching_checksum(v, digest))
+        {
+            return Err(
+                "CycloneDX SBOM does not bind its metadata component to this artifact SHA-256."
+                    .into(),
+            );
+        }
+        return Ok("CycloneDX");
+    }
+    if object
+        .get("spdxVersion")
+        .and_then(|v| v.as_str())
+        .is_some_and(|v| v.starts_with("SPDX-"))
+    {
+        let core_valid = object.get("SPDXID").and_then(|v| v.as_str()) == Some("SPDXRef-DOCUMENT")
+            && object
+                .get("name")
+                .and_then(|v| v.as_str())
+                .is_some_and(|v| !v.is_empty())
+            && object
+                .get("dataLicense")
+                .and_then(|v| v.as_str())
+                .is_some_and(|v| !v.is_empty())
+            && object
+                .get("documentNamespace")
+                .and_then(|v| v.as_str())
+                .is_some_and(|v| v.starts_with("http"))
+            && object
+                .get("creationInfo")
+                .is_some_and(serde_json::Value::is_object);
+        if !core_valid {
+            return Err("SPDX SBOM is missing required document fields.".into());
+        }
+        if !matching_checksum(value, digest) {
+            return Err("SPDX SBOM does not contain this artifact SHA-256.".into());
+        }
+        return Ok("SPDX");
+    }
+    Err("SBOM must be a CycloneDX or SPDX JSON document.".into())
+}
+
+fn inspect_sbom(c: &Channel, root: &Path, artifact: &Path, required: bool, out: &mut Vec<Finding>) {
+    let name = format!("{}.sbom.json", c.artifact);
+    let raw = match read_companion(root, &name) {
+        Ok(Some(raw)) => raw,
+        Ok(None) => return missing_companion(c, &name, "SBOM", required, out),
+        Err(error) => {
+            add(
+                out,
+                c,
+                "sbom",
+                Level::Fail,
+                error,
+                Some("Check the SBOM file permissions and retry."),
+            );
+            return;
+        }
+    };
+    let result = (|| -> Result<&'static str, String> {
+        if raw.is_empty() {
+            return Err("SBOM companion is empty.".into());
+        }
+        let value =
+            serde_json::from_slice(&raw).map_err(|e| format!("SBOM is not valid JSON: {e}"))?;
+        let digest = sha256(artifact)?;
+        validate_sbom(&value, &digest)
+    })();
+    match result {
+        Ok(format) => add(
+            out,
+            c,
+            "sbom",
+            Level::Pass,
+            format!("Valid {format} SBOM matches the artifact SHA-256."),
+            None,
+        ),
+        Err(error) => add(
+            out,
+            c,
+            "sbom",
+            Level::Fail,
+            error,
+            Some("Generate a valid CycloneDX or SPDX SBOM that includes the artifact SHA-256."),
+        ),
+    }
+}
+
+fn validate_statement(value: &serde_json::Value, digest: &str) -> Result<(), String> {
+    let statement = value
+        .as_object()
+        .ok_or_else(|| "Provenance statement must be a JSON object.".to_string())?;
+    let statement_type = statement
+        .get("_type")
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
+    if statement_type != "https://in-toto.io/Statement/v1"
+        && statement_type != "https://in-toto.io/Statement/v0.1"
+    {
+        return Err("Provenance _type must be an in-toto Statement.".into());
+    }
+    if statement
+        .get("predicateType")
+        .and_then(|v| v.as_str())
+        .is_none_or(|v| !v.starts_with("https://"))
+    {
+        return Err("Provenance predicateType must be an HTTPS URI.".into());
+    }
+    let subjects = statement
+        .get("subject")
+        .and_then(|v| v.as_array())
+        .ok_or_else(|| "Provenance subject must be an array.".to_string())?;
+    let matches = subjects.iter().any(|subject| {
+        subject
+            .pointer("/digest/sha256")
+            .and_then(|v| v.as_str())
+            .is_some_and(|v| v.eq_ignore_ascii_case(digest))
+    });
+    if !matches {
+        return Err("Provenance subject does not match this artifact SHA-256.".into());
+    }
+    if !statement.contains_key("predicate") {
+        return Err("Provenance statement is missing its predicate.".into());
+    }
+    Ok(())
+}
+
+fn validate_provenance_line(value: &serde_json::Value, digest: &str) -> Result<(), String> {
+    if value.get("payloadType").is_some() || value.get("payload").is_some() {
+        if value.get("payloadType").and_then(|v| v.as_str()) != Some("application/vnd.in-toto+json")
+        {
+            return Err("DSSE provenance payloadType must be application/vnd.in-toto+json.".into());
+        }
+        let signatures = value
+            .get("signatures")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| "DSSE provenance signatures must be an array.".to_string())?;
+        if signatures.is_empty()
+            || signatures.iter().any(|item| {
+                item.get("sig")
+                    .and_then(|v| v.as_str())
+                    .is_none_or(str::is_empty)
+            })
+        {
+            return Err("DSSE provenance must contain a non-empty signature.".into());
+        }
+        let payload = value
+            .get("payload")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| "DSSE provenance is missing its payload.".to_string())?;
+        let decoded = BASE64
+            .decode(payload)
+            .map_err(|_| "DSSE provenance payload is not valid base64.".to_string())?;
+        let statement = serde_json::from_slice(&decoded)
+            .map_err(|e| format!("DSSE provenance payload is not valid JSON: {e}"))?;
+        validate_statement(&statement, digest)
+    } else {
+        validate_statement(value, digest)
+    }
+}
+
+fn inspect_provenance(
+    c: &Channel,
+    root: &Path,
+    artifact: &Path,
     required: bool,
     out: &mut Vec<Finding>,
 ) {
-    if safe_join(root, name).is_some_and(|p| p.is_file()) {
-        add(
+    let name = format!("{}.intoto.jsonl", c.artifact);
+    let raw = match read_companion(root, &name) {
+        Ok(Some(raw)) => raw,
+        Ok(None) => return missing_companion(c, &name, "provenance", required, out),
+        Err(error) => {
+            add(
+                out,
+                c,
+                "provenance",
+                Level::Fail,
+                error,
+                Some("Check the provenance file permissions and retry."),
+            );
+            return;
+        }
+    };
+    let result = (|| -> Result<usize, String> {
+        if raw.is_empty() {
+            return Err("Provenance companion is empty.".into());
+        }
+        let text =
+            std::str::from_utf8(&raw).map_err(|_| "Provenance is not UTF-8 JSONL.".to_string())?;
+        let digest = sha256(artifact)?;
+        let mut count = 0;
+        for (index, line) in text
+            .lines()
+            .enumerate()
+            .filter(|(_, line)| !line.trim().is_empty())
+        {
+            let value = serde_json::from_str(line)
+                .map_err(|e| format!("Provenance line {} is not valid JSON: {e}", index + 1))?;
+            validate_provenance_line(&value, &digest)
+                .map_err(|e| format!("Provenance line {} is invalid: {e}", index + 1))?;
+            count += 1;
+        }
+        if count == 0 {
+            return Err("Provenance companion has no statements.".into());
+        }
+        Ok(count)
+    })();
+    match result {
+        Ok(count) => add(
             out,
             c,
-            &label.to_lowercase(),
+            "provenance",
             Level::Pass,
-            format!("Found {label} companion."),
+            format!("{count} in-toto provenance statement(s) match the artifact SHA-256."),
             None,
-        )
-    } else if required {
-        add(
+        ),
+        Err(error) => add(
             out,
             c,
-            &label.to_lowercase(),
+            "provenance",
             Level::Fail,
-            format!("Missing {label} companion: {name}."),
-            Some(&format!("Create {name} beside the artifact.")),
-        )
-    } else {
-        add(
-            out,
-            c,
-            &label.to_lowercase(),
-            Level::Warning,
-            format!("No {label} companion found."),
-            Some(&format!("Add {name} when the channel supports it.")),
-        )
+            error,
+            Some("Generate in-toto JSONL whose subject SHA-256 matches the artifact."),
+        ),
     }
 }
 
@@ -816,12 +1168,12 @@ fn seed_demo(root: &Path) -> Result<(), String> {
     .map_err(|e| e.to_string())?;
     fs::write(
         artifacts.join("acme-cli_1.4.0_windows_x86_64.zip.sig"),
-        b"demo detached signature\n",
+        include_bytes!("../examples/demo/artifacts/acme-cli_1.4.0_windows_x86_64.zip.sig"),
     )
     .map_err(|e| e.to_string())?;
     fs::write(
         artifacts.join("acme-cli_1.4.0_windows_x86_64.zip.sbom.json"),
-        b"{\"bomFormat\":\"CycloneDX\"}\n",
+        include_bytes!("../examples/demo/artifacts/acme-cli_1.4.0_windows_x86_64.zip.sbom.json"),
     )
     .map_err(|e| e.to_string())?;
     fs::write(
@@ -835,6 +1187,58 @@ fn seed_demo(root: &Path) -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    const ARTIFACT: &str = "acme-cli_1.4.0_windows_x86_64.zip";
+
+    fn evidence_fixture() -> tempfile::TempDir {
+        let root = tempfile::tempdir().unwrap();
+        let artifacts = root.path().join("artifacts");
+        fs::create_dir(&artifacts).unwrap();
+        fs::write(
+            root.path().join("release-doctor.yml"),
+            include_str!("../examples/demo/release-doctor.yml"),
+        )
+        .unwrap();
+        for name in [ARTIFACT, "SHA256SUMS"] {
+            fs::write(
+                artifacts.join(name),
+                fs::read(Path::new("examples/demo/artifacts").join(name)).unwrap(),
+            )
+            .unwrap();
+        }
+        fs::write(
+            artifacts.join(format!("{ARTIFACT}.sig")),
+            include_bytes!("../examples/demo/artifacts/acme-cli_1.4.0_windows_x86_64.zip.sig"),
+        )
+        .unwrap();
+        fs::write(
+            artifacts.join(format!("{ARTIFACT}.sbom.json")),
+            include_bytes!(
+                "../examples/demo/artifacts/acme-cli_1.4.0_windows_x86_64.zip.sbom.json"
+            ),
+        )
+        .unwrap();
+        fs::write(
+            artifacts.join(format!("{ARTIFACT}.intoto.jsonl")),
+            concat!(
+                "{\"_type\":\"https://in-toto.io/Statement/v1\",",
+                "\"subject\":[{\"name\":\"acme-cli_1.4.0_windows_x86_64.zip\",",
+                "\"digest\":{\"sha256\":\"72f0da333168f736893e41756aaabe226a218354505f50b1cd797cd74f7f7589\"}}],",
+                "\"predicateType\":\"https://slsa.dev/provenance/v1\",\"predicate\":{}}\n"
+            ),
+        )
+        .unwrap();
+        root
+    }
+
+    fn evidence_finding<'a>(report: &'a Report, check: &str) -> &'a Finding {
+        report
+            .findings
+            .iter()
+            .find(|finding| finding.check == check)
+            .unwrap()
+    }
+
     #[test]
     fn blocks_parent_paths() {
         assert!(clean_entry("../escape").is_err());
@@ -850,5 +1254,53 @@ mod tests {
             serde_yaml::from_str("product: {name: x, version: 1.0.0, binary: x}\nchannels: []")
                 .unwrap();
         assert!(validate_manifest(&m).is_err());
+    }
+
+    #[test]
+    fn verifies_release_evidence() {
+        let root = evidence_fixture();
+        let artifacts = root.path().join("artifacts");
+        let manifest = root.path().join("release-doctor.yml");
+        let report = diagnose(&manifest, &artifacts).unwrap();
+        for check in ["signature", "sbom", "provenance"] {
+            assert_eq!(evidence_finding(&report, check).level, Level::Pass);
+        }
+
+        fs::write(
+            artifacts.join(format!("{ARTIFACT}.sig")),
+            r#"{"algorithm":"ed25519-sha256","signature":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="}"#,
+        )
+        .unwrap();
+        fs::write(
+            artifacts.join(format!("{ARTIFACT}.sbom.json")),
+            r#"{"bomFormat":"CycloneDX","specVersion":"1.6","version":1,"metadata":{"component":{"name":"acme","hashes":[{"alg":"SHA-256","content":"deadbeef"}]}}}"#,
+        )
+        .unwrap();
+        fs::write(
+            artifacts.join(format!("{ARTIFACT}.intoto.jsonl")),
+            r#"{"_type":"https://in-toto.io/Statement/v1","subject":[{"name":"acme","digest":{"sha256":"deadbeef"}}],"predicateType":"https://slsa.dev/provenance/v1","predicate":{}}"#,
+        )
+        .unwrap();
+        let report = diagnose(&manifest, &artifacts).unwrap();
+        for check in ["signature", "sbom", "provenance"] {
+            assert_eq!(evidence_finding(&report, check).level, Level::Fail);
+        }
+    }
+
+    #[test]
+    fn rejects_empty_evidence_companions() {
+        let root = evidence_fixture();
+        let artifacts = root.path().join("artifacts");
+        for suffix in ["sig", "sbom.json", "intoto.jsonl"] {
+            fs::write(artifacts.join(format!("{ARTIFACT}.{suffix}")), []).unwrap();
+        }
+        let report = diagnose(&root.path().join("release-doctor.yml"), &artifacts).unwrap();
+        for check in ["signature", "sbom", "provenance"] {
+            let finding = evidence_finding(&report, check);
+            assert_eq!(finding.level, Level::Fail);
+            assert!(finding.message.contains("empty"));
+        }
+        assert_eq!(report.summary.passed, 0);
+        assert_eq!(report.summary.failures, 3);
     }
 }

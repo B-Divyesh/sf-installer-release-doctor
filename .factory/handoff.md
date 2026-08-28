@@ -1,79 +1,62 @@
-# Installer Release Doctor v0.1.0 handoff — **FAIL (independent verification)**
+# Installer Release Doctor v0.1.1 repair handoff
 
-> 2026-08-28 independent verifier result for candidate
-> `134e2c12c151d787344fa129d2d3a0e0a7675c72`: **FAIL**. See
-> [`.factory/verification.md`](verification.md) for exact evidence. No product
-> code was changed by verification.
->
-> Release-blocking defect: the CLI treats zero-byte `.sig`, `.sbom.json`, and
-> `.intoto.jsonl` companions as valid and reports the release as passing. It
-> must verify their contents or stop representing them as passed evidence.
->
-> Additional required repairs: restore the initial Tab path to the skip link
-> (do not autofocus the h1 on cold load) and configure immutable caching for
-> hashed deployed assets. The full local suite, claims, package install,
-> live demo, accessibility checks, release checksum, and live installer were
-> otherwise verified as recorded in the verification report.
+- Repair work order: `installer-release-doctor-repair-1`
+- Verifier report: `0b61e89e53825cb887ca7e18e520241712356d52`
+- Failed candidate: `134e2c12c151d787344fa129d2d3a0e0a7675c72`
 
-## What was built
+## What changed
 
-- A Rust single-binary CLI named `release-doctor`.
-- YAML and JSON manifests with versioned policy dates.
-- Safe ZIP, tar, and tar.gz inspection with traversal, link, per-entry size, and expanded-size defenses.
-- Checks for binary layout, required files, detached signatures, SBOMs, provenance, checksums, package identifiers, architectures, and upgrade versions.
-- Text and JSON output, stable exit codes, strict warnings, GitHub Actions annotations, and Markdown channel matrices.
-- A bundled `release-doctor demo` fixture in a new temporary workspace. Its missing provenance file proves the failure and repair path.
-- A responsive static site with a one-click isolated demo, empty download state, error-safe GitHub release lookup, keyboard paths, reduced motion, offline shell, privacy, terms, and a 404 route.
-- A $49 one-time policy-pack offer using the Sociobot checkout, license return storage, daily verification cache, and paste-to-restore flow.
-- Checksum-verifying shell and PowerShell installers.
-- A tag-driven GitHub Actions release matrix for a static Linux x64 binary, macOS arm64/x64 archives, Windows ZIP, `.deb`, `.rpm`, unsigned `.pkg`, `SHA256SUMS`, `latest.json`, and a generated Homebrew formula.
-- Scoop and winget manifests ready for their post-release SHA-256 values.
+- Replaced companion-file presence checks with content verification.
+- `.sig` is now a JSON Ed25519 signature over the artifact's raw SHA-256 digest. The manifest supplies the base64 public key.
+- CycloneDX and SPDX SBOMs must have required document fields and include the inspected artifact's SHA-256.
+- Direct and DSSE-wrapped in-toto statements must be valid JSONL and bind a subject to the artifact's SHA-256.
+- Empty, malformed, mismatched, unsupported, and unverifiable evidence blocks the channel with a repair message.
+- Added a valid signed demo artifact and matching CycloneDX fixture. Its missing provenance remains the demo's single blocker.
+- Stopped focusing the h1 during the initial render. The first Tab now reaches the skip link. Client-side route changes still focus and announce the new h1.
+- Added Azure Static Web Apps route headers: one-year immutable caching for `/assets/*`, and revalidation for `index.html` and `sw.js`.
+- Bumped the service-worker cache to `release-doctor-v3`.
+- Added TypeScript and Rust lint gates to local and GitHub CI.
+- Bumped the CLI and site to v0.1.1 without changing the artifact or deployment class.
 
-## How to run
+## Exact regression coverage
 
-```sh
-npm ci
-npm test
-npm run build:site
-cargo build --release --locked
-cargo run -- demo
-```
+- `tests::rejects_empty_evidence_companions` recreates the verifier's three zero-byte files. It asserts three failures and zero ready channels.
+- `tests::verifies_release_evidence` proves valid evidence passes, then proves bad signature bytes and wrong SBOM/provenance digests fail.
+- `@claim:evidence-validation` exposes those checks through the claims gate.
+- The keyboard test asserts the cold-load sequence starts with the skip link and wordmark. It also asserts SPA navigation focuses the demo h1.
+- The deployment-policy test reads the built SWA configuration and asserts the exact immutable and revalidation directives.
+- Browser tests run at 1366×900 and 390×844. They cover axe, console errors, overflow, keyboard use, 44 px targets, reduced motion, privacy, offline reload, and service-worker update.
 
-The deploy root is `dist/site`, with `index.html` at that root.
+## Local verification
 
-## Verification completed
-
-- `npm test`: passed, including 3 Rust tests, 2 unit tests, 8 claim/accessibility/keyboard/license browser tests (11 browser tests total).
+- `npm ci`: 59 packages installed; 0 vulnerabilities.
+- `npm run typecheck`: passed.
+- `npm run lint`: `cargo fmt --check` and Clippy with warnings denied passed.
+- `npm test`: 5 Rust tests, 2 Vitest tests, and 32 Playwright project runs passed across desktop and mobile.
+- Every command in `.factory/claims.json` passed verbatim from a fresh browser context.
+- The independent zero-byte reproduction now exits 1 with `{channels:1, passed:0, failures:3}`. Signature, SBOM, and provenance each report an empty-file failure.
 - `cargo build --release --locked`: passed.
-- `cargo package --allow-dirty --no-verify`: passed; 130.7 KiB compressed crate.
+- `cargo package --allow-dirty --no-verify`: passed; 135.9 KiB compressed crate.
+- Fresh extracted-crate consumer: `cargo install --path ... --root ... --locked` passed. The installed binary reports `release-doctor 0.1.1`; its demo exits 1 with exactly one missing-provenance failure.
 - `npm audit --audit-level=high`: 0 vulnerabilities.
-- `sh -n site/public/install.sh`: passed.
-- `/opt/fleet/lib/verify-url.sh`: 200 response, no console errors, one h1, `lang=en`, main landmark, no missing alt text, no unnamed buttons.
-- Lighthouse mobile: Performance 99, Accessibility 100, Best Practices 100, SEO 100.
-- Lighthouse lab metrics: LCP 2.0 s, CLS 0, TBT 20 ms.
-- First-load bundles: 5.74 KiB JS gzip and 2.75 KiB CSS gzip.
-- Responsive hero: 27 KiB at 640 px; large hero: 97 KiB; Open Graph image: 84 KiB.
-- Visual review completed at 1366 px and 390 px.
-- Every `.factory/claims.json` test passed from the documented sandbox.
-- GitHub Actions release run `33168442516`: passed across verify, Linux, macOS, Windows, and publish jobs.
-- GitHub Release `v0.1.0`: published 7 platform/package artifacts plus `SHA256SUMS`, `latest.json`, and the Homebrew formula.
-- Downloaded `release-doctor-v0.1.0-linux-x86_64.tar.gz`: published SHA-256 verified successfully and the archive contains `release-doctor`.
-- Scoop and winget manifests now contain the published Windows ZIP SHA-256.
+- `sh -n site/public/install.sh`: passed. PowerShell was not installed in the repair container, so the existing PowerShell installer receives its platform test in GitHub Actions.
+- Local `/opt/fleet/lib/verify-url.sh`: HTTP 200, no console errors, title and `lang=en`, one h1, main landmark, no missing alt text, and no unnamed buttons.
+- Local mobile Lighthouse: Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 1.57 s, CLS 0, TBT 47 ms, 113,566 bytes transferred.
+- Production bundles: JS 15.32 KiB / 5.76 KiB gzip; CSS 9.85 KiB / 2.79 KiB gzip. Mobile hero is 28 KiB.
 
-## Artwork provenance
+## Release and deployment
 
-The final raster assets are `site/public/assets/release-inspection.webp`, its 640 px derivative, and `og-release-doctor.webp`. They were generated and edited with `/opt/fleet/lib/gen-image.sh` using the prompts recorded in `.factory/design.md`. The edit removed unintended platform marks and replaced them with abstract package symbols.
+The v0.1.1 GitHub release and static production deployment are completed after the repair commit is pushed. Their run IDs, checksums, live headers, and asset identity are recorded here in the final handoff update.
 
 ## Known limits
 
-- v0.1 validates signature, SBOM, and provenance companion presence. It does not perform cryptographic signature verification.
-- `.deb`, `.rpm`, `.pkg`, and `.msi` internals are treated as opaque files. The report tells users to run each format's native validator in CI.
-- Channel policy `2026-08-01` is the first policy set. Distribution rules can change after that date.
-- A passing report reduces known blockers but cannot guarantee registry acceptance.
+- Native `.deb`, `.rpm`, and `.pkg` internals remain opaque and receive the existing native-validator warning.
+- The accepted detached signature format is the documented `ed25519-sha256` JSON envelope. Other signature formats fail closed.
+- DSSE envelopes require a non-empty DSSE signature and a valid matching statement. This release does not validate a DSSE transparency log or certificate chain.
+- Channel policy `2026-08-01` remains the first policy set. A passing report reduces known blockers but cannot guarantee registry acceptance.
 
 ## Needs operator action
 
-- Create `B-Divyesh/homebrew-installer-release-doctor` if it does not exist. Add `TAP_GITHUB_TOKEN` to publish the generated formula automatically.
-- Submit the ready winget manifests to `microsoft/winget-pkgs`.
-- Register the paid product in the Sociobot billing system. The site intentionally contains no hardcoded billing product ID beyond the product slug.
-- macOS and Windows packages are unsigned. Signing later requires the owner's Apple installer certificate and Windows Authenticode certificate. Until then, keep the unsigned notice visible.
+- macOS and Windows packages remain unsigned. Signing needs the owner's Apple installer and Windows Authenticode certificates.
+- Submit the v0.1.1 winget manifests to `microsoft/winget-pkgs` after release hashes are recorded.
+- Register the paid policy-pack product if it is not already registered. No payment-provider secret is stored here.

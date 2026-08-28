@@ -16,7 +16,7 @@ function shell(content: string, demo = false) {
   return banner +
     '<header class="site-header"><a class="wordmark" href="/" data-link aria-label="Installer Release Doctor home"><span aria-hidden="true">IR/DR</span><b>Installer<br>Release Doctor</b></a><nav aria-label="Main navigation"><a href="/demo" data-link>Demo</a><a href="/#install">Install</a><a href="/#pricing">Policy pack</a><a href="/privacy" data-link>Privacy</a></nav></header>' +
     '<main id="main" tabindex="-1">' + content + '</main>' +
-    '<footer><p><strong>Installer Release Doctor</strong><br>Check installer artifacts before upload.</p><nav aria-label="Footer navigation"><a href="/privacy" data-link>Privacy</a><a href="/terms" data-link>Terms</a><a href="https://www.sociobot.in/" rel="external">Built by Param Factory <span class="sr-only">(external site)</span></a></nav><p>v0.1.0 · build 2026.08</p></footer>';
+    '<footer><p><strong>Installer Release Doctor</strong><br>Check installer artifacts before upload.</p><nav aria-label="Footer navigation"><a href="/privacy" data-link>Privacy</a><a href="/terms" data-link>Terms</a><a href="https://www.sociobot.in/" rel="external">Built by Param Factory <span class="sr-only">(external site)</span></a></nav><p>v0.1.1 · build 2026.08</p></footer>';
 }
 
 function icon(kind: string) {
@@ -35,7 +35,7 @@ function home() {
     '<section class="preview section" aria-labelledby="preview-title"><div class="section-label">01 / LIVE PREVIEW</div><div><h2 id="preview-title">Find the blocker before CI does</h2><p>One manifest describes the release. Each result names the failed check and the next repair.</p></div><div class="terminal" tabindex="0" aria-label="Sample release-doctor output"><div class="terminal-bar"><span>release-doctor check</span><span>exit 1</span></div><pre><code><span class="term-pass">PASS</span> homebrew  archive-layout   Binary and license found.\n<span class="term-fail">FAIL</span> winget    provenance       Provenance companion is missing.\n      repair: Create the .intoto.jsonl companion.\n<span class="term-warn">WARN</span> apt       package-metadata Maintainer URL is not set.\n────────────────────────────────────────────────────────\n2 of 3 channels ready · 1 warning · 1 failure</code></pre></div></section>' +
     '<section class="section how" aria-labelledby="how-title"><div class="section-label">02 / HOW IT WORKS</div><div><h2 id="how-title">Inspect a release in three steps</h2><ol class="steps"><li><span>1</span><div><h3>Describe channels</h3><p>List each artifact and its required evidence in one YAML manifest.</p></div></li><li><span>2</span><div><h3>Run local checks</h3><p>The CLI reads archives safely. It never reads a signing key.</p></div></li><li><span>3</span><div><h3>Repair blockers</h3><p>Use the channel matrix or GitHub Actions annotations before upload.</p></div></li></ol></div></section>' +
     '<section class="section boundaries" aria-labelledby="boundaries-title"><div class="section-label">03 / BOUNDARIES</div><div><h2 id="boundaries-title">The checker stays in its lane</h2><p>It checks files you already built. It does not host packages, store credentials, sign code, or replace native channel validation.</p><a href="/privacy" data-link>Read the privacy note</a></div></section>' +
-    '<section id="install" class="section install" aria-labelledby="install-title"><div class="section-label">04 / INSTALL</div><div><h2 id="install-title">Install the local checker</h2><div id="download-state" aria-live="polite"><p>Checking published builds…</p></div><div class="install-tabs"><div><h3>macOS and Linux</h3><code>curl -fsSL https://installer-release-doctor.sociobot.in/install.sh | sh</code></div><div><h3>Windows PowerShell</h3><code>irm https://installer-release-doctor.sociobot.in/install.ps1 | iex</code></div><div><h3>Homebrew</h3><code>brew install B-Divyesh/installer-release-doctor/installer-release-doctor</code></div></div><p class="fine">macOS and Windows builds are unsigned in v0.1.0. Inspect checksums before installation.</p></div></section>' +
+    '<section id="install" class="section install" aria-labelledby="install-title"><div class="section-label">04 / INSTALL</div><div><h2 id="install-title">Install the local checker</h2><div id="download-state" aria-live="polite"><p>Checking published builds…</p></div><div class="install-tabs"><div><h3>macOS and Linux</h3><code>curl -fsSL https://installer-release-doctor.sociobot.in/install.sh | sh</code></div><div><h3>Windows PowerShell</h3><code>irm https://installer-release-doctor.sociobot.in/install.ps1 | iex</code></div><div><h3>Homebrew</h3><code>brew install B-Divyesh/installer-release-doctor/installer-release-doctor</code></div></div><p class="fine">macOS and Windows builds are unsigned in v0.1.1. Inspect checksums before installation.</p></div></section>' +
     '<section id="pricing" class="section pricing" aria-labelledby="pricing-title"><div class="section-label">05 / POLICY PACK</div><div><h2 id="pricing-title">Add company policy checks</h2><div class="price-lockup"><div><p class="price">$49</p><p>One-time purchase</p></div><ul><li>Versioned compliance policy pack</li><li>Custom rule templates</li><li>Priority setup support</li></ul></div><p>The free local checker stays useful. The policy pack adds company controls.</p><div class="paid-actions"><a class="button primary" href="https://api.sociobot.in/api/v1/products/installer-release-doctor/checkout">Buy the policy pack</a><button class="button secondary" data-restore>Restore a license</button></div><form class="license-form" hidden><label for="license">License token</label><div><input id="license" name="license" autocomplete="off"><button type="submit">Verify license</button></div><p class="form-status" aria-live="polite"></p></form><p class="fine">Sociobot/Dodo is the merchant of record. Refunds are handled there. See <a href="/terms" data-link>terms</a>.</p></div></section>'
   );
 }
@@ -60,7 +60,7 @@ function notFound() {
   return shell('<section class="not-found"><p class="error-code">404 / MISROUTED</p><h1>This package went to the wrong path</h1><p>The page does not exist. The checker has not changed any files.</p><a class="button primary" href="/" data-link>Return to the workbench</a></section>');
 }
 
-function navigate(path: string, replace = false) {
+function navigate(path: string, replace = false, focusHeading = true) {
   const clean = path === '/' ? '/' : path.replace(/\/$/, '');
   const route = ['/', '/demo', '/privacy', '/terms'].includes(clean) ? clean : '/404';
   app.innerHTML = route === '/' ? home() : route === '/demo' ? demo() : route === '/privacy' ? privacy() : route === '/terms' ? terms() : notFound();
@@ -71,8 +71,10 @@ function navigate(path: string, replace = false) {
   if (!replace) history.pushState({}, '', path);
   window.scrollTo(0, 0);
   const heading = document.querySelector<HTMLElement>('h1');
-  heading?.setAttribute('tabindex', '-1');
-  heading?.focus();
+  if (focusHeading) {
+    heading?.setAttribute('tabindex', '-1');
+    heading?.focus();
+  }
   document.querySelector('.route-status')!.textContent = heading?.textContent || '';
 }
 
@@ -161,5 +163,5 @@ function receiveLicense() {
 
 window.addEventListener('popstate', function () { navigate(location.pathname, true); });
 receiveLicense();
-navigate(location.pathname, true);
+navigate(location.pathname, true, false);
 if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); });

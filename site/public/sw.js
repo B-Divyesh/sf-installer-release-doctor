@@ -1,4 +1,4 @@
-const CACHE = 'release-doctor-v2';
+const CACHE = 'release-doctor-v3';
 const SHELL = ['/', '/demo', '/privacy', '/terms', '/favicon.svg', '/assets/release-inspection-640.webp'];
 self.addEventListener('install', function (event) {
   event.waitUntil(caches.open(CACHE).then(async function (cache) {

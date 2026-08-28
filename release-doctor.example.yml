@@ -5,6 +5,8 @@ product:
   binary: your-cli
 checks:
   require_signature: true
+  # Base64 Ed25519 public key. The .sig JSON signs the artifact SHA-256 bytes.
+  signature_public_key: REPLACE_WITH_BASE64_ED25519_PUBLIC_KEY
   require_sbom: true
   require_provenance: true
   require_checksums: true

@@ -1,0 +1,16 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:3cbce5a8-1d47-4f37-a2eb-e4e4f96b4290",
+  "version": 1,
+  "metadata": {
+    "component": {
+      "type": "application",
+      "name": "acme-cli_1.4.0_windows_x86_64.zip",
+      "version": "1.4.0",
+      "hashes": [
+        {"alg": "SHA-256", "content": "72f0da333168f736893e41756aaabe226a218354505f50b1cd797cd74f7f7589"}
+      ]
+    }
+  }
+}

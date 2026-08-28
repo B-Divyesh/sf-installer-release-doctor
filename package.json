@@ -1,12 +1,14 @@
 {
   "name": "installer-release-doctor",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite --config site/vite.config.ts",
     "build": "npm run build:site",
     "build:site": "vite build --config site/vite.config.ts",
+    "typecheck": "tsc --noEmit -p site/tsconfig.json",
+    "lint": "cargo fmt --check && cargo clippy --all-targets --all-features --locked -- -D warnings",
     "test": "cargo test && npm run test:unit && npm run build:site && playwright test",
     "test:unit": "vitest run --config site/vitest.config.ts",
     "test:e2e": "playwright test",

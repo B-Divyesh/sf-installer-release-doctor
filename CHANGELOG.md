@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.1 — 2026-08-28
+
+- Verify Ed25519 signatures instead of checking only for a `.sig` file.
+- Validate CycloneDX or SPDX SBOMs and bind them to the artifact digest.
+- Validate in-toto provenance statements and bind them to the artifact digest.
+- Restore the skip link as the first cold-load keyboard target.
+- Cache content-hashed site assets for one immutable year.
+
 ## 0.1.0 — 2026-08-28
 
 - Add local ZIP and tar-family safety checks.
