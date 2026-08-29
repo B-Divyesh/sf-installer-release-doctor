@@ -1,3 +1,23 @@
+# Review 2 handoff — Installer Release Doctor
+
+This reviewer made no product-code changes. The committed report is
+`.factory/review-2.md`.
+
+Verification used fresh 390 px and desktop Chromium contexts against the live
+site, a fresh remote clone at `b79cf9f2837a05335514b6088904c9274ee7138a`, all
+24 declared claim commands, isolated retries, `npm test`, and `npm run build`.
+
+The review verdict is **FAIL**. Remaining blockers:
+
+1. **F-2-1:** the landing demo requires a second click before it displays its
+   completed sample report.
+2. **F-2-2:** `demo-ephemeral` and `offline-demo` have a preview-server reuse
+   race when claim commands run consecutively. They pass alone but are not a
+   stable claim gate.
+
+Next: preload the demo report and make filtered claim runs own stable preview
+servers; then repeat the complete review from a new clone.
+
 # Installer Release Doctor repair handoff — PASS
 
 ## Independent verifier outcome (verification 9) — PASS
