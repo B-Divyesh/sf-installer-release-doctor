@@ -696,8 +696,14 @@ test('@claim:powershell-installer PowerShell behavior runs on Windows CI', async
   const workflow = readFileSync('.github/workflows/ci.yml', 'utf8');
   expect(workflow).toContain('runs-on: windows-latest');
   expect(workflow).toContain('tests/windows/installer.integration.ps1');
+  const releaseWorkflow = readFileSync('.github/workflows/release.yml', 'utf8');
+  expect(releaseWorkflow).toContain('Run the PowerShell installer success and rollback flows');
+  expect(releaseWorkflow).toContain('tests/windows/installer.integration.ps1');
   const integration = readFileSync('tests/windows/installer.integration.ps1', 'utf8');
-  for (const observable of ['current-process PATH was not updated', 'user PATH was not persisted', 'installed binary was not executed', 'bad checksum was not rejected', 'binary remained after checksum rejection']) {
+  expect(integration).toContain('cargo metadata --no-deps --format-version 1');
+  expect(integration).toContain('$ExpectedVersionOutput = "release-doctor $Version"');
+  expect(integration).not.toMatch(/release-doctor-v\d+\.\d+\.\d+-windows-x86_64/);
+  for (const observable of ['current-process PATH was not updated', 'user PATH was not persisted', 'installed binary was not executed', 'bad checksum was not rejected', 'previous binary was not preserved after checksum rejection', 'previous binary no longer runs after checksum rejection']) {
     expect(integration).toContain(observable);
   }
 });

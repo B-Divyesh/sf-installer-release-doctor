@@ -104,7 +104,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
       - run: cargo build --release --locked
+      - name: Run the PowerShell installer success and rollback flows
+        shell: pwsh
+        env:
+          EXPECTED_VERSION: ${{ github.event.inputs.version || github.ref_name }}
+        run: '& ./tests/windows/installer.integration.ps1'
       - name: Confirm the Windows binary is unsigned
         shell: pwsh
         run: |

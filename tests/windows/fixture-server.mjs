@@ -4,6 +4,8 @@ import { basename, join } from 'node:path';
 
 const root = process.argv[2];
 const port = Number(process.argv[3] || 8765);
+const version = process.argv[4];
+if (!version) throw new Error('A fixture release version is required.');
 const origin = `http://127.0.0.1:${port}`;
 
 createServer((request, response) => {
@@ -13,7 +15,7 @@ createServer((request, response) => {
       browser_download_url: `${origin}/${name}`
     }));
     response.writeHead(200, { 'content-type': 'application/json' });
-    response.end(JSON.stringify({ tag_name: 'v0.1.3', assets }));
+    response.end(JSON.stringify({ tag_name: `v${version}`, assets }));
     return;
   }
   const name = basename(new URL(request.url, origin).pathname);
