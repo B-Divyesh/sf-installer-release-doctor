@@ -2,9 +2,9 @@
 
 Check installer artifacts before release channels reject them.
 
-Installer Release Doctor is for CLI authors who already build release files. It finds missing evidence, unsafe archive layouts, invalid metadata, and broken upgrade paths before upload.
+Installer Release Doctor is for CLI authors who already build release artifacts. It finds missing evidence, unsafe archive layouts, invalid metadata, and broken upgrade paths before upload.
 
-The checker runs on local files without network access or an account. A default check reports findings without changing release files. Signature checks use the public key stored in the manifest.
+The checker runs on local files without network access or an account. A default check reports findings without changing artifacts. Signature checks use the public key stored in the manifest.
 
 ## Try the bundled demo
 
@@ -12,9 +12,9 @@ The checker runs on local files without network access or an account. A default 
 cargo run -- demo
 ```
 
-The command creates a temporary Acme CLI release, runs all checks, and prints the workspace path. The sample contains one missing provenance file, so exit code `1` is expected.
+The command creates a temporary Acme CLI release, checks its manifest, and prints the workspace path. The sample contains one missing provenance file, so exit code `1` is expected.
 
-The matching browser demo is at <https://installer-release-doctor.sociobot.in/demo>. It works offline after its first visit.
+The matching browser demo is at <https://installer-release-doctor.sociobot.in/?demo=1>. It works offline after its first visit.
 
 ## Install
 
@@ -47,9 +47,9 @@ scoop bucket add installer-release-doctor https://github.com/B-Divyesh/sf-instal
 scoop install installer-release-doctor
 ```
 
-A winget manifest for `0.1.3` is ready in [`winget/InstallerReleaseDoctor/0.1.3`](winget/InstallerReleaseDoctor/0.1.3). The owner submits it to `microsoft/winget-pkgs` after release verification.
+A winget manifest for `0.1.3` is ready in [`winget/InstallerReleaseDoctor/0.1.3`](winget/InstallerReleaseDoctor/0.1.3). It is not yet published in winget; the owner must submit it after verification.
 
-The release also includes `.deb`, `.rpm`, an unsigned `.pkg`, and portable archives. Check `SHA256SUMS` before installing a downloaded file.
+The release also includes `.deb`, `.rpm`, a `.pkg`, and portable archives. Downloads have no publisher signature; macOS binaries may use ad hoc signatures. Check `SHA256SUMS` before installing an artifact.
 
 ## Use
 
@@ -72,10 +72,10 @@ Write a Markdown matrix and GitHub Actions annotations:
 release-doctor check --github --matrix dist/channel-matrix.md
 ```
 
-Exit codes are stable:
+Exit codes:
 
-- `0`: no blocking findings.
-- `1`: one or more blocking findings, or a warning with `--strict`.
+- `0`: no blockers.
+- `1`: one or more blockers, or a warning with `--strict`.
 - `2`: the command or manifest could not be read.
 
 The manifest schema is shown in [`release-doctor.example.yml`](release-doctor.example.yml). Policy versions are dates because distribution rules change outside this project.
@@ -101,14 +101,14 @@ CycloneDX SBOMs must include the artifact SHA-256 in `metadata.component.hashes`
 - In-toto provenance structure and artifact binding.
 - `SHA256SUMS` entries and artifact hashes.
 - Reverse-DNS package identifiers and known architecture names.
-- Monotonic upgrade versions.
+- Versions increase on every upgrade.
 - Opaque package formats receive a warning to run their native verifier.
 
 The checker does not claim that a channel will accept a release. Native validators and registry review remain the final authority.
 
 ## Develop and verify
 
-Requirements: Rust 1.85 or newer and Node.js 22.
+Install Rust and Node.js, then run:
 
 ```sh
 npm ci
@@ -119,7 +119,7 @@ npm run build:site
 cargo build --release
 ```
 
-The static site lands in `dist/site`. The Rust binary lands in `target/release/release-doctor`.
+The site build writes files to `dist/site`. Cargo writes the Rust binary to `target/release/release-doctor`.
 
 Run one claim test with its recorded command:
 
@@ -131,9 +131,7 @@ See [`.factory/claims.json`](.factory/claims.json) for all claims and sandbox st
 
 ## Release
 
-Pushing a `v*` tag runs [the release workflow](.github/workflows/release.yml). GitHub-hosted runners build Linux, macOS, and Windows assets. The workflow validates native package metadata and publishes checksums, `latest.json`, package installers, portable archives, and a Homebrew formula.
-
-The factory owns publishing credentials. Do not publish registry packages from a development machine.
+To prepare a release, push a `v*` tag and monitor [the release workflow](.github/workflows/release.yml). Do not publish registry packages from a development machine.
 
 ## Privacy and license
 

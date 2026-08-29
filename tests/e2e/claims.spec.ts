@@ -24,7 +24,7 @@ test('claims manifest has exactly one tagged regression per public claim', async
 });
 
 test('@claim:sample-blocker finds the seeded release blocker and repair', async ({ page }) => {
-  await page.goto('/demo');
+  await page.goto('/?demo=1');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Inspect the sample release');
   await expect(page.getByText('Provenance companion is missing.')).toBeVisible();
   await page.getByText('Show repair').click();
@@ -37,31 +37,52 @@ test('@claim:demo-private demo sends no sample data off site', async ({ page }) 
     const url = new URL(request.url());
     if (url.origin !== 'http://127.0.0.1:4173') external.push(request.url());
   });
-  await page.goto('/demo');
+  await page.goto('/?demo=1');
   await page.getByRole('button', { name: 'Run release check' }).click();
   await expect(page.getByText(/Finished: winget is blocked/)).toBeVisible();
   expect(external).toEqual([]);
 });
 
-test('@claim:demo-ephemeral demo leaves no saved user state', async ({ page }) => {
-  await page.goto('/demo');
-  await page.getByRole('button', { name: 'Run release check' }).click();
-  await expect(page.getByText(/Finished: winget is blocked/)).toBeVisible();
-  await page.getByText('Show repair').click();
-  await page.getByRole('button', { name: 'Reset demo' }).click();
-  const saved = await page.evaluate(async function () {
-    return {
-      local: Object.keys(localStorage),
-      session: Object.keys(sessionStorage),
-      cookies: document.cookie,
-      databases: indexedDB.databases ? (await indexedDB.databases()).map(function (database) { return database.name; }) : []
-    };
-  });
-  expect(saved).toEqual({ local: [], session: [], cookies: '', databases: [] });
+test('@claim:demo-ephemeral demo leaves no saved user state', async ({ browser }) => {
+  const inspect = async function (page: import('@playwright/test').Page) {
+    return page.evaluate(async function () {
+      return {
+        local: Object.keys(localStorage),
+        session: Object.keys(sessionStorage),
+        cookies: document.cookie,
+        databases: indexedDB.databases ? (await indexedDB.databases()).map(function (database) { return database.name; }) : []
+      };
+    });
+  };
+  const empty = { local: [], session: [], cookies: '', databases: [] };
+
+  const resetContext = await browser.newContext();
+  const resetPage = await resetContext.newPage();
+  await resetPage.goto('http://127.0.0.1:4173/?demo=1');
+  expect(await inspect(resetPage)).toEqual(empty);
+  await resetPage.getByRole('button', { name: 'Run release check' }).click();
+  await expect(resetPage.getByText(/Finished: winget is blocked/)).toBeVisible();
+  await resetPage.getByText('Show repair').click();
+  expect(await inspect(resetPage)).toEqual(empty);
+  await resetPage.getByRole('button', { name: 'Reset demo' }).click();
+  expect(await inspect(resetPage)).toEqual(empty);
+  await resetContext.close();
+
+  const exitContext = await browser.newContext();
+  const exitPage = await exitContext.newPage();
+  await exitPage.route('https://api.github.com/**', async function (route) { await route.abort(); });
+  await exitPage.goto('http://127.0.0.1:4173/?demo=1');
+  await exitPage.getByRole('button', { name: 'Run release check' }).click();
+  await expect(exitPage.getByText(/Finished: winget is blocked/)).toBeVisible();
+  expect(await inspect(exitPage)).toEqual(empty);
+  await exitPage.getByRole('link', { name: 'Leave demo' }).click();
+  await expect(exitPage).toHaveURL('http://127.0.0.1:4173/');
+  expect(await inspect(exitPage)).toEqual(empty);
+  await exitContext.close();
 });
 
 test('@claim:offline-demo sample demo reloads offline after first visit', async ({ page, context }) => {
-  await page.goto('/demo');
+  await page.goto('/?demo=1');
   await page.waitForFunction(function () { return navigator.serviceWorker?.ready; });
   await page.waitForFunction(function () { return navigator.serviceWorker?.controller; });
   await context.setOffline(true);
@@ -112,22 +133,25 @@ test('@claim:exit-codes returns 0 for ready, 1 for blocked, and 2 for unreadable
 });
 
 test('@claim:archive-safe archive paths cannot escape the inspection root', async () => {
-  const result = spawnSync('cargo', ['test', 'blocks_parent_paths'], { cwd: process.cwd(), encoding: 'utf8' });
+  const result = spawnSync('cargo', ['test', '--test', 'cli_claims', 'public_cli_rejects_unsafe_zip_tar_and_tar_gz_entries_without_writing_outside'], { cwd: process.cwd(), encoding: 'utf8' });
   expect(result.status).toBe(0);
-  expect(result.stdout).toContain('test tests::blocks_parent_paths ... ok');
+  expect(result.stdout).toContain('public_cli_rejects_unsafe_zip_tar_and_tar_gz_entries_without_writing_outside ... ok');
 });
 
 test('@claim:archive-layout verifies the expected binary and required archive files', async () => {
-  const result = spawnSync('cargo', ['test', 'verifies_release_evidence'], { cwd: process.cwd(), encoding: 'utf8' });
+  const result = spawnSync('cargo', ['test', '--test', 'cli_claims', 'public_cli_checks_layout_for_zip_tar_and_tar_gz'], { cwd: process.cwd(), encoding: 'utf8' });
   expect(result.status).toBe(0);
-  expect(result.stdout).toContain('test tests::verifies_release_evidence ... ok');
+  expect(result.stdout).toContain('public_cli_checks_layout_for_zip_tar_and_tar_gz ... ok');
 });
 
 test('@claim:evidence-validation rejects empty and mismatched release evidence', async () => {
-  const result = spawnSync('cargo', ['test', 'evidence'], { cwd: process.cwd(), encoding: 'utf8' });
-  expect(result.status).toBe(0);
-  expect(result.stdout).toContain('test tests::verifies_release_evidence ... ok');
-  expect(result.stdout).toContain('test tests::rejects_empty_evidence_companions ... ok');
+  const unit = spawnSync('cargo', ['test', 'evidence'], { cwd: process.cwd(), encoding: 'utf8' });
+  expect(unit.status).toBe(0);
+  expect(unit.stdout).toContain('test tests::verifies_release_evidence ... ok');
+  expect(unit.stdout).toContain('test tests::rejects_empty_evidence_companions ... ok');
+  const spdx = spawnSync('cargo', ['test', '--test', 'cli_claims', 'public_cli_accepts_valid_spdx_and_rejects_malformed_or_mismatched_spdx'], { cwd: process.cwd(), encoding: 'utf8' });
+  expect(spdx.status).toBe(0);
+  expect(spdx.stdout).toContain('public_cli_accepts_valid_spdx_and_rejects_malformed_or_mismatched_spdx ... ok');
 });
 
 test('@claim:channel-policy-checks rejects invalid checksums, package metadata, architectures, and upgrades', async () => {
@@ -188,15 +212,33 @@ test('@claim:free-core core checker is MIT licensed', async ({ page }) => {
   expect(readFileSync('LICENSE', 'utf8')).toContain('Permission is hereby granted, free of charge');
 });
 
-test('@claim:release-checksums published downloads include a checksum manifest', async ({ request, page }) => {
+test('@claim:release-checksums every published download matches the checksum manifest', async ({ request, page }) => {
   const response = await request.get('https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/latest', githubApiOptions);
   expect(response.ok()).toBe(true);
   const release = await response.json();
   const names = release.assets.map(function (asset: { name: string }) { return asset.name; });
   expect(names).toContain('SHA256SUMS');
   expect(names).toContain('latest.json');
-  for (const marker of ['linux-x86_64.tar.gz', 'darwin-aarch64.tar.gz', 'darwin-x86_64.tar.gz', 'windows-x86_64.zip', 'amd64.deb', 'x86_64.rpm']) {
+  for (const marker of ['linux-x86_64.tar.gz', 'darwin-aarch64.tar.gz', 'darwin-x86_64.tar.gz', 'darwin-aarch64.pkg', 'windows-x86_64.zip', 'amd64.deb', 'x86_64.rpm', 'installer-release-doctor.rb']) {
     expect(names.some(function (name: string) { return name.includes(marker); })).toBe(true);
+  }
+  const sumsAsset = release.assets.find(function (asset: { name: string }) { return asset.name === 'SHA256SUMS'; });
+  const sumsResponse = await request.get(sumsAsset.browser_download_url);
+  expect(sumsResponse.ok()).toBe(true);
+  const sums = new Map((await sumsResponse.text()).trim().split('\n').map(function (line: string) {
+    const match = line.match(/^([a-f0-9]{64})\s+\*?(.+)$/);
+    expect(match).not.toBeNull();
+    return [match![2], match![1]];
+  }));
+  const packages = release.assets.filter(function (asset: { name: string }) {
+    return /^release-doctor-.*\.(?:tar\.gz|zip|deb|rpm|pkg)$/.test(asset.name);
+  });
+  expect(packages).toHaveLength(7);
+  for (const asset of packages) {
+    expect(sums.has(asset.name), `missing checksum for ${asset.name}`).toBe(true);
+    const download = await request.get(asset.browser_download_url);
+    expect(download.ok()).toBe(true);
+    expect(createHash('sha256').update(await download.body()).digest('hex')).toBe(sums.get(asset.name));
   }
   await page.route('https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases?per_page=1', async function (route) {
     await route.fulfill({ contentType: 'application/json', body: JSON.stringify([release]) });
@@ -285,7 +327,7 @@ test('@claim:website-storage website stores only the public release cache', asyn
   expect(await page.evaluate(function () { return Object.keys(localStorage); })).toEqual(['release-cache:v2']);
 });
 
-test('routes have one h1 and no serious accessibility findings', async ({ page }) => {
+test('routes have one h1, route-specific metadata, and no moderate accessibility findings', async ({ page }) => {
   const errors: string[] = [];
   page.on('console', function (message) { if (message.type() === 'error') errors.push(message.text()); });
   page.on('pageerror', function (error) { errors.push(error.message); });
@@ -295,12 +337,29 @@ test('routes have one h1 and no serious accessibility findings', async ({ page }
       { name: 'SHA256SUMS', browser_download_url: 'https://example.test/sums' }
     ] }]) });
   });
-  for (const route of ['/', '/demo', '/privacy', '/terms', '/missing']) {
+  const routes = [
+    ['/', 'Installer Release Doctor — Check installer releases', 'Check installer archives and release evidence before publishing packages.', '/'],
+    ['/demo', 'Demo — Installer Release Doctor', 'Inspect a bundled installer release with one blocker and a specific repair.', '/demo'],
+    ['/?demo=1', 'Demo — Installer Release Doctor', 'Inspect a bundled installer release with one blocker and a specific repair.', '/demo'],
+    ['/privacy', 'Privacy — Installer Release Doctor', 'Learn what the local checker and website read, store, and request.', '/privacy'],
+    ['/terms', 'Terms — Installer Release Doctor', 'Read the license, warranty, and release responsibilities for the checker.', '/terms'],
+    ['/missing', 'Page not found — Installer Release Doctor', 'The requested Installer Release Doctor page was not found.', '/missing'],
+    ['/404.html', 'Page not found — Installer Release Doctor', 'The requested Installer Release Doctor page was not found.', '/404']
+  ];
+  for (const [route, title, description, canonical] of routes) {
     await page.goto(route);
+    await expect(page).toHaveTitle(title);
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', description);
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', title);
+    await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', description);
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', `https://installer-release-doctor.sociobot.in${canonical}`);
+    await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute('content', title);
+    await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute('content', description);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://installer-release-doctor.sociobot.in${canonical}`);
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('main')).toHaveCount(1);
     const results = await new AxeBuilder({ page }).analyze();
-    expect(results.violations.filter(function (item) { return item.impact === 'critical' || item.impact === 'serious'; })).toEqual([]);
+    expect(results.violations.filter(function (item) { return item.impact !== 'minor' && item.impact !== null; })).toEqual([]);
     expect(await page.evaluate(function () { return document.documentElement.scrollWidth <= window.innerWidth; })).toBe(true);
   }
   expect(errors).toEqual([]);
@@ -316,6 +375,47 @@ test('expanded repair stays inside a 390 pixel viewport', async ({ page }) => {
   const box = await repair.boundingBox();
   expect(box?.x).toBeGreaterThanOrEqual(0);
   expect((box?.x || 0) + (box?.width || 0)).toBeLessThanOrEqual(390);
+});
+
+test('cold first screen keeps the action, outcome, and three facts in view', async ({ page }) => {
+  for (const viewport of [{ width: 1366, height: 768 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+    const required = [
+      page.getByRole('heading', { level: 1, name: 'Check installer releases before upload' }),
+      page.getByText('For CLI authors checking archives and release evidence before publishing installers.'),
+      page.getByRole('link', { name: 'Try it with sample data' }),
+      page.getByText('See one blocked release and its repair.'),
+      page.getByText('Runs on local files'),
+      page.getByText('No account or network required'),
+      page.getByText('Core checker is free')
+    ];
+    for (const item of required) {
+      await expect(item).toBeVisible();
+      const box = await item.boundingBox();
+      expect(box, `missing box at ${viewport.width}×${viewport.height}`).not.toBeNull();
+      expect(box!.y + box!.height, `below fold at ${viewport.width}×${viewport.height}: ${await item.textContent()}`).toBeLessThanOrEqual(viewport.height);
+    }
+  }
+});
+
+test('every internal link and fragment has a real destination', async ({ page, request }) => {
+  const hrefs = new Set<string>();
+  for (const route of ['/', '/demo', '/privacy', '/terms', '/404.html']) {
+    await page.goto(route);
+    for (const href of await page.locator('a[href]').evaluateAll(function (links) { return links.map(function (link) { return link.getAttribute('href') || ''; }); })) {
+      if (href.startsWith('/') || href.startsWith('http://127.0.0.1:4173')) hrefs.add(href);
+    }
+  }
+  for (const href of hrefs) {
+    const url = new URL(href, 'http://127.0.0.1:4173');
+    const response = await request.get(url.pathname);
+    expect(response.status(), href).toBeLessThan(400);
+    if (url.hash) {
+      await page.goto(url.pathname);
+      await expect(page.locator(url.hash)).toHaveCount(1);
+    }
+  }
 });
 
 test('Intel Mac visitors get explicit compatible architecture choices', async ({ page }) => {
@@ -357,7 +457,7 @@ test('keyboard path enters and resets the demo', async ({ page }) => {
   await expect(page.getByRole('link', { name: /Installer Release Doctor/ })).toBeFocused();
   await page.getByRole('link', { name: 'Try it with sample data' }).focus();
   await page.keyboard.press('Enter');
-  await expect(page).toHaveURL(/\/demo$/);
+  await expect(page).toHaveURL(/\?demo=1$/);
   await expect(page.getByRole('heading', { level: 1 })).toBeFocused();
   await page.getByRole('button', { name: 'Reset demo' }).focus();
   await page.keyboard.press('Enter');
@@ -374,8 +474,12 @@ test('deployment policy caches hashed assets immutably and revalidates the shell
   expect(config.routes).toContainEqual({ route: '/sw.js', headers: { 'Cache-Control': 'no-cache' } });
   expect(config.responseOverrides).toEqual({ '404': { rewrite: '/404.html', statusCode: 404 } });
   const notFound = readFileSync('dist/site/404.html', 'utf8');
-  expect(notFound).toContain('<h1 id="not-found-title">This package went to the wrong path</h1>');
-  expect(notFound).toContain('href="/">Return to the workbench</a>');
+  expect(notFound).toContain('<h1 id="not-found-title">Page not found</h1>');
+  expect(notFound).toContain('href="/">Open the checker home page</a>');
+  expect(notFound).not.toContain('/#pricing');
+  for (const marker of ['meta name="description"', 'rel="canonical"', 'property="og:title"', 'name="twitter:title"', 'rel="apple-touch-icon"']) {
+    expect(notFound).toContain(marker);
+  }
   expect(readdirSync('dist/site/assets').some(function (name) { return /^index-[\w-]+\.js$/.test(name); })).toBe(true);
   expect(config.globalHeaders['Content-Security-Policy']).not.toContain('api.sociobot.in');
 });
@@ -423,7 +527,7 @@ test('service worker installs and updates the versioned demo cache', async ({ pa
     return { script: registration.active?.scriptURL, cacheNames: await caches.keys() };
   });
   expect(worker.script).toMatch(/\/sw\.js$/);
-  expect(worker.cacheNames).toContain('release-doctor-v8');
+  expect(worker.cacheNames).toContain('release-doctor-v9');
 });
 
 test('reduced motion shows the final demo result without a scan delay', async ({ page }) => {
@@ -454,11 +558,62 @@ test('@claim:no-checkout unavailable policy-pack checkout is not exposed', async
   expect(readFileSync('site/public/staticwebapp.config.json', 'utf8')).not.toContain('api.sociobot.in');
 });
 
-test('@claim:unsigned-builds unsigned download status is disclosed and release automation does not sign', async ({ page }) => {
+test('@claim:unsigned-builds public downloads have no publisher signature', async ({ page, request }) => {
   await page.goto('/');
-  await expect(page.getByText('macOS and Windows builds are unsigned in v0.1.3.')).toBeVisible();
+  await expect(page.getByText('Downloads have no publisher signature. macOS binaries may use ad hoc signatures. Inspect checksums before installation.')).toBeVisible();
+  const latestResponse = await request.get('https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/latest', githubApiOptions);
+  expect(latestResponse.ok()).toBe(true);
+  const release = await latestResponse.json();
+  const windowsAsset = release.assets.find(function (asset: { name: string }) { return asset.name.endsWith('windows-x86_64.zip'); });
+  const fixture = mkdtempSync(join(tmpdir(), 'release-doctor-signatures-'));
+  const windowsArchive = join(fixture, windowsAsset.name);
+  writeFileSync(windowsArchive, await (await request.get(windowsAsset.browser_download_url)).body());
+  expect(spawnSync('unzip', ['-q', windowsArchive, '-d', join(fixture, 'windows')], { encoding: 'utf8' }).status).toBe(0);
+  const pe = readFileSync(join(fixture, 'windows', 'release-doctor.exe'));
+  const peOffset = pe.readUInt32LE(0x3c);
+  const optionalHeader = peOffset + 24;
+  const dataDirectories = optionalHeader + (pe.readUInt16LE(optionalHeader) === 0x20b ? 112 : 96);
+  expect(pe.readUInt32LE(dataDirectories + (8 * 4) + 4)).toBe(0);
+
+  for (const suffix of ['darwin-aarch64.tar.gz', 'darwin-x86_64.tar.gz']) {
+    const asset = release.assets.find(function (item: { name: string }) { return item.name.endsWith(suffix); });
+    const archive = join(fixture, asset.name);
+    const target = join(fixture, suffix);
+    mkdirSync(target);
+    writeFileSync(archive, await (await request.get(asset.browser_download_url)).body());
+    expect(spawnSync('tar', ['-xzf', archive, '-C', target], { encoding: 'utf8' }).status).toBe(0);
+    const macho = readFileSync(join(target, 'release-doctor'));
+    expect(macho.readUInt32LE(0)).toBe(0xfeedfacf);
+    const commandCount = macho.readUInt32LE(16);
+    let offset = 32;
+    let codeSignatureOffset = 0;
+    for (let index = 0; index < commandCount; index += 1) {
+      const command = macho.readUInt32LE(offset);
+      const size = macho.readUInt32LE(offset + 4);
+      if (command === 0x1d) codeSignatureOffset = macho.readUInt32LE(offset + 8);
+      expect(size).toBeGreaterThanOrEqual(8);
+      offset += size;
+    }
+    if (codeSignatureOffset > 0) {
+      expect(macho.readUInt32BE(codeSignatureOffset)).toBe(0xfade0cc0);
+      const blobCount = macho.readUInt32BE(codeSignatureOffset + 8);
+      const slots = Array.from({ length: blobCount }, function (_, index) {
+        return macho.readUInt32BE(codeSignatureOffset + 12 + (index * 8));
+      });
+      expect(slots).not.toContain(0x10000);
+      const codeDirectoryIndex = slots.indexOf(0);
+      expect(codeDirectoryIndex).toBeGreaterThanOrEqual(0);
+      const codeDirectoryRelativeOffset = macho.readUInt32BE(codeSignatureOffset + 16 + (codeDirectoryIndex * 8));
+      const codeDirectoryFlags = macho.readUInt32BE(codeSignatureOffset + codeDirectoryRelativeOffset + 12);
+      expect(codeDirectoryFlags & 0x2).toBe(0x2);
+    }
+  }
   const workflow = readFileSync('.github/workflows/release.yml', 'utf8');
-  expect(workflow).not.toMatch(/codesign|signtool|APPLE_CERTIFICATE|WINDOWS_CERT/i);
+  const ci = readFileSync('.github/workflows/ci.yml', 'utf8');
+  expect(workflow).toContain('Get-AuthenticodeSignature');
+  expect(workflow).toContain('codesign --verify');
+  expect(ci).toContain('Inspect the public Windows binary signature');
+  expect(ci).toContain('Inspect every public macOS download signature');
 });
 
 test('@claim:posix-installer shell installer verifies the checksum, updates PATH, and runs the binary', async () => {
@@ -522,11 +677,18 @@ esac
   expect(existsSync(join(badDestination, 'release-doctor'))).toBe(false);
 });
 
-test('@claim:powershell-installer PowerShell installer verifies, updates PATH, and runs the binary', async () => {
+test('@claim:powershell-installer PowerShell behavior runs on Windows CI', async () => {
   const installer = readFileSync('site/public/install.ps1', 'utf8');
   expect(installer).toContain('Get-FileHash $Zip -Algorithm SHA256');
   expect(installer).toContain('if ($Expected -ne $Actual) { throw "Checksum did not match. Nothing was installed." }');
   expect(installer).toContain('[Environment]::SetEnvironmentVariable("Path", $UpdatedPath, "User")');
   expect(installer).toContain('$env:Path = "$Dest;$env:Path"');
   expect(installer).toContain('& (Join-Path $Dest "release-doctor.exe") --version');
+  const workflow = readFileSync('.github/workflows/ci.yml', 'utf8');
+  expect(workflow).toContain('runs-on: windows-latest');
+  expect(workflow).toContain('tests/windows/installer.integration.ps1');
+  const integration = readFileSync('tests/windows/installer.integration.ps1', 'utf8');
+  for (const observable of ['current-process PATH was not updated', 'user PATH was not persisted', 'installed binary was not executed', 'bad checksum was not rejected', 'binary remained after checksum rejection']) {
+    expect(integration).toContain(observable);
+  }
 });

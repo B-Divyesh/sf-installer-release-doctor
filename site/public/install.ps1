@@ -1,6 +1,7 @@
 $ErrorActionPreference = "Stop"
 $Repo = "B-Divyesh/sf-installer-release-doctor"
-$Release = Invoke-RestMethod "https://api.github.com/repos/$Repo/releases/latest"
+$ReleaseApi = if ($env:RELEASE_DOCTOR_RELEASE_API_URL) { $env:RELEASE_DOCTOR_RELEASE_API_URL } else { "https://api.github.com/repos/$Repo/releases/latest" }
+$Release = Invoke-RestMethod $ReleaseApi
 $Asset = $Release.assets | Where-Object { $_.name -like "*windows-x86_64.zip" } | Select-Object -First 1
 if (-not $Asset) { throw "The Windows release asset is not published yet." }
 $Temp = Join-Path ([System.IO.Path]::GetTempPath()) ("release-doctor-" + [guid]::NewGuid())

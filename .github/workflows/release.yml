@@ -78,6 +78,11 @@ jobs:
       - run: |
           cargo build --release --locked --target aarch64-apple-darwin
           cargo build --release --locked --target x86_64-apple-darwin
+          for binary in target/aarch64-apple-darwin/release/release-doctor target/x86_64-apple-darwin/release/release-doctor; do
+            if codesign --verify "$binary" 2>/dev/null; then
+              codesign -dvvv "$binary" 2>&1 | grep 'Signature=adhoc'
+            fi
+          done
       - name: Package assets
         env:
           VERSION: ${{ github.event.inputs.version || github.ref_name }}
@@ -100,6 +105,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo build --release --locked
+      - name: Confirm the Windows binary is unsigned
+        shell: pwsh
+        run: |
+          $Signature = Get-AuthenticodeSignature target/release/release-doctor.exe
+          if ($Signature.Status -ne "NotSigned") { throw "Expected an unsigned binary, got $($Signature.Status)." }
       - name: Package portable ZIP
         shell: pwsh
         run: |

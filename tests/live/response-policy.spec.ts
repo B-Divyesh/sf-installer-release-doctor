@@ -6,14 +6,15 @@ test('unknown live paths return the deployed 404 document with HTTP 404', async 
   expect(response.status()).toBe(404);
   expect(response.headers()['content-type']).toContain('text/html');
   const document = await response.text();
-  expect(document).toContain('<h1 id="not-found-title">This package went to the wrong path</h1>');
-  expect(document).toContain('href="/">Return to the workbench</a>');
+  expect(document).toContain('<h1 id="not-found-title">Page not found</h1>');
+  expect(document).toContain('href="/">Open the checker home page</a>');
+  expect(document).not.toContain('/#pricing');
 });
 
 test('the deployed 404 page is keyboard-accessible and has no serious axe findings', async ({ page }) => {
   const response = await page.goto('/definitely-missing-qa-path');
   expect(response?.status()).toBe(404);
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('This package went to the wrong path');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Page not found');
   await expect(page.locator('main')).toHaveCount(1);
   await page.keyboard.press('Tab');
   await expect(page.getByRole('link', { name: 'Skip to main content' })).toBeFocused();

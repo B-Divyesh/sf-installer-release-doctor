@@ -1,0 +1,1 @@
+Check installer artifacts and release evidence before publishing packages.

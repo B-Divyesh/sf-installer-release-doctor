@@ -22,3 +22,47 @@ jobs:
       - run: npm test
         env:
           GITHUB_TOKEN: ${{ github.token }}
+  windows-installer:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: cargo build --release --locked
+      - name: Run the PowerShell installer success and rollback flows
+        shell: pwsh
+        run: '& ./tests/windows/installer.integration.ps1'
+      - name: Inspect the public Windows binary signature
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $Release = Invoke-RestMethod -Headers @{ Authorization = "Bearer $env:GH_TOKEN" } "https://api.github.com/repos/${{ github.repository }}/releases/latest"
+          $Asset = $Release.assets | Where-Object { $_.name -like "*windows-x86_64.zip" } | Select-Object -First 1
+          Invoke-WebRequest $Asset.browser_download_url -OutFile public-windows.zip
+          Expand-Archive public-windows.zip -DestinationPath public-windows
+          $Signature = Get-AuthenticodeSignature public-windows/release-doctor.exe
+          if ($Signature.Status -ne "NotSigned") { throw "Expected unsigned Windows binary, got $($Signature.Status)." }
+  macos-signatures:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect every public macOS download signature
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download --repo "${{ github.repository }}" --pattern '*darwin-aarch64.tar.gz' --pattern '*darwin-x86_64.tar.gz' --pattern '*.pkg'
+          mkdir public-macos
+          for archive in *darwin-*.tar.gz; do
+            target="public-macos/$(basename "$archive" .tar.gz)"
+            mkdir "$target"
+            tar -xzf "$archive" -C "$target"
+            if codesign --verify "$target/release-doctor" 2>/dev/null; then
+              codesign -dvvv "$target/release-doctor" 2>&1 | grep 'Signature=adhoc'
+            fi
+          done
+          if pkgutil --check-signature ./*.pkg >/dev/null 2>&1; then
+            echo "Expected the public pkg to be unsigned" >&2
+            exit 1
+          fi

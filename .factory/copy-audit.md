@@ -4,19 +4,19 @@ Checked August 29, 2026 against the current landing-page source, including every
 
 | Sentence or standalone line | Words | Result |
 |---|---:|---|
+| LOCAL RELEASE CHECKER · POLICY 2026-08 | 5 | pass |
 | Check installer releases before upload | 5 | pass |
-| For CLI authors shipping signed releases across package channels without learning every policy. | 13 | pass |
+| For CLI authors checking archives and release evidence before publishing installers. | 11 | pass |
 | Try it with sample data | 5 | pass |
 | See one blocked release and its repair. | 7 | pass |
 | Runs on local files | 4 | pass |
 | No account or network required | 5 | pass |
 | Core checker is free | 4 | pass |
 | A package moves through a mechanical inspection bench into release channels. | 11 | pass |
-| One artifact enters. | 3 | pass |
-| Channel-specific evidence leaves. | 3 | pass |
-| Find the blocker before CI does | 6 | pass |
-| One manifest describes the release. | 5 | pass |
-| Each result names the failed check and the next repair. | 10 | pass |
+| The checker validates one artifact against each channel’s requirements. | 9 | pass |
+| Sample release report | 3 | pass |
+| The sample uses one YAML manifest. | 6 | pass |
+| Its failed check includes a repair step. | 7 | pass |
 | Binary and license found. | 4 | pass |
 | Provenance companion is missing. | 4 | pass |
 | Create the .intoto.jsonl companion. | 4 | pass |
@@ -29,9 +29,9 @@ Checked August 29, 2026 against the current landing-page source, including every
 | Signature checks use the public key in your manifest. | 9 | pass |
 | Repair blockers | 2 | pass |
 | Use the channel matrix or GitHub Actions annotations before upload. | 10 | pass |
-| The checker stays in its lane | 6 | pass |
-| It checks files you already built. | 6 | pass |
-| A default check reports findings without changing those files. | 9 | pass |
+| Checks are read-only | 4 | pass |
+| It checks artifacts you already built. | 6 | pass |
+| A default check reports findings without changing those artifacts. | 9 | pass |
 | Read the privacy note | 4 | pass |
 | Install the local checker | 4 | pass |
 | Checking published builds… | 3 | pass |
@@ -44,7 +44,8 @@ Checked August 29, 2026 against the current landing-page source, including every
 | Choose an asset on the GitHub Release page. | 8 | pass |
 | Downloads are being published. | 4 | pass |
 | Use the install command, or check the GitHub Releases page. | 10 | pass |
-| macOS and Windows builds are unsigned in v0.1.3. | 8 | pass |
+| Downloads have no publisher signature. | 5 | pass |
+| macOS binaries may use ad hoc signatures. | 7 | pass |
 | Inspect checksums before installation. | 4 | pass |
 | Use the free checker today | 5 | pass |
 | The local checker is available now. | 6 | pass |
@@ -64,4 +65,4 @@ Checked August 29, 2026 against the current landing-page source, including every
 | Optional company rules | policy pack |
 | Example environment | demo |
 
-Catalog description: “Check installer artifacts before release channels reject them.” (8 words, 62 characters.)
+Catalog description: “Check installer artifacts and release evidence before publishing packages.” (9 words, 73 characters.)
