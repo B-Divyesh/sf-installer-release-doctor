@@ -44,7 +44,7 @@ Checked August 29, 2026 against the current landing-page source, including every
 | Choose an asset on the GitHub Release page. | 8 | pass |
 | Downloads are being published. | 4 | pass |
 | Use the install command, or check the GitHub Releases page. | 10 | pass |
-| macOS and Windows builds are unsigned in v0.1.2. | 8 | pass |
+| macOS and Windows builds are unsigned in v0.1.3. | 8 | pass |
 | Inspect checksums before installation. | 4 | pass |
 | Use the free checker today | 5 | pass |
 | The local checker is available now. | 6 | pass |

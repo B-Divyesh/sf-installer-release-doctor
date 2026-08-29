@@ -47,6 +47,8 @@ scoop bucket add installer-release-doctor https://github.com/B-Divyesh/sf-instal
 scoop install installer-release-doctor
 ```
 
+A winget manifest for `0.1.2` is ready in [`winget/InstallerReleaseDoctor/0.1.2`](winget/InstallerReleaseDoctor/0.1.2). The owner submits it to `microsoft/winget-pkgs` after release verification.
+
 The release also includes `.deb`, `.rpm`, an unsigned `.pkg`, and portable archives. Check `SHA256SUMS` before installing a downloaded file.
 
 ## Use
@@ -90,7 +92,7 @@ The signature covers the artifact's 32 raw SHA-256 bytes. The checker rejects ev
 
 CycloneDX SBOMs must include the artifact SHA-256 in `metadata.component.hashes`. SPDX SBOMs use a checksum entry. In-toto provenance names the digest in a statement subject.
 
-## What v0.1.2 checks
+## What v0.1.3 checks
 
 - ZIP, tar, and tar.gz entries that stay within the archive root.
 - Expected binary and companion files inside an archive.

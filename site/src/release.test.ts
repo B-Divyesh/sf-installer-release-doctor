@@ -2,11 +2,11 @@ import { describe, expect, test } from 'vitest';
 import { downloadChoices, type ReleaseAsset } from './release';
 
 const assets: ReleaseAsset[] = [
-  { name: 'release-doctor-v0.1.2-darwin-aarch64.pkg', browser_download_url: 'https://example.test/arm.pkg' },
-  { name: 'release-doctor-v0.1.2-darwin-aarch64.tar.gz', browser_download_url: 'https://example.test/arm.tar.gz' },
-  { name: 'release-doctor-v0.1.2-darwin-x86_64.tar.gz', browser_download_url: 'https://example.test/intel.tar.gz' },
-  { name: 'release-doctor-v0.1.2-linux-x86_64.tar.gz', browser_download_url: 'https://example.test/linux.tar.gz' },
-  { name: 'release-doctor-v0.1.2-windows-x86_64.zip', browser_download_url: 'https://example.test/windows.zip' }
+  { name: 'release-doctor-v0.1.3-darwin-aarch64.pkg', browser_download_url: 'https://example.test/arm.pkg' },
+  { name: 'release-doctor-v0.1.3-darwin-aarch64.tar.gz', browser_download_url: 'https://example.test/arm.tar.gz' },
+  { name: 'release-doctor-v0.1.3-darwin-x86_64.tar.gz', browser_download_url: 'https://example.test/intel.tar.gz' },
+  { name: 'release-doctor-v0.1.3-linux-x86_64.tar.gz', browser_download_url: 'https://example.test/linux.tar.gz' },
+  { name: 'release-doctor-v0.1.3-windows-x86_64.zip', browser_download_url: 'https://example.test/windows.zip' }
 ];
 
 describe('downloadChoices', function () {

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3 — 2026-08-29
+
+- Make Windows release archives reproducible before calculating Scoop and winget hashes.
+- Verify public release/source identity and every advertised distribution channel.
+- Record the remaining availability, privacy, and unsigned-build promises as tested claims.
+
 ## 0.1.2 — 2026-08-29
 
 - Validate Debian and RPM identity and version metadata before publishing.
