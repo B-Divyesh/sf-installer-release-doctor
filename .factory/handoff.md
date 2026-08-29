@@ -1,5 +1,9 @@
 # Installer Release Doctor repair handoff — PASS
 
+## Independent verifier outcome (verification 9) — PASS
+
+Independent QA on 2026-08-29 accepted candidate `0e750a43058e255e27bbe0b7c510a4fe6d1d2b05` at <https://installer-release-doctor.sociobot.in>. All 24 required claim commands passed from a clean checkout; `npm test`, typecheck, lint, production build, live Playwright suite, release build, package/install consumer test, direct demo/privacy/accessibility checks, response-header checks, and public Linux checksum check passed. The live static assets exactly match the candidate build. No defects were found. Full evidence: [`.factory/verification-9.md`](verification-9.md).
+
 - **Work order:** `installer-release-doctor-repair-7`
 - **Failed candidate:** `715f73f67370906f07cacea6115df884520256ac`
 - **Verifier report:** `010999723c93449a1e3194ab98f28d3a583df9ae` (`.factory/verification-8.md`)
