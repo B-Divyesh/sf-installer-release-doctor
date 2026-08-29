@@ -1,20 +1,20 @@
 [package]
 name = "installer-release-doctor"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2024"
 rust-version = "1.85"
 description = "Check installer artifacts before release channels reject them"
 license = "MIT"
 repository = "https://github.com/B-Divyesh/sf-installer-release-doctor"
 include = [
-  "src/**",
-  "examples/demo/**",
-  "Cargo.toml",
-  "Cargo.lock",
-  "README.md",
-  "CHANGELOG.md",
-  "LICENSE",
-  "release-doctor.example.yml"
+  "/src/**",
+  "/examples/demo/**",
+  "/Cargo.toml",
+  "/Cargo.lock",
+  "/README.md",
+  "/CHANGELOG.md",
+  "/LICENSE",
+  "/release-doctor.example.yml"
 ]
 
 [[bin]]
@@ -29,6 +29,7 @@ flate2 = "1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 serde_yaml = "0.9"
+semver = "1"
 sha2 = "0.10"
 tar = "0.4"
 tempfile = "3"

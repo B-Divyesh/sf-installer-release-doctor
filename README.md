@@ -47,7 +47,7 @@ scoop bucket add installer-release-doctor https://github.com/B-Divyesh/sf-instal
 scoop install installer-release-doctor
 ```
 
-A winget manifest for `0.1.3` is ready in [`winget/InstallerReleaseDoctor/0.1.3`](winget/InstallerReleaseDoctor/0.1.3). It is not yet published in winget; the owner must submit it after verification.
+A winget manifest for the current release is ready under [`winget/InstallerReleaseDoctor`](winget/InstallerReleaseDoctor). It is not yet published in winget; the owner must submit it after verification.
 
 The release also includes `.deb`, `.rpm`, a `.pkg`, and portable archives. Downloads have no publisher signature; macOS binaries may use ad hoc signatures. For the unsigned `.pkg`, use Finder's **Open** action from the file context menu. Check `SHA256SUMS` before installing an artifact.
 
@@ -92,16 +92,16 @@ The signature covers the artifact's 32 raw SHA-256 bytes. The checker rejects ev
 
 CycloneDX SBOMs must include the artifact SHA-256 in `metadata.component.hashes`. SPDX SBOMs use a checksum entry. In-toto provenance names the digest in a statement subject.
 
-## What v0.1.3 checks
+## What v0.1.4 checks
 
-- ZIP, tar, and tar.gz entries that stay within the archive root.
+- ZIP, tar, and tar.gz entries that stay within the archive root. POSIX and Windows traversal, absolute, drive-qualified, and UNC paths are rejected on every host.
 - Expected binary and companion files inside an archive.
 - Ed25519 signatures over the artifact digest.
 - CycloneDX or SPDX SBOM structure and artifact binding.
 - In-toto provenance structure and artifact binding.
 - `SHA256SUMS` entries and artifact hashes.
-- Reverse-DNS package identifiers and known architecture names.
-- Versions increase on every upgrade.
+- Reverse-DNS package identifiers with lowercase DNS labels and known architecture names.
+- Semantic Versions increase on every upgrade, including prerelease-to-final releases.
 - Opaque package formats receive a warning to run their native verifier.
 
 The checker does not claim that a channel will accept a release. Native validators and registry review remain the final authority.

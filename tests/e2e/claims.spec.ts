@@ -155,9 +155,18 @@ test('@claim:evidence-validation rejects empty and mismatched release evidence',
 });
 
 test('@claim:channel-policy-checks rejects invalid checksums, package metadata, architectures, and upgrades', async () => {
-  const result = spawnSync('cargo', ['test', 'channel_policy_checks'], { cwd: process.cwd(), encoding: 'utf8' });
+  const result = spawnSync('cargo', ['test', '--test', 'cli_claims', 'public_cli_enforces_reverse_dns_identifiers_and_semver_upgrade_precedence'], { cwd: process.cwd(), encoding: 'utf8' });
   expect(result.status).toBe(0);
-  expect(result.stdout).toContain('test tests::channel_policy_checks_reject_invalid_release_metadata ... ok');
+  expect(result.stdout).toContain('public_cli_enforces_reverse_dns_identifiers_and_semver_upgrade_precedence ... ok');
+});
+
+test('keyboard focus returns to the demo run action after completion', async ({ page }) => {
+  await page.goto('/demo');
+  const run = page.getByRole('button', { name: 'Run release check' });
+  await run.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByText(/Finished: winget is blocked/)).toBeVisible();
+  await expect(run).toBeFocused();
 });
 
 test('@claim:public-key-only verifies signatures without a signing key', async () => {

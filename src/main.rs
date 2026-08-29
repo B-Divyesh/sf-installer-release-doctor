@@ -477,7 +477,7 @@ fn inspect_channel(
         }
     }
     if let Some(id) = &c.package.identifier {
-        if id.contains('.') && !id.contains(' ') {
+        if valid_reverse_dns_identifier(id) {
             add(
                 out,
                 c,
@@ -520,8 +520,8 @@ fn inspect_channel(
         }
     }
     if let Some(previous) = &c.upgrade.previous_version {
-        if !c.upgrade.allow_downgrade && version_cmp(&m.product.version, previous) <= 0 {
-            add(
+        match version_cmp(&m.product.version, previous) {
+            Ok(order) if !c.upgrade.allow_downgrade && order <= 0 => add(
                 out,
                 c,
                 "upgrade-path",
@@ -530,17 +530,26 @@ fn inspect_channel(
                     "Release {} does not advance previous version {previous}.",
                     m.product.version
                 ),
-                Some("Increase the release version or explicitly allow a downgrade."),
-            )
-        } else {
-            add(
+                Some(
+                    "Use valid Semantic Versions and increase the release version or explicitly allow a downgrade.",
+                ),
+            ),
+            Ok(_) => add(
                 out,
                 c,
                 "upgrade-path",
                 Level::Pass,
                 format!("Upgrade advances {previous} to {}.", m.product.version),
                 None,
-            )
+            ),
+            Err(error) => add(
+                out,
+                c,
+                "upgrade-path",
+                Level::Fail,
+                format!("Upgrade versions must be valid Semantic Versions: {error}."),
+                Some("Use MAJOR.MINOR.PATCH versions with optional prerelease or build metadata."),
+            ),
         }
     }
 }
@@ -973,18 +982,31 @@ fn archive_entries(path: &Path, format: &str) -> Result<Option<Vec<String>>, Str
     }
 }
 fn clean_entry(name: &str) -> Result<String, String> {
-    let p = Path::new(name);
-    if p.is_absolute()
-        || p.components().any(|x| {
-            matches!(
-                x,
-                Component::ParentDir | Component::RootDir | Component::Prefix(_)
-            )
-        })
+    // Archive names use a platform-neutral grammar. Treating them as host paths
+    // would make `..\\escape` safe on Unix and `../escape` safe on Windows.
+    let normalized = name.replace('\\', "/");
+    let drive_qualified = normalized.as_bytes().get(1) == Some(&b':')
+        && normalized
+            .as_bytes()
+            .first()
+            .is_some_and(u8::is_ascii_alphabetic);
+    if normalized.is_empty()
+        || normalized.starts_with('/')
+        || drive_qualified
+        || normalized.split('/').any(|part| part == "..")
     {
+        return Err(format!("Unsafe archive entry: {name}."));
+    }
+
+    let cleaned = normalized
+        .split('/')
+        .filter(|part| !part.is_empty() && *part != ".")
+        .collect::<Vec<_>>()
+        .join("/");
+    if cleaned.is_empty() {
         Err(format!("Unsafe archive entry: {name}."))
     } else {
-        Ok(name.trim_start_matches("./").to_string())
+        Ok(cleaned)
     }
 }
 fn inspect_zip(path: &Path) -> Result<Vec<String>, String> {
@@ -1064,28 +1086,34 @@ fn sha256(path: &Path) -> Result<String, String> {
     io::copy(&mut f, &mut h).map_err(|e| e.to_string())?;
     Ok(format!("{:x}", h.finalize()))
 }
-fn version_cmp(a: &str, b: &str) -> i8 {
-    let nums = |s: &str| {
-        s.trim_start_matches('v')
-            .split('.')
-            .map(|x| {
-                x.split('-')
-                    .next()
-                    .unwrap_or("0")
-                    .parse::<u64>()
-                    .unwrap_or(0)
-            })
-            .collect::<Vec<_>>()
-    };
-    let (a, b) = (nums(a), nums(b));
-    for i in 0..a.len().max(b.len()) {
-        match a.get(i).unwrap_or(&0).cmp(b.get(i).unwrap_or(&0)) {
-            std::cmp::Ordering::Greater => return 1,
-            std::cmp::Ordering::Less => return -1,
-            _ => {}
-        }
+fn valid_reverse_dns_identifier(identifier: &str) -> bool {
+    if identifier.len() > 253 {
+        return false;
     }
-    0
+    let labels = identifier.split('.').collect::<Vec<_>>();
+    labels.len() >= 2
+        && labels.iter().all(|label| {
+            let bytes = label.as_bytes();
+            !bytes.is_empty()
+                && bytes.len() <= 63
+                && bytes[0].is_ascii_lowercase()
+                && bytes.last().is_some_and(u8::is_ascii_alphanumeric)
+                && bytes
+                    .iter()
+                    .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || *byte == b'-')
+        })
+}
+
+fn version_cmp(a: &str, b: &str) -> Result<i8, semver::Error> {
+    use std::cmp::Ordering;
+
+    let current = semver::Version::parse(a)?;
+    let previous = semver::Version::parse(b)?;
+    match current.cmp_precedence(&previous) {
+        Ordering::Greater => Ok(1),
+        Ordering::Equal => Ok(0),
+        Ordering::Less => Ok(-1),
+    }
 }
 
 fn render(r: &Report, format: Format, github: bool) {
@@ -1263,9 +1291,55 @@ mod tests {
         assert!(clean_entry("../escape").is_err());
     }
     #[test]
-    fn compares_versions() {
-        assert_eq!(version_cmp("1.4.0", "1.3.9"), 1);
-        assert_eq!(version_cmp("1.0", "1.0.0"), 0);
+    fn blocks_windows_archive_paths_on_every_host() {
+        for name in [
+            r"..\outside.exe",
+            r"C:\outside.exe",
+            r"C:outside.exe",
+            r"\\server\share\outside.exe",
+            r"\outside.exe",
+        ] {
+            assert!(clean_entry(name).is_err(), "{name} must be rejected");
+        }
+        assert_eq!(
+            clean_entry(r"bin\release-doctor").unwrap(),
+            "bin/release-doctor"
+        );
+    }
+    #[test]
+    fn compares_semantic_versions() {
+        assert_eq!(version_cmp("1.4.0", "1.3.9").unwrap(), 1);
+        assert_eq!(version_cmp("1.0.0-rc.2", "1.0.0-rc.1").unwrap(), 1);
+        assert_eq!(version_cmp("1.0.0", "1.0.0-rc.2").unwrap(), 1);
+        assert_eq!(version_cmp("1.0.0+build.2", "1.0.0+build.1").unwrap(), 0);
+        assert_eq!(version_cmp("18446744073709551615.0.0", "1.0.0").unwrap(), 1);
+        assert!(version_cmp("1.0", "1.0.0").is_err());
+        assert!(version_cmp("1.0.0", "1.0.0-01").is_err());
+    }
+    #[test]
+    fn validates_reverse_dns_identifier_boundaries() {
+        for identifier in ["in.sociobot.tool", "com.acme-2.release"] {
+            assert!(
+                valid_reverse_dns_identifier(identifier),
+                "{identifier} must be valid"
+            );
+        }
+        for identifier in [
+            ".",
+            "foo.",
+            ".foo",
+            "com..acme",
+            "com.acme_tool",
+            "com.Acme.tool",
+            "1com.acme",
+            "com.-acme.tool",
+            "com.acme-.tool",
+        ] {
+            assert!(
+                !valid_reverse_dns_identifier(identifier),
+                "{identifier} must be invalid"
+            );
+        }
     }
     #[test]
     fn rejects_empty_channels() {

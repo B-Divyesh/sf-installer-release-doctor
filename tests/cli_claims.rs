@@ -93,9 +93,24 @@ fn fixture() -> TempDir {
 fn public_cli_rejects_unsafe_zip_tar_and_tar_gz_entries_without_writing_outside() {
     let root = fixture();
     let artifacts = root.path().join("artifacts");
-    write_zip(&artifacts.join("unsafe.zip"), &["../escape-zip"]);
-    write_tar(&artifacts.join("unsafe.tar"), &["../escape-tar"], false);
-    write_tar(&artifacts.join("unsafe.tar.gz"), &["../escape-tgz"], true);
+    write_zip(
+        &artifacts.join("unsafe.zip"),
+        &["../escape-zip", r"..\escape-zip-windows", r"C:\escape-zip"],
+    );
+    write_tar(
+        &artifacts.join("unsafe.tar"),
+        &[
+            "../escape-tar",
+            r"..\escape-tar-windows",
+            r"\\server\share\escape-tar",
+        ],
+        false,
+    );
+    write_tar(
+        &artifacts.join("unsafe.tar.gz"),
+        &["../escape-tgz", r"..\escape-tgz-windows"],
+        true,
+    );
     fs::write(
         root.path().join("release-doctor.yml"),
         manifest(
@@ -125,9 +140,77 @@ fn public_cli_rejects_unsafe_zip_tar_and_tar_gz_entries_without_writing_outside(
                 })
         );
     }
-    for name in ["escape-zip", "escape-tar", "escape-tgz"] {
+    for name in [
+        "escape-zip",
+        "escape-zip-windows",
+        "escape-tar",
+        "escape-tar-windows",
+        "escape-tgz",
+        "escape-tgz-windows",
+    ] {
         assert!(!root.path().join(name).exists());
     }
+}
+
+#[test]
+fn public_cli_enforces_reverse_dns_identifiers_and_semver_upgrade_precedence() {
+    let root = fixture();
+    let artifacts = root.path().join("artifacts");
+    fs::write(artifacts.join("fixture.deb"), b"opaque package").unwrap();
+    fs::write(
+        root.path().join("release-doctor.yml"),
+        concat!(
+            "product: {name: Fixture, version: 1.0.0, binary: release-doctor}\n",
+            "checks: {}\nchannels:\n",
+            "  - {name: dot, artifact: fixture.deb, format: deb, package: {identifier: .}}\n",
+            "  - {name: trailing, artifact: fixture.deb, format: deb, package: {identifier: foo.}}\n",
+            "  - {name: leading, artifact: fixture.deb, format: deb, package: {identifier: .foo}}\n",
+            "  - {name: repeated, artifact: fixture.deb, format: deb, package: {identifier: com..acme}}\n",
+            "  - {name: character, artifact: fixture.deb, format: deb, package: {identifier: com.acme_tool}}\n",
+            "  - {name: valid, artifact: fixture.deb, format: deb, package: {identifier: in.sociobot.tool}}\n",
+            "  - {name: final, artifact: fixture.deb, format: deb, upgrade: {previous_version: 1.0.0-rc.2}}\n",
+        ),
+    )
+    .unwrap();
+
+    let output = run_check(root.path());
+    assert_eq!(output.status.code(), Some(1));
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+    for channel in ["dot", "trailing", "leading", "repeated", "character"] {
+        assert!(
+            report["findings"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|finding| {
+                    finding["channel"] == channel
+                        && finding["check"] == "package-id"
+                        && finding["level"] == "fail"
+                })
+        );
+    }
+    assert!(
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|finding| {
+                finding["channel"] == "valid"
+                    && finding["check"] == "package-id"
+                    && finding["level"] == "pass"
+            })
+    );
+    assert!(
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|finding| {
+                finding["channel"] == "final"
+                    && finding["check"] == "upgrade-path"
+                    && finding["level"] == "pass"
+            })
+    );
 }
 
 #[test]
