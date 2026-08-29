@@ -14,7 +14,7 @@ cargo run -- demo
 
 The command creates a temporary Acme CLI release, checks its manifest, and prints the workspace path. The sample contains one missing provenance file, so exit code `1` is expected.
 
-The matching browser demo is at <https://installer-release-doctor.sociobot.in/?demo=1>. It works offline after its first visit.
+The matching browser demo is at <https://installer-release-doctor.sociobot.in/?demo=1>. It opens with the completed sample report and works offline after its first visit.
 
 ## Install
 
@@ -128,6 +128,7 @@ npm test -- --grep @claim:sample-blocker
 ```
 
 See [`.factory/claims.json`](.factory/claims.json) for all claims and sandbox steps.
+Run every recorded command consecutively with `npm run test:claims:sequential`.
 
 ## Release
 

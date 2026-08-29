@@ -22,6 +22,10 @@ jobs:
       - run: npm test
         env:
           GITHUB_TOKEN: ${{ github.token }}
+      - name: Run every declared claim command consecutively without retries
+        run: npm run test:claims:sequential
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Verify published crate contents
         run: |
           cargo package --locked --no-verify

@@ -42,12 +42,16 @@ function home() {
 }
 
 function demo() {
+  const orderedFindings = [
+    ...sampleReport.findings.filter(function (item) { return item.level === 'fail'; }),
+    ...sampleReport.findings.filter(function (item) { return item.level !== 'fail'; })
+  ];
   const matrix = ['winget'].map(function (channel) {
     const status = channelStatus(sampleReport, channel);
     return '<div><b>' + channel + '</b><span class="stamp ' + status + '">' + (status === 'fail' ? 'blocked' : status) + '</span></div>';
   }).join('');
   return shell(
-    '<section class="demo-workbench"><p class="eyebrow">TEMP WORKSPACE / ACME CLI 1.4.0</p><h1>Inspect the sample release</h1><p class="lede">The sample has one blocker. Expand the failed result to see its repair.</p><div class="demo-controls"><button class="button primary" data-run>Run release check</button><span class="run-status" aria-live="polite">Ready to inspect the winget channel.</span></div><div class="matrix" aria-label="Channel readiness">' + matrix + '</div><section aria-labelledby="results-title"><h2 id="results-title">11 checks</h2><ul class="findings">' + findingRows(sampleReport.findings) + '</ul></section><section class="demo-command" aria-labelledby="demo-command-title"><h2 id="demo-command-title">Run the same demo in the CLI</h2><code>release-doctor demo</code><p>It creates a temporary workspace and prints where it ran.</p></section></section>', true
+    '<section class="demo-workbench"><p class="eyebrow">TEMP WORKSPACE / ACME CLI 1.4.0</p><h1>Inspect the sample release</h1><p class="lede">The completed report has one blocker. Open it to see the repair.</p><div class="demo-controls"><button class="button primary" data-run>Run release check again</button><span class="run-status" aria-live="polite">Finished: winget is blocked by 1 missing file.</span></div><div class="matrix" aria-label="Channel readiness">' + matrix + '</div><section aria-labelledby="results-title"><h2 id="results-title">11 checks</h2><ul class="findings">' + findingRows(orderedFindings) + '</ul></section><section class="demo-command" aria-labelledby="demo-command-title"><h2 id="demo-command-title">Run the same demo in the CLI</h2><code>release-doctor demo</code><p>It creates a temporary workspace and prints where it ran.</p></section></section>', true
   );
 }
 

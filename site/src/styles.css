@@ -26,4 +26,13 @@
   .lede{font-size:17px;line-height:1.35}
   .hero-actions{gap:8px;margin-block:16px}
   .plain-facts{margin-top:12px;gap:4px}
+  .demo-workbench{padding-top:16px}
+  .demo-workbench>h1{font-size:38px;line-height:.95;margin-block:14px}
+  .demo-workbench>.lede{font-size:16px;margin-block:12px}
+  .demo-controls{gap:10px;margin-block:16px}
+  .demo-controls .run-status{font-size:14px}
+  .matrix{margin-block:8px}
+  .matrix>div{padding:12px 16px}
+  .demo-workbench h2{font-size:30px;margin-bottom:12px}
+  .finding{padding-block:14px}
 }

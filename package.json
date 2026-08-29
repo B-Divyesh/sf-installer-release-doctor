@@ -9,9 +9,10 @@
     "build:site": "vite build --config site/vite.config.ts",
     "typecheck": "tsc --noEmit -p site/tsconfig.json",
     "lint": "cargo fmt --check && cargo clippy --all-targets --all-features --locked -- -D warnings",
-    "test": "cargo test && npm run test:unit && npm run build:site && playwright test",
+    "test": "cargo test && npm run test:unit && npm run build:site && node scripts/run-playwright.mjs",
     "test:unit": "vitest run --config site/vitest.config.ts",
-    "test:e2e": "playwright test",
+    "test:e2e": "node scripts/run-playwright.mjs",
+    "test:claims:sequential": "node scripts/run-claim-gates.mjs",
     "test:live": "playwright test --config=playwright.live.config.ts",
     "preview": "vite preview --config site/vite.config.ts"
   },

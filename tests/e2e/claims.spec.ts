@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import AxeBuilder from '@axe-core/playwright';
 
+const siteOrigin = process.env.PLAYWRIGHT_BASE_URL!;
 const githubApiOptions = process.env.GITHUB_TOKEN
   ? { headers: { Authorization: `Bearer ${process.env.GITHUB_TOKEN}`, Accept: 'application/vnd.github+json' } }
   : undefined;
@@ -24,10 +25,19 @@ test('claims manifest has exactly one tagged regression per public claim', async
 });
 
 test('@claim:sample-blocker finds the seeded release blocker and repair', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/?demo=1');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Inspect the sample release');
+  await expect(page.getByText('Finished: winget is blocked by 1 missing file.')).toBeVisible();
+  await expect(page.getByText('blocked', { exact: true })).toBeVisible();
   await expect(page.getByText('Provenance companion is missing.')).toBeVisible();
-  await page.getByText('Show repair').click();
+  const repairControl = page.getByText('Show repair');
+  await expect(repairControl).toBeVisible();
+  for (const item of [page.getByText('Provenance companion is missing.'), repairControl]) {
+    const box = await item.boundingBox();
+    expect(box!.y + box!.height).toBeLessThanOrEqual(844);
+  }
+  await repairControl.click();
   await expect(page.getByText(/Create acme-cli_1.4.0_windows/)).toBeVisible();
 });
 
@@ -35,10 +45,10 @@ test('@claim:demo-private demo sends no sample data off site', async ({ page }) 
   const external: string[] = [];
   page.on('request', function (request) {
     const url = new URL(request.url());
-    if (url.origin !== 'http://127.0.0.1:4173') external.push(request.url());
+    if (url.origin !== siteOrigin) external.push(request.url());
   });
   await page.goto('/?demo=1');
-  await page.getByRole('button', { name: 'Run release check' }).click();
+  await page.getByRole('button', { name: 'Run release check again' }).click();
   await expect(page.getByText(/Finished: winget is blocked/)).toBeVisible();
   expect(external).toEqual([]);
 });
@@ -58,9 +68,9 @@ test('@claim:demo-ephemeral demo leaves no saved user state', async ({ browser }
 
   const resetContext = await browser.newContext();
   const resetPage = await resetContext.newPage();
-  await resetPage.goto('http://127.0.0.1:4173/?demo=1');
+  await resetPage.goto(`${siteOrigin}/?demo=1`);
   expect(await inspect(resetPage)).toEqual(empty);
-  await resetPage.getByRole('button', { name: 'Run release check' }).click();
+  await resetPage.getByRole('button', { name: 'Run release check again' }).click();
   await expect(resetPage.getByText(/Finished: winget is blocked/)).toBeVisible();
   await resetPage.getByText('Show repair').click();
   expect(await inspect(resetPage)).toEqual(empty);
@@ -71,12 +81,12 @@ test('@claim:demo-ephemeral demo leaves no saved user state', async ({ browser }
   const exitContext = await browser.newContext();
   const exitPage = await exitContext.newPage();
   await exitPage.route('https://api.github.com/**', async function (route) { await route.abort(); });
-  await exitPage.goto('http://127.0.0.1:4173/?demo=1');
-  await exitPage.getByRole('button', { name: 'Run release check' }).click();
+  await exitPage.goto(`${siteOrigin}/?demo=1`);
+  await exitPage.getByRole('button', { name: 'Run release check again' }).click();
   await expect(exitPage.getByText(/Finished: winget is blocked/)).toBeVisible();
   expect(await inspect(exitPage)).toEqual(empty);
   await exitPage.getByRole('link', { name: 'Leave demo' }).click();
-  await expect(exitPage).toHaveURL('http://127.0.0.1:4173/');
+  await expect(exitPage).toHaveURL(`${siteOrigin}/`);
   expect(await inspect(exitPage)).toEqual(empty);
   await exitContext.close();
 });
@@ -162,7 +172,7 @@ test('@claim:channel-policy-checks rejects invalid checksums, package metadata, 
 
 test('keyboard focus returns to the demo run action after completion', async ({ page }) => {
   await page.goto('/demo');
-  const run = page.getByRole('button', { name: 'Run release check' });
+  const run = page.getByRole('button', { name: 'Run release check again' });
   await run.focus();
   await page.keyboard.press('Enter');
   await expect(page.getByText(/Finished: winget is blocked/)).toBeVisible();
@@ -314,7 +324,7 @@ test('@claim:website-storage website stores only the public release cache', asyn
   const external: string[] = [];
   page.on('request', function (request) {
     const url = new URL(request.url());
-    if (url.origin !== 'http://127.0.0.1:4173') external.push(url.origin);
+    if (url.origin !== siteOrigin) external.push(url.origin);
   });
   await page.route('https://api.github.com/**', async function (route) {
     await route.fulfill({ contentType: 'application/json', body: JSON.stringify([{
@@ -332,7 +342,7 @@ test('@claim:website-storage website stores only the public release cache', asyn
   expect(external).toEqual(['https://api.github.com']);
   await expect(page.locator('input')).toHaveCount(0);
   await page.goto('/demo');
-  await page.getByRole('button', { name: 'Run release check' }).click();
+  await page.getByRole('button', { name: 'Run release check again' }).click();
   expect(await page.evaluate(function () { return Object.keys(localStorage); })).toEqual(['release-cache:v2']);
 });
 
@@ -413,11 +423,11 @@ test('every internal link and fragment has a real destination', async ({ page, r
   for (const route of ['/', '/demo', '/privacy', '/terms', '/404.html']) {
     await page.goto(route);
     for (const href of await page.locator('a[href]').evaluateAll(function (links) { return links.map(function (link) { return link.getAttribute('href') || ''; }); })) {
-      if (href.startsWith('/') || href.startsWith('http://127.0.0.1:4173')) hrefs.add(href);
+      if (href.startsWith('/') || href.startsWith(siteOrigin)) hrefs.add(href);
     }
   }
   for (const href of hrefs) {
-    const url = new URL(href, 'http://127.0.0.1:4173');
+    const url = new URL(href, siteOrigin);
     const response = await request.get(url.pathname);
     expect(response.status(), href).toBeLessThan(400);
     if (url.hash) {
@@ -470,7 +480,8 @@ test('keyboard path enters and resets the demo', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toBeFocused();
   await page.getByRole('button', { name: 'Reset demo' }).focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByText('Ready to inspect the winget channel.')).toBeVisible();
+  await expect(page.getByText('Finished: winget is blocked by 1 missing file.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Run release check again' })).toBeVisible();
 });
 
 test('deployment policy caches hashed assets immutably and revalidates the shell', async () => {
@@ -542,7 +553,7 @@ test('service worker installs and updates the versioned demo cache', async ({ pa
 test('reduced motion shows the final demo result without a scan delay', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/demo');
-  await page.getByRole('button', { name: 'Run release check' }).click();
+  await page.getByRole('button', { name: 'Run release check again' }).click();
   await expect(page.getByText('Finished: winget is blocked by 1 missing file.')).toBeVisible();
 });
 

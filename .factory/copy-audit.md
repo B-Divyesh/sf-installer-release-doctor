@@ -65,4 +65,21 @@ Checked August 29, 2026 against the current landing-page source, including every
 | Optional company rules | policy pack |
 | Example environment | demo |
 
-Catalog description: “Check installer artifacts and release evidence before publishing packages.” (9 words, 73 characters.)
+## Demo first screen
+
+| Sentence or standalone line | Words | Result |
+|---|---:|---|
+| Demo — sample data, nothing is saved | 7 | pass |
+| Reset demo | 2 | pass |
+| Leave demo | 2 | pass |
+| TEMP WORKSPACE / ACME CLI 1.4.0 | 6 | pass |
+| Inspect the sample release | 4 | pass |
+| The completed report has one blocker. | 6 | pass |
+| Open it to see the repair. | 7 | pass |
+| Run release check again | 4 | pass |
+| Finished: winget is blocked by 1 missing file. | 8 | pass |
+| 11 checks | 2 | pass |
+| Provenance companion is missing. | 4 | pass |
+| Show repair | 2 | pass |
+
+Catalog description: “Check installer artifacts and release evidence before publishing to package channels.” (11 words, 85 characters.)
