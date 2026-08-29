@@ -1,0 +1,94 @@
+{
+  "routes": [
+    {
+      "viewport": "desktop",
+      "route": "/",
+      "errors": [],
+      "serious": 0,
+      "h1": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "desktop",
+      "route": "/demo",
+      "errors": [],
+      "serious": 0,
+      "h1": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "desktop",
+      "route": "/privacy",
+      "errors": [],
+      "serious": 0,
+      "h1": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "desktop",
+      "route": "/terms",
+      "errors": [],
+      "serious": 0,
+      "h1": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "mobile-390",
+      "route": "/",
+      "errors": [],
+      "serious": 0,
+      "h1": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "mobile-390",
+      "route": "/demo",
+      "errors": [],
+      "serious": 0,
+      "h1": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "mobile-390",
+      "route": "/privacy",
+      "errors": [],
+      "serious": 0,
+      "h1": 1,
+      "overflow": false
+    },
+    {
+      "viewport": "mobile-390",
+      "route": "/terms",
+      "errors": [],
+      "serious": 0,
+      "h1": 1,
+      "overflow": false
+    }
+  ],
+  "demo": {
+    "width": 390,
+    "external": [],
+    "storage": {
+      "local": [],
+      "session": [],
+      "cookie": ""
+    }
+  },
+  "keyboard": {
+    "first": "Skip to main content",
+    "url": "https://installer-release-doctor.sociobot.in/demo",
+    "h1Focused": true
+  },
+  "offline": {
+    "title": "Inspect the sample release",
+    "online": false
+  },
+  "intelMac": {
+    "labels": [
+      "Download for Intel Mac",
+      "Download for Apple silicon"
+    ],
+    "firstHref": "https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.2/release-doctor-v0.1.2-darwin-x86_64.tar.gz",
+    "firstClass": "button primary"
+  }
+}
