@@ -6,6 +6,10 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import AxeBuilder from '@axe-core/playwright';
 
+const githubApiOptions = process.env.GITHUB_TOKEN
+  ? { headers: { Authorization: `Bearer ${process.env.GITHUB_TOKEN}`, Accept: 'application/vnd.github+json' } }
+  : undefined;
+
 test('claims manifest has exactly one tagged regression per public claim', async () => {
   const claims = JSON.parse(readFileSync('.factory/claims.json', 'utf8')) as Array<{ id: string; test: string }>;
   const source = readFileSync('tests/e2e/claims.spec.ts', 'utf8');
@@ -75,6 +79,10 @@ test('@claim:cli-local bundled CLI demo runs with network proxies blocked', asyn
   const report = JSON.parse(result.stdout);
   expect(report.findings.some(function (finding: { check: string; level: string }) { return finding.check === 'provenance' && finding.level === 'fail'; })).toBe(true);
   expect(result.stderr).toContain('Demo workspace:');
+  const metadataResult = spawnSync('cargo', ['metadata', '--locked', '--format-version', '1'], { cwd: process.cwd(), encoding: 'utf8' });
+  expect(metadataResult.status, metadataResult.stderr).toBe(0);
+  const dependencyNames = JSON.parse(metadataResult.stdout).packages.map(function (entry: { name: string }) { return entry.name; });
+  expect(dependencyNames).not.toEqual(expect.arrayContaining(['reqwest', 'ureq', 'hyper', 'opentelemetry']));
 });
 
 test('@claim:json-output CLI emits machine-readable reports', async () => {
@@ -145,7 +153,7 @@ test('@claim:homebrew-tap resolves to a valid current formula', async ({ request
   expect(remote.status).toBe(0);
   expect(remote.stdout).toContain('refs/heads/main');
 
-  const latestResponse = await request.get('https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/latest');
+  const latestResponse = await request.get('https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/latest', githubApiOptions);
   expect(latestResponse.ok()).toBe(true);
   const latest = await latestResponse.json();
   const version = latest.tag_name.replace(/^v/, '');
@@ -181,7 +189,7 @@ test('@claim:free-core core checker is MIT licensed', async ({ page }) => {
 });
 
 test('@claim:release-checksums published downloads include a checksum manifest', async ({ request, page }) => {
-  const response = await request.get('https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/latest');
+  const response = await request.get('https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/latest', githubApiOptions);
   expect(response.ok()).toBe(true);
   const release = await response.json();
   const names = release.assets.map(function (asset: { name: string }) { return asset.name; });
@@ -190,21 +198,62 @@ test('@claim:release-checksums published downloads include a checksum manifest',
   for (const marker of ['linux-x86_64.tar.gz', 'darwin-aarch64.tar.gz', 'darwin-x86_64.tar.gz', 'windows-x86_64.zip', 'amd64.deb', 'x86_64.rpm']) {
     expect(names.some(function (name: string) { return name.includes(marker); })).toBe(true);
   }
-  const sumsAsset = release.assets.find(function (asset: { name: string }) { return asset.name === 'SHA256SUMS'; });
-  const sumsResponse = await request.get(sumsAsset.browser_download_url);
-  expect(sumsResponse.ok()).toBe(true);
-  const sums = await sumsResponse.text();
-  const windowsHash = sums.match(/^([a-f0-9]{64})\s+release-doctor-v[^\s]+-windows-x86_64\.zip$/m)?.[1];
-  expect(windowsHash).toMatch(/^[a-f0-9]{64}$/);
-  const version = String(release.tag_name).replace(/^v/, '');
-  const scoop = JSON.parse(readFileSync('scoop-bucket/installer-release-doctor.json', 'utf8'));
-  expect(scoop.version).toBe(version);
-  expect(scoop.architecture['64bit'].hash).toBe(windowsHash);
-  const winget = readFileSync(`winget/InstallerReleaseDoctor/${version}/InstallerReleaseDoctor.installer.yaml`, 'utf8');
-  expect(winget).toContain(`PackageVersion: ${version}`);
-  expect(winget).toContain(`InstallerSha256: ${windowsHash?.toUpperCase()}`);
   await page.goto('/');
   await expect(page.getByText(`Published ${release.tag_name}. SHA256SUMS is included.`)).toBeVisible();
+});
+
+test('@claim:windows-manifests Scoop and winget target the current verified Windows archive', async ({ request }) => {
+  const latestResponse = await request.get('https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/latest', githubApiOptions);
+  expect(latestResponse.ok()).toBe(true);
+  const latest = await latestResponse.json();
+  const version = latest.tag_name.replace(/^v/, '');
+  const sumsAsset = latest.assets.find(function (asset: { name: string }) { return asset.name === 'SHA256SUMS'; });
+  const sumsResponse = await request.get(sumsAsset.browser_download_url);
+  expect(sumsResponse.ok()).toBe(true);
+  const windowsHash = (await sumsResponse.text()).match(new RegExp(`([a-f0-9]{64})  release-doctor-v${version}-windows-x86_64\\.zip`))?.[1];
+  expect(windowsHash).toMatch(/^[a-f0-9]{64}$/);
+  const scoop = JSON.parse(readFileSync('scoop-bucket/installer-release-doctor.json', 'utf8'));
+  expect(scoop.version).toBe(version);
+  expect(scoop.architecture['64bit'].url).toContain(`/v${version}/release-doctor-v${version}-windows-x86_64.zip`);
+  expect(scoop.architecture['64bit'].hash).toBe(windowsHash);
+  const wingetRoot = join('winget', 'InstallerReleaseDoctor', version);
+  for (const name of ['InstallerReleaseDoctor.yaml', 'InstallerReleaseDoctor.locale.en-US.yaml', 'InstallerReleaseDoctor.installer.yaml']) {
+    expect(readFileSync(join(wingetRoot, name), 'utf8')).toContain(`PackageVersion: ${version}`);
+  }
+  const winget = readFileSync(join(wingetRoot, 'InstallerReleaseDoctor.installer.yaml'), 'utf8');
+  expect(winget).toContain(`InstallerUrl: https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v${version}/release-doctor-v${version}-windows-x86_64.zip`);
+  expect(winget).toContain(`InstallerSha256: ${windowsHash?.toUpperCase()}`);
+});
+
+test('@claim:release-identity public CLI and manifest identify the tagged source', async ({ request }) => {
+  const releaseResponse = await request.get('https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/latest', githubApiOptions);
+  expect(releaseResponse.ok()).toBe(true);
+  const release = await releaseResponse.json();
+  const version = release.tag_name.replace(/^v/, '');
+  const refResponse = await request.get(`https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/git/ref/tags/${release.tag_name}`, githubApiOptions);
+  expect(refResponse.ok()).toBe(true);
+  const ref = await refResponse.json();
+  let commit = ref.object.sha;
+  if (ref.object.type === 'tag') {
+    const tagResponse = await request.get(ref.object.url, githubApiOptions);
+    expect(tagResponse.ok()).toBe(true);
+    commit = (await tagResponse.json()).object.sha;
+  }
+  const manifestAsset = release.assets.find(function (asset: { name: string }) { return asset.name === 'latest.json'; });
+  const manifestResponse = await request.get(manifestAsset.browser_download_url);
+  expect(manifestResponse.ok()).toBe(true);
+  expect(await manifestResponse.json()).toEqual(expect.objectContaining({ version, commit }));
+  const linuxAsset = release.assets.find(function (asset: { name: string }) { return asset.name.endsWith('linux-x86_64.tar.gz'); });
+  const archiveResponse = await request.get(linuxAsset.browser_download_url);
+  expect(archiveResponse.ok()).toBe(true);
+  const fixture = mkdtempSync(join(tmpdir(), 'release-doctor-public-'));
+  const archive = join(fixture, linuxAsset.name);
+  writeFileSync(archive, await archiveResponse.body());
+  expect(spawnSync('tar', ['-xzf', archive, '-C', fixture], { encoding: 'utf8' }).status).toBe(0);
+  const binary = join(fixture, 'release-doctor');
+  chmodSync(binary, 0o755);
+  expect(spawnSync(binary, ['--version'], { encoding: 'utf8' }).stdout.trim()).toBe(`release-doctor ${version}`);
+  expect(spawnSync(binary, ['--help'], { encoding: 'utf8' }).stdout).toContain('Checks use local files and the signature public key recorded in the manifest.');
 });
 
 test('@claim:website-storage website stores only the public release cache', async ({ page }) => {
@@ -215,10 +264,10 @@ test('@claim:website-storage website stores only the public release cache', asyn
   });
   await page.route('https://api.github.com/**', async function (route) {
     await route.fulfill({ contentType: 'application/json', body: JSON.stringify([{
-      tag_name: 'v0.1.2',
+      tag_name: 'v0.1.3',
       html_url: 'https://github.com/example/release',
       assets: [
-        { name: 'release-doctor-v0.1.2-linux-x86_64.tar.gz', browser_download_url: 'https://github.com/example/linux' },
+        { name: 'release-doctor-v0.1.3-linux-x86_64.tar.gz', browser_download_url: 'https://github.com/example/linux' },
         { name: 'SHA256SUMS', browser_download_url: 'https://github.com/example/sums' }
       ]
     }]) });
@@ -267,10 +316,10 @@ test('Intel Mac visitors get explicit compatible architecture choices', async ({
   await page.route('https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases?per_page=1', async function (route) {
     await route.fulfill({
       contentType: 'application/json',
-      body: JSON.stringify([{ tag_name: 'v0.1.2', html_url: 'https://example.test/release', assets: [
-        { name: 'release-doctor-v0.1.2-darwin-aarch64.pkg', browser_download_url: 'https://example.test/arm.pkg' },
-        { name: 'release-doctor-v0.1.2-darwin-aarch64.tar.gz', browser_download_url: 'https://example.test/arm.tar.gz' },
-        { name: 'release-doctor-v0.1.2-darwin-x86_64.tar.gz', browser_download_url: 'https://example.test/intel.tar.gz' },
+      body: JSON.stringify([{ tag_name: 'v0.1.3', html_url: 'https://example.test/release', assets: [
+        { name: 'release-doctor-v0.1.3-darwin-aarch64.pkg', browser_download_url: 'https://example.test/arm.pkg' },
+        { name: 'release-doctor-v0.1.3-darwin-aarch64.tar.gz', browser_download_url: 'https://example.test/arm.tar.gz' },
+        { name: 'release-doctor-v0.1.3-darwin-x86_64.tar.gz', browser_download_url: 'https://example.test/intel.tar.gz' },
         { name: 'SHA256SUMS', browser_download_url: 'https://example.test/sums' }
       ] }])
     });
@@ -365,7 +414,7 @@ test('service worker installs and updates the versioned demo cache', async ({ pa
     return { script: registration.active?.scriptURL, cacheNames: await caches.keys() };
   });
   expect(worker.script).toMatch(/\/sw\.js$/);
-  expect(worker.cacheNames).toContain('release-doctor-v7');
+  expect(worker.cacheNames).toContain('release-doctor-v8');
 });
 
 test('reduced motion shows the final demo result without a scan delay', async ({ page }) => {
@@ -387,7 +436,7 @@ test('visible controls meet the 44 pixel touch target baseline', async ({ page }
   }
 });
 
-test('unavailable policy-pack checkout is not exposed', async ({ page }) => {
+test('@claim:no-checkout unavailable policy-pack checkout is not exposed', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('link', { name: /Buy the policy pack/i })).toHaveCount(0);
   await expect(page.locator('a[href*="api.sociobot.in"]')).toHaveCount(0);
@@ -396,18 +445,25 @@ test('unavailable policy-pack checkout is not exposed', async ({ page }) => {
   expect(readFileSync('site/public/staticwebapp.config.json', 'utf8')).not.toContain('api.sociobot.in');
 });
 
+test('@claim:unsigned-builds unsigned download status is disclosed and release automation does not sign', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByText('macOS and Windows builds are unsigned in v0.1.3.')).toBeVisible();
+  const workflow = readFileSync('.github/workflows/release.yml', 'utf8');
+  expect(workflow).not.toMatch(/codesign|signtool|APPLE_CERTIFICATE|WINDOWS_CERT/i);
+});
+
 test('@claim:posix-installer shell installer verifies the checksum, updates PATH, and runs the binary', async () => {
   const fixture = mkdtempSync(join(tmpdir(), 'release-doctor-installer-'));
   const home = join(fixture, 'home');
   const source = join(fixture, 'source');
   const fakeBin = join(fixture, 'bin');
-  const archive = join(fixture, 'release-doctor-v0.1.2-linux-x86_64.tar.gz');
+  const archive = join(fixture, 'release-doctor-v0.1.3-linux-x86_64.tar.gz');
   const checksums = join(fixture, 'SHA256SUMS');
   mkdirSync(home);
   mkdirSync(source);
   mkdirSync(fakeBin);
   const binary = join(source, 'release-doctor');
-  writeFileSync(binary, '#!/bin/sh\necho "release-doctor 0.1.2"\n');
+  writeFileSync(binary, '#!/bin/sh\necho "release-doctor 0.1.3"\n');
   chmodSync(binary, 0o755);
   expect(spawnSync('tar', ['-C', source, '-czf', archive, 'release-doctor'], { encoding: 'utf8' }).status).toBe(0);
   writeFileSync(checksums, createHash('sha256').update(readFileSync(archive)).digest('hex') + '  ' + archive.split('/').pop() + '\n');
@@ -422,9 +478,9 @@ for arg in "$@"; do
   case "$arg" in -*) ;; *) url="$arg" ;; esac
 done
 case "$url" in
-  *releases/latest) printf '%s' '{"browser_download_url":"https://fixture.invalid/release-doctor-v0.1.2-linux-x86_64.tar.gz"}' ;;
+  *releases/latest) printf '%s' '{"browser_download_url":"https://fixture.invalid/release-doctor-v0.1.3-linux-x86_64.tar.gz"}' ;;
   *SHA256SUMS) cp "$INSTALLER_FIXTURE_DIR/SHA256SUMS" "$out" ;;
-  *linux-x86_64.tar.gz) cp "$INSTALLER_FIXTURE_DIR/release-doctor-v0.1.2-linux-x86_64.tar.gz" "$out" ;;
+  *linux-x86_64.tar.gz) cp "$INSTALLER_FIXTURE_DIR/release-doctor-v0.1.3-linux-x86_64.tar.gz" "$out" ;;
   *) exit 1 ;;
 esac
 `);
@@ -443,7 +499,7 @@ esac
   });
   expect(freshLogin.status, freshLogin.stderr).toBe(0);
   expect(freshLogin.stdout).toContain(join(home, '.local/bin/release-doctor'));
-  expect(freshLogin.stdout).toContain('release-doctor 0.1.2');
+  expect(freshLogin.stdout).toContain('release-doctor 0.1.3');
 
   writeFileSync(checksums, `${'0'.repeat(64)}  ${archive.split('/').pop()}\n`);
   const badDestination = join(fixture, 'bad-destination');
