@@ -103,6 +103,9 @@ jobs:
         run: |
           $Version = "${{ github.event.inputs.version || github.ref_name }}".TrimStart("v")
           New-Item -ItemType Directory release | Out-Null
+          # Compress-Archive records this timestamp. Fix it so rebuilding the same
+          # binary yields the same checksum for Scoop and winget manifests.
+          (Get-Item target/release/release-doctor.exe).LastWriteTimeUtc = [datetime]"1980-01-01T00:00:00Z"
           Compress-Archive target/release/release-doctor.exe "release/release-doctor-v$Version-windows-x86_64.zip"
       - uses: actions/upload-artifact@v4
         with: {name: windows-assets, path: release/*}

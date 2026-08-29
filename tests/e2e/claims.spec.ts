@@ -338,6 +338,7 @@ test('release automation expands and validates native package versions', async (
   expect(workflow).toContain("rpm -qp --queryformat '%{VERSION}' release/release-doctor-$VERSION.x86_64.rpm");
   expect(workflow).toContain('SOURCE_VERSION=$(cargo metadata');
   expect(workflow).toContain('scripts/make-latest.mjs "$VERSION" "$REPOSITORY" release "$GITHUB_SHA"');
+  expect(workflow).toContain('LastWriteTimeUtc = [datetime]"1980-01-01T00:00:00Z"');
 });
 
 test('release manifest records the exact source commit and artifact digests', async () => {
