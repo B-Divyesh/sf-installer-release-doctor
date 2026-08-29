@@ -3,7 +3,7 @@
   "description": "Check installer artifacts before release channels reject them.",
   "homepage": "https://installer-release-doctor.sociobot.in",
   "license": "MIT",
-  "architecture": {"64bit": {"url": "https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.2/release-doctor-v0.1.2-windows-x86_64.zip", "hash": "c8f39c4948d4e4d5c6ea3e1968e1ccc6db8c44906d11ca588a6587a3fdfbbcc2"}},
+  "architecture": {"64bit": {"url": "https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.2/release-doctor-v0.1.2-windows-x86_64.zip", "hash": "e7d83b8eb66b5ec5bcc7a6a9661a9b91d66190967970f559ee4237fecc6ab1fa"}},
   "bin": "release-doctor.exe",
   "checkver": "github",
   "autoupdate": {"architecture": {"64bit": {"url": "https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v$version/release-doctor-v$version-windows-x86_64.zip"}}}

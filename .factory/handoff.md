@@ -26,7 +26,7 @@
 - Package/consumer: `cargo build --release --locked` and `cargo package --locked --allow-dirty --no-verify` passed. The 136.9 KiB crate installed in a fresh temporary root and ran `release-doctor 0.1.2`; its demo returned the expected blocking status and valid JSON.
 - Native package reproduction: nFPM 2.43.4 produced both formats. `dpkg-deb` reported `release-doctor / 0.1.2 / amd64`; `rpm -qp` reported `release-doctor / 0.1.2 / x86_64`.
 - Public release: GitHub Actions release run `33234277125` passed. All downloaded 0.1.2 assets matched `SHA256SUMS`; public Debian and RPM metadata report 0.1.2. The Linux binary reports 0.1.2 and contains the repaired help text.
-- Public manifests: Scoop and winget 0.1.2 use Windows SHA-256 `c8f39c4948d4e4d5c6ea3e1968e1ccc6db8c44906d11ca588a6587a3fdfbbcc2`.
+- Public manifests: Scoop and winget 0.1.2 use the exact Windows ZIP SHA-256 published in `SHA256SUMS`.
 - Browser: live routes `/`, `/demo`, `/privacy`, and `/terms` have one h1, no console errors, no serious/critical Axe findings, and no horizontal overflow at 1366 px or 390 px.
 - Mobile repair path: after **Show repair**, document width is 390 CSS px in a 390 px viewport.
 - Keyboard: the skip link is first, Enter opens the demo, route focus moves to its h1, and no trap was found.
