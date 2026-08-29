@@ -203,6 +203,9 @@ test('@claim:release-checksums published downloads include a checksum manifest',
   const winget = readFileSync(`winget/InstallerReleaseDoctor/${version}/InstallerReleaseDoctor.installer.yaml`, 'utf8');
   expect(winget).toContain(`PackageVersion: ${version}`);
   expect(winget).toContain(`InstallerSha256: ${windowsHash?.toUpperCase()}`);
+  await page.route('https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases?per_page=1', async function (route) {
+    await route.fulfill({ contentType: 'application/json', body: JSON.stringify([release]) });
+  });
   await page.goto('/');
   await expect(page.getByText(`Published ${release.tag_name}. SHA256SUMS is included.`)).toBeVisible();
 });
