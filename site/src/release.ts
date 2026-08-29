@@ -21,10 +21,13 @@ export function downloadChoices(assets: ReleaseAsset[], userAgent: string): Down
   if (/Mac/i.test(userAgent)) {
     const arm = named(assets, 'darwin-aarch64.tar.gz');
     const intel = named(assets, 'darwin-x86_64.tar.gz');
-    return [
-      ...(arm ? [{ label: 'Download for Apple silicon', asset: arm, primary: false }] : []),
-      ...(intel ? [{ label: 'Download for Intel Mac', asset: intel, primary: false }] : [])
+    const intelAgent = /Intel Mac/i.test(userAgent);
+    const armAgent = /(?:arm64|aarch64)/i.test(userAgent);
+    const choices = [
+      ...(intel ? [{ label: 'Download for Intel Mac', asset: intel, primary: intelAgent }] : []),
+      ...(arm ? [{ label: 'Download for Apple silicon', asset: arm, primary: armAgent }] : [])
     ];
+    return choices.sort(function (left, right) { return Number(right.primary) - Number(left.primary); });
   }
   const asset = named(assets, 'linux-x86_64.tar.gz');
   return asset ? [{ label: `Download ${asset.name}`, asset, primary: true }] : [];

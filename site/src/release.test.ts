@@ -10,14 +10,14 @@ const assets: ReleaseAsset[] = [
 ];
 
 describe('downloadChoices', function () {
-  test('offers both architectures on Intel Mac user agents without making ARM primary', function () {
+  test('offers both architectures and makes Intel primary for an Intel Mac', function () {
     const choices = downloadChoices(assets, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)');
     expect(choices.map(function (choice) { return choice.label; })).toEqual([
-      'Download for Apple silicon',
-      'Download for Intel Mac'
+      'Download for Intel Mac',
+      'Download for Apple silicon'
     ]);
-    expect(choices.every(function (choice) { return !choice.primary; })).toBe(true);
-    expect(choices[1].asset.name).toContain('darwin-x86_64');
+    expect(choices[0].primary).toBe(true);
+    expect(choices[0].asset.name).toContain('darwin-x86_64');
   });
 
   test('selects the matching archive for Windows and Linux', function () {

@@ -145,13 +145,13 @@ test('@claim:homebrew-tap resolves to a valid current formula', async ({ request
   expect(remote.status).toBe(0);
   expect(remote.stdout).toContain('refs/heads/main');
 
-  const response = await request.get('https://raw.githubusercontent.com/B-Divyesh/homebrew-installer-release-doctor/main/Formula/installer-release-doctor.rb');
-  expect(response.ok()).toBe(true);
-  const formula = await response.text();
   const latestResponse = await request.get('https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/latest');
   expect(latestResponse.ok()).toBe(true);
   const latest = await latestResponse.json();
   const version = latest.tag_name.replace(/^v/, '');
+  const response = await request.get('https://raw.githubusercontent.com/B-Divyesh/homebrew-installer-release-doctor/main/Formula/installer-release-doctor.rb?v=' + encodeURIComponent(version));
+  expect(response.ok()).toBe(true);
+  const formula = await response.text();
   expect(formula).toContain('class InstallerReleaseDoctor < Formula');
   expect(formula).toContain(`version "${version}"`);
 
@@ -180,7 +180,7 @@ test('@claim:free-core core checker is MIT licensed', async ({ page }) => {
   expect(readFileSync('LICENSE', 'utf8')).toContain('Permission is hereby granted, free of charge');
 });
 
-test('@claim:release-checksums published downloads include a checksum manifest', async ({ request }) => {
+test('@claim:release-checksums published downloads include a checksum manifest', async ({ request, page }) => {
   const response = await request.get('https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/latest');
   expect(response.ok()).toBe(true);
   const release = await response.json();
@@ -190,6 +190,47 @@ test('@claim:release-checksums published downloads include a checksum manifest',
   for (const marker of ['linux-x86_64.tar.gz', 'darwin-aarch64.tar.gz', 'darwin-x86_64.tar.gz', 'windows-x86_64.zip', 'amd64.deb', 'x86_64.rpm']) {
     expect(names.some(function (name: string) { return name.includes(marker); })).toBe(true);
   }
+  const sumsAsset = release.assets.find(function (asset: { name: string }) { return asset.name === 'SHA256SUMS'; });
+  const sumsResponse = await request.get(sumsAsset.browser_download_url);
+  expect(sumsResponse.ok()).toBe(true);
+  const sums = await sumsResponse.text();
+  const windowsHash = sums.match(/^([a-f0-9]{64})\s+release-doctor-v[^\s]+-windows-x86_64\.zip$/m)?.[1];
+  expect(windowsHash).toMatch(/^[a-f0-9]{64}$/);
+  const version = String(release.tag_name).replace(/^v/, '');
+  const scoop = JSON.parse(readFileSync('scoop-bucket/installer-release-doctor.json', 'utf8'));
+  expect(scoop.version).toBe(version);
+  expect(scoop.architecture['64bit'].hash).toBe(windowsHash);
+  const winget = readFileSync(`winget/InstallerReleaseDoctor/${version}/InstallerReleaseDoctor.installer.yaml`, 'utf8');
+  expect(winget).toContain(`PackageVersion: ${version}`);
+  expect(winget).toContain(`InstallerSha256: ${windowsHash?.toUpperCase()}`);
+  await page.goto('/');
+  await expect(page.getByText(`Published ${release.tag_name}. SHA256SUMS is included.`)).toBeVisible();
+});
+
+test('@claim:website-storage website stores only the public release cache', async ({ page }) => {
+  const external: string[] = [];
+  page.on('request', function (request) {
+    const url = new URL(request.url());
+    if (url.origin !== 'http://127.0.0.1:4173') external.push(url.origin);
+  });
+  await page.route('https://api.github.com/**', async function (route) {
+    await route.fulfill({ contentType: 'application/json', body: JSON.stringify([{
+      tag_name: 'v0.1.2',
+      html_url: 'https://github.com/example/release',
+      assets: [
+        { name: 'release-doctor-v0.1.2-linux-x86_64.tar.gz', browser_download_url: 'https://github.com/example/linux' },
+        { name: 'SHA256SUMS', browser_download_url: 'https://github.com/example/sums' }
+      ]
+    }]) });
+  });
+  await page.goto('/');
+  expect(await page.context().cookies()).toEqual([]);
+  expect(await page.evaluate(function () { return Object.keys(localStorage); })).toEqual(['release-cache:v2']);
+  expect(external).toEqual(['https://api.github.com']);
+  await expect(page.locator('input')).toHaveCount(0);
+  await page.goto('/demo');
+  await page.getByRole('button', { name: 'Run release check' }).click();
+  expect(await page.evaluate(function () { return Object.keys(localStorage); })).toEqual(['release-cache:v2']);
 });
 
 test('routes have one h1 and no serious accessibility findings', async ({ page }) => {
@@ -229,12 +270,15 @@ test('Intel Mac visitors get explicit compatible architecture choices', async ({
       body: JSON.stringify([{ tag_name: 'v0.1.2', html_url: 'https://example.test/release', assets: [
         { name: 'release-doctor-v0.1.2-darwin-aarch64.pkg', browser_download_url: 'https://example.test/arm.pkg' },
         { name: 'release-doctor-v0.1.2-darwin-aarch64.tar.gz', browser_download_url: 'https://example.test/arm.tar.gz' },
-        { name: 'release-doctor-v0.1.2-darwin-x86_64.tar.gz', browser_download_url: 'https://example.test/intel.tar.gz' }
+        { name: 'release-doctor-v0.1.2-darwin-x86_64.tar.gz', browser_download_url: 'https://example.test/intel.tar.gz' },
+        { name: 'SHA256SUMS', browser_download_url: 'https://example.test/sums' }
       ] }])
     });
   });
   await page.goto('/');
   await expect(page.getByText('Choose your Mac:')).toBeVisible();
+  await expect(page.locator('#download-state .button').first()).toHaveText('Download for Intel Mac');
+  await expect(page.getByRole('link', { name: 'Download for Intel Mac' })).toHaveClass(/primary/);
   await expect(page.getByRole('link', { name: 'Download for Apple silicon' })).toHaveAttribute('href', 'https://example.test/arm.tar.gz');
   await expect(page.getByRole('link', { name: 'Download for Intel Mac' })).toHaveAttribute('href', 'https://example.test/intel.tar.gz');
   await expect(page.getByRole('link', { name: /aarch64\.pkg/ })).toHaveCount(0);

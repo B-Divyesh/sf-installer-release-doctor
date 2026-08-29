@@ -116,27 +116,9 @@ async function loadRelease() {
       if (!release) throw new Error('not published');
       localStorage.setItem('release-cache:v2', JSON.stringify({ saved: Date.now(), data: release }));
     }
-    const assets = release.assets as { name: string; browser_download_url: string }[];
-    const hasChecksums = assets.some(function (item) { return item.name === 'SHA256SUMS'; });
-    const isMac = /Mac/i.test(navigator.userAgent);
-    const hint = /Windows/i.test(navigator.userAgent) ? 'windows-x86_64.zip' : isMac ? 'darwin' : 'linux-x86_64.tar.gz';
-    let matches = assets.filter(function (item) { return item.name.toLowerCase().includes(hint); });
-    if (isMac) {
-      const architecture = /(?:arm64|aarch64)/i.test(navigator.userAgent) ? 'aarch64' : 'x86_64';
-      matches = matches.filter(function (item) { return item.name.endsWith('.tar.gz'); }).sort(function (left, right) {
-        return Number(right.name.includes(architecture)) - Number(left.name.includes(architecture));
-      });
-    }
-    if (matches.length && hasChecksums) {
-      const links = matches.map(function (asset, index) {
-        const label = isMac ? (asset.name.includes('aarch64') ? 'Download for Apple silicon' : 'Download for Intel Mac') : 'Download ' + asset.name;
-        return '<a class="button ' + (index === 0 ? 'primary' : 'secondary') + '" href="' + asset.browser_download_url + '">' + label + '</a>';
-      }).join('');
-      element.innerHTML = '<div class="download-actions">' + links + '</div><p>Published ' + release.tag_name + '. SHA256SUMS is included.</p>';
-    } else {
-      element.innerHTML = '<p>Build ' + release.tag_name + ' is published. Choose an asset on the <a href="' + release.html_url + '">GitHub Release page.</a></p>';
-    }
-    const choices = downloadChoices(release.assets as ReleaseAsset[], navigator.userAgent);
+    const assets = release.assets as ReleaseAsset[];
+    const hasChecksums = assets.some(function (asset) { return asset.name === 'SHA256SUMS'; });
+    const choices = hasChecksums ? downloadChoices(assets, navigator.userAgent) : [];
     const downloads = choices.map(function (choice) {
       return '<a class="button ' + (choice.primary ? 'primary' : 'secondary') + '" href="' + choice.asset.browser_download_url + '">' + choice.label + '</a>';
     }).join('');
