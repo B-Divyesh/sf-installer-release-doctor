@@ -47,7 +47,7 @@ scoop bucket add installer-release-doctor https://github.com/B-Divyesh/sf-instal
 scoop install installer-release-doctor
 ```
 
-A winget manifest for `0.1.2` is ready in [`winget/InstallerReleaseDoctor/0.1.2`](winget/InstallerReleaseDoctor/0.1.2). The owner submits it to `microsoft/winget-pkgs` after release verification.
+A winget manifest for `0.1.3` is ready in [`winget/InstallerReleaseDoctor/0.1.3`](winget/InstallerReleaseDoctor/0.1.3). The owner submits it to `microsoft/winget-pkgs` after release verification.
 
 The release also includes `.deb`, `.rpm`, an unsigned `.pkg`, and portable archives. Check `SHA256SUMS` before installing a downloaded file.
 
