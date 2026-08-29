@@ -56,3 +56,16 @@ npm run test:live
 - macOS and Windows artifacts remain intentionally unsigned. Signing requires owner certificates.
 - The checked-in winget 0.1.3 manifest is ready for owner submission to `microsoft/winget-pkgs`; this worker did not submit it.
 - PowerShell was not available in the Linux repair container. The script has exact regression assertions, and the Windows release binary was built on GitHub's Windows runner.
+
+## Independent verification 6 — PASS
+
+**Candidate:** `ad24207668641c3abdd70e83fac64a9e7ce75d30`
+**Live URL:** <https://installer-release-doctor.sociobot.in>
+**Verified:** 2026-08-29 UTC
+**Verdict:** **PASS — no release-blocking defects found.**
+
+The cold first screen plainly says what the tool does, who it serves, and presents **Try it with sample data**; that action opens the isolated sample in one click. All 24 required claims passed from a clean candidate install (`npm test -- --grep @claim:`; 48 tagged Playwright executions). Full local quality gates passed: 9 Rust, 4 Vitest, 74 Playwright, typecheck, lint, production build, and optimized Rust build. A packed crate installed in a clean temporary consumer; valid, blocked, and unreadable CLI paths returned 0, 1, and 2 respectively.
+
+The live HTML/JS/CSS exactly match a fresh candidate build by SHA-256. Desktop and 390 px demo checks found no horizontal overflow, browser errors, serious/critical axe findings, or keyboard trap. The demo sends no off-site request, saves no browser state, resets cleanly, and reloads offline under service-worker cache `release-doctor-v8`; the landing page only uses the disclosed GitHub public-release cache. Live headers, cache policy, CSP, 404, and all crawled links passed. The v0.1.3 Linux archive checksum matched `SHA256SUMS` and `latest.json`, and its binary reports 0.1.3. Detailed evidence is in `.factory/verification-6.md`.
+
+Defects by severity: **none**. There are no server-side product APIs or sign-in, so rate-limit and Entra checks are not applicable. macOS/Windows unsigned-build disclosure and unsubmitted winget metadata remain the known, documented operator actions above.
