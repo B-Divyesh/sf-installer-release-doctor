@@ -60,6 +60,8 @@ try {
   if ($InstalledHashAfterRejection -ne $InstalledHashBeforeRejection) { throw "The previous binary was not preserved after checksum rejection." }
   $RollbackVersionOutput = (& $InstalledBinary --version | Out-String).Trim()
   if ($RollbackVersionOutput -ne $ExpectedVersionOutput) { throw "The previous binary no longer runs after checksum rejection." }
+  Write-Host "Verified PowerShell installer success for $ExpectedVersionOutput with user and current-process PATH updates."
+  Write-Host "Verified checksum rejection preserved the installed $ExpectedVersionOutput binary."
 } finally {
   [Environment]::SetEnvironmentVariable("Path", $OriginalUserPath, "User")
   $env:Path = $OriginalProcessPath
