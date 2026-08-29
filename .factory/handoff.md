@@ -25,6 +25,7 @@ Every exact command in `.factory/claims.json` is `npm test -- --grep @claim:<id>
 - At final repair `00bef62`, `npm run test:claims:clean` passed from another clean clone, including Rust unit/integration, Vitest, production build, and desktop + 390 px sample-claim browser runs.
 - `npm ci` passed: 59 packages, 0 vulnerabilities.
 - `npm run typecheck`, `npm run lint`, `npm test`, and `npm run build` passed. The full test suite ran 11 Rust unit tests, 4 Rust CLI integration tests, 4 Vitest tests, and 80 desktop/390 px Playwright executions.
+- GitHub Actions run `33252419395` passed its Linux test job (including the new clean-clone regression), Windows installer job, and macOS signature job: <https://github.com/B-Divyesh/sf-installer-release-doctor/actions/runs/33252419395>.
 - `cargo build --release --locked` and `cargo package --locked --allow-dirty` passed; the crate contains 16 files (82.1 KiB unpacked, 22.2 KiB compressed).
 - A consumer installed the packaged crate with `cargo install --path target/package/installer-release-doctor-0.1.4 --root <temp>`; `--version` returned `0.1.4`, `demo --format json` found the provenance blocker and exited 1, and missing input exited 2 with the corrective message.
 - The full Playwright suite covers desktop and 390 px mobile, keyboard entry/reset and the skip link, touch targets, routes/metadata/404, Axe scans, privacy storage/request boundaries, offline demo reload, service-worker update, reduced motion, release and installer claims, and response configuration. Axe found no serious or critical issues.
