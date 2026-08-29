@@ -86,13 +86,13 @@ Set `checks.signature_public_key` to the base64 form of a 32-byte Ed25519 public
 {"algorithm":"ed25519-sha256","signature":"BASE64_SIGNATURE"}
 ```
 
-The signature covers the artifact's 32 raw SHA-256 bytes. This keeps verification fast for large installers. The checker rejects missing keys, invalid JSON, unsupported algorithms, malformed signatures, and signature mismatches.
+The signature covers the artifact's 32 raw SHA-256 bytes. The checker rejects evidence it cannot parse or bind to that digest.
 
-CycloneDX SBOMs must include the artifact SHA-256 in `metadata.component.hashes`. SPDX SBOMs must include it in a checksum entry. In-toto JSONL provenance must name the artifact SHA-256 in a statement subject. Direct statements and DSSE envelopes are accepted.
+CycloneDX SBOMs must include the artifact SHA-256 in `metadata.component.hashes`. SPDX SBOMs use a checksum entry. In-toto provenance names the digest in a statement subject.
 
 ## What v0.1.2 checks
 
-- ZIP, tar, and tar.gz paths, links, individual entry size, and total expanded size.
+- ZIP, tar, and tar.gz entries that stay within the archive root.
 - Expected binary and companion files inside an archive.
 - Ed25519 signatures over the artifact digest.
 - CycloneDX or SPDX SBOM structure and artifact binding.
@@ -129,7 +129,7 @@ See [`.factory/claims.json`](.factory/claims.json) for all claims and sandbox st
 
 ## Release
 
-Pushing a `v*` tag runs [the release workflow](.github/workflows/release.yml). GitHub-hosted runners build Linux, macOS, and Windows assets. The workflow publishes checksums, `latest.json`, package installers, portable archives, and a Homebrew formula. Native package tools reject a release when its Debian or RPM version metadata is wrong.
+Pushing a `v*` tag runs [the release workflow](.github/workflows/release.yml). GitHub-hosted runners build Linux, macOS, and Windows assets. The workflow validates native package metadata and publishes checksums, `latest.json`, package installers, portable archives, and a Homebrew formula.
 
 The factory owns publishing credentials. Do not publish registry packages from a development machine.
 

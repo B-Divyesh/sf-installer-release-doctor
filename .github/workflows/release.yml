@@ -20,6 +20,13 @@ jobs:
         with: {node-version: 22, cache: npm}
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      - name: Verify release version matches the source
+        env:
+          RELEASE_VERSION: ${{ github.event.inputs.version || github.ref_name }}
+        run: |
+          RELEASE_VERSION=${RELEASE_VERSION#v}
+          SOURCE_VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
+          test "$SOURCE_VERSION" = "$RELEASE_VERSION"
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
@@ -49,12 +56,12 @@ jobs:
           tar -C release/x64 -czf release/release-doctor-v$VERSION-linux-x86_64.tar.gz release-doctor
           VERSION=$VERSION "$(go env GOPATH)/bin/nfpm" package --config nfpm.yaml --packager deb --target release/release-doctor-$VERSION-amd64.deb
           VERSION=$VERSION "$(go env GOPATH)/bin/nfpm" package --config nfpm.yaml --packager rpm --target release/release-doctor-$VERSION.x86_64.rpm
-          test "$(dpkg-deb -f release/release-doctor-$VERSION-amd64.deb Package)" = release-doctor
+          test "$(dpkg-deb -f release/release-doctor-$VERSION-amd64.deb Package)" = "release-doctor"
           test "$(dpkg-deb -f release/release-doctor-$VERSION-amd64.deb Version)" = "$VERSION"
-          test "$(dpkg-deb -f release/release-doctor-$VERSION-amd64.deb Architecture)" = amd64
-          test "$(rpm -qp --qf '%{NAME}\n' release/release-doctor-$VERSION.x86_64.rpm)" = release-doctor
-          test "$(rpm -qp --qf '%{VERSION}\n' release/release-doctor-$VERSION.x86_64.rpm)" = "$VERSION"
-          test "$(rpm -qp --qf '%{ARCH}\n' release/release-doctor-$VERSION.x86_64.rpm)" = x86_64
+          test "$(dpkg-deb -f release/release-doctor-$VERSION-amd64.deb Architecture)" = "amd64"
+          test "$(rpm -qp --queryformat '%{NAME}' release/release-doctor-$VERSION.x86_64.rpm)" = "release-doctor"
+          test "$(rpm -qp --queryformat '%{VERSION}' release/release-doctor-$VERSION.x86_64.rpm)" = "$VERSION"
+          test "$(rpm -qp --queryformat '%{ARCH}' release/release-doctor-$VERSION.x86_64.rpm)" = "x86_64"
           rm -rf release/x64
       - uses: actions/upload-artifact@v4
         with: {name: linux-assets, path: release/*}
@@ -117,7 +124,7 @@ jobs:
           mkdir release
           find gathered -type f -exec cp {} release/ \;
           (cd release && sha256sum release-doctor-* > SHA256SUMS)
-          node scripts/make-latest.mjs "$VERSION" "$REPOSITORY" release
+          node scripts/make-latest.mjs "$VERSION" "$REPOSITORY" release "$GITHUB_SHA"
           SHA_ARM=$(awk '/darwin-aarch64.tar.gz/{print $1}' release/SHA256SUMS)
           SHA_X64=$(awk '/darwin-x86_64.tar.gz/{print $1}' release/SHA256SUMS)
           sed -e "s/@VERSION@/$VERSION/g" -e "s/@SHA_ARM@/$SHA_ARM/g" -e "s/@SHA_X64@/$SHA_X64/g" packaging/homebrew/installer-release-doctor.rb.in > release/installer-release-doctor.rb

@@ -1,6 +1,7 @@
 import './styles.css';
 import './a11y.css';
 import { channelStatus, sampleReport, type Finding } from './report';
+import { downloadChoices, type ReleaseAsset } from './release';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
 const titles: Record<string, string> = {
@@ -135,6 +136,12 @@ async function loadRelease() {
     } else {
       element.innerHTML = '<p>Build ' + release.tag_name + ' is published. Choose an asset on the <a href="' + release.html_url + '">GitHub Release page.</a></p>';
     }
+    const choices = downloadChoices(release.assets as ReleaseAsset[], navigator.userAgent);
+    const downloads = choices.map(function (choice) {
+      return '<a class="button ' + (choice.primary ? 'primary' : 'secondary') + '" href="' + choice.asset.browser_download_url + '">' + choice.label + '</a>';
+    }).join('');
+    const macLabel = /Mac/i.test(navigator.userAgent) && choices.length ? '<p><strong>Choose your Mac:</strong></p>' : '';
+    element.innerHTML = choices.length ? macLabel + '<div class="download-choices">' + downloads + '</div><p>Published ' + release.tag_name + '. SHA256SUMS is included.</p>' : '<p>Build ' + release.tag_name + ' is published. Choose an asset on the <a href="' + release.html_url + '">GitHub Release page.</a></p>';
   } catch {
     element.innerHTML = '<p><strong>Downloads are being published.</strong><br>Use the install command, or check the <a href="https://github.com/B-Divyesh/sf-installer-release-doctor/releases">GitHub Releases page.</a></p>';
   }

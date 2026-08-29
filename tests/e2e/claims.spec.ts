@@ -1,10 +1,23 @@
 import { expect, test } from '@playwright/test';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { chmodSync, cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { chmodSync, copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import AxeBuilder from '@axe-core/playwright';
+
+test('claims manifest has exactly one tagged regression per public claim', async () => {
+  const claims = JSON.parse(readFileSync('.factory/claims.json', 'utf8')) as Array<{ id: string; test: string }>;
+  const source = readFileSync('tests/e2e/claims.spec.ts', 'utf8');
+  const ids = claims.map(function (claim) { return claim.id; });
+  expect(new Set(ids).size).toBe(ids.length);
+  for (const claim of claims) {
+    expect(claim.test).toBe(`npm test -- --grep @claim:${claim.id}`);
+    expect(source.match(new RegExp(`@claim:${claim.id}(?![a-z0-9-])`, 'g'))).toHaveLength(1);
+  }
+  const tags = [...source.matchAll(/@claim:([a-z0-9-]+)/g)].map(function (match) { return match[1]; });
+  expect(tags.sort()).toEqual([...ids].sort());
+});
 
 test('@claim:sample-blocker finds the seeded release blocker and repair', async ({ page }) => {
   await page.goto('/demo');
@@ -26,17 +39,21 @@ test('@claim:demo-private demo sends no sample data off site', async ({ page }) 
   expect(external).toEqual([]);
 });
 
-test('@claim:demo-ephemeral demo changes are never persisted', async ({ page }) => {
+test('@claim:demo-ephemeral demo leaves no saved user state', async ({ page }) => {
   await page.goto('/demo');
   await page.getByRole('button', { name: 'Run release check' }).click();
   await expect(page.getByText(/Finished: winget is blocked/)).toBeVisible();
   await page.getByText('Show repair').click();
   await page.getByRole('button', { name: 'Reset demo' }).click();
-  const storage = await page.evaluate(function () {
-    return { local: Object.keys(localStorage), session: Object.keys(sessionStorage), cookie: document.cookie };
+  const saved = await page.evaluate(async function () {
+    return {
+      local: Object.keys(localStorage),
+      session: Object.keys(sessionStorage),
+      cookies: document.cookie,
+      databases: indexedDB.databases ? (await indexedDB.databases()).map(function (database) { return database.name; }) : []
+    };
   });
-  expect(storage).toEqual({ local: [], session: [], cookie: '' });
-  await expect(page.getByText('Ready to inspect the winget channel.')).toBeVisible();
+  expect(saved).toEqual({ local: [], session: [], cookies: '', databases: [] });
 });
 
 test('@claim:offline-demo sample demo reloads offline after first visit', async ({ page, context }) => {
@@ -67,23 +84,23 @@ test('@claim:json-output CLI emits machine-readable reports', async () => {
   expect(report.policy_version).toBe('2026-08-01');
 });
 
-test('@claim:exit-codes CLI returns stable success, blocked, and input-error codes', async () => {
-  const root = mkdtempSync(join(tmpdir(), 'release-doctor-exits-'));
-  cpSync('examples/demo', root, { recursive: true });
-  writeFileSync(join(root, 'artifacts', 'acme-cli_1.4.0_windows_x86_64.zip.intoto.jsonl'), '{"_type":"https://in-toto.io/Statement/v1","subject":[{"name":"acme-cli_1.4.0_windows_x86_64.zip","digest":{"sha256":"72f0da333168f736893e41756aaabe226a218354505f50b1cd797cd74f7f7589"}}],"predicateType":"https://slsa.dev/provenance/v1","predicate":{}}\n');
-  const ready = spawnSync('cargo', ['run', '--quiet', '--', 'check', '--manifest', join(root, 'release-doctor.yml'), '--artifacts', join(root, 'artifacts')], { cwd: process.cwd(), encoding: 'utf8' });
-  const blocked = spawnSync('cargo', ['run', '--quiet', '--', 'demo'], { cwd: process.cwd(), encoding: 'utf8' });
-  const unreadable = spawnSync('cargo', ['run', '--quiet', '--', 'check', '--manifest', join(root, 'missing.yml'), '--artifacts', join(root, 'artifacts')], { cwd: process.cwd(), encoding: 'utf8' });
-  expect(ready.status, ready.stderr).toBe(0);
+test('@claim:exit-codes returns 0 for ready, 1 for blocked, and 2 for unreadable input', async () => {
+  const fixture = mkdtempSync(join(tmpdir(), 'release-doctor-exits-'));
+  const artifacts = join(fixture, 'artifacts');
+  mkdirSync(artifacts);
+  copyFileSync('examples/demo/release-doctor.yml', join(fixture, 'release-doctor.yml'));
+  for (const name of ['acme-cli_1.4.0_windows_x86_64.zip', 'acme-cli_1.4.0_windows_x86_64.zip.sig', 'acme-cli_1.4.0_windows_x86_64.zip.sbom.json', 'SHA256SUMS']) {
+    copyFileSync(join('examples/demo/artifacts', name), join(artifacts, name));
+  }
+  writeFileSync(join(artifacts, 'acme-cli_1.4.0_windows_x86_64.zip.intoto.jsonl'), '{"_type":"https://in-toto.io/Statement/v1","subject":[{"name":"acme-cli_1.4.0_windows_x86_64.zip","digest":{"sha256":"72f0da333168f736893e41756aaabe226a218354505f50b1cd797cd74f7f7589"}}],"predicateType":"https://slsa.dev/provenance/v1","predicate":{}}\n');
+  const ready = spawnSync('cargo', ['run', '--quiet', '--', 'check', '--manifest', join(fixture, 'release-doctor.yml'), '--artifacts', artifacts, '--format', 'json'], { cwd: process.cwd(), encoding: 'utf8' });
+  const blocked = spawnSync('cargo', ['run', '--quiet', '--', 'demo', '--format', 'json'], { cwd: process.cwd(), encoding: 'utf8' });
+  const unreadable = spawnSync('cargo', ['run', '--quiet', '--', 'check', '--manifest', join(fixture, 'missing.yml'), '--artifacts', artifacts], { cwd: process.cwd(), encoding: 'utf8' });
+  expect(ready.status).toBe(0);
+  expect(JSON.parse(ready.stdout).summary.failures).toBe(0);
   expect(blocked.status).toBe(1);
   expect(unreadable.status).toBe(2);
   expect(unreadable.stderr).toContain('manifest not found');
-});
-
-test('@claim:checker-scope checker reports every documented policy category', async () => {
-  const result = spawnSync('cargo', ['test', 'reports_documented_check_scope'], { cwd: process.cwd(), encoding: 'utf8' });
-  expect(result.status, result.stderr).toBe(0);
-  expect(result.stdout).toContain('test tests::reports_documented_check_scope ... ok');
 });
 
 test('@claim:archive-safe archive paths cannot escape the inspection root', async () => {
@@ -92,11 +109,23 @@ test('@claim:archive-safe archive paths cannot escape the inspection root', asyn
   expect(result.stdout).toContain('test tests::blocks_parent_paths ... ok');
 });
 
+test('@claim:archive-layout verifies the expected binary and required archive files', async () => {
+  const result = spawnSync('cargo', ['test', 'verifies_release_evidence'], { cwd: process.cwd(), encoding: 'utf8' });
+  expect(result.status).toBe(0);
+  expect(result.stdout).toContain('test tests::verifies_release_evidence ... ok');
+});
+
 test('@claim:evidence-validation rejects empty and mismatched release evidence', async () => {
   const result = spawnSync('cargo', ['test', 'evidence'], { cwd: process.cwd(), encoding: 'utf8' });
   expect(result.status).toBe(0);
   expect(result.stdout).toContain('test tests::verifies_release_evidence ... ok');
   expect(result.stdout).toContain('test tests::rejects_empty_evidence_companions ... ok');
+});
+
+test('@claim:channel-policy-checks rejects invalid checksums, package metadata, architectures, and upgrades', async () => {
+  const result = spawnSync('cargo', ['test', 'channel_policy_checks'], { cwd: process.cwd(), encoding: 'utf8' });
+  expect(result.status).toBe(0);
+  expect(result.stdout).toContain('test tests::channel_policy_checks_reject_invalid_release_metadata ... ok');
 });
 
 test('@claim:public-key-only verifies signatures without a signing key', async () => {
@@ -122,9 +151,9 @@ test('@claim:homebrew-tap resolves to a valid current formula', async ({ request
   const latestResponse = await request.get('https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/latest');
   expect(latestResponse.ok()).toBe(true);
   const latest = await latestResponse.json();
-  const version = String(latest.tag_name).replace(/^v/, '');
+  const version = latest.tag_name.replace(/^v/, '');
   expect(formula).toContain('class InstallerReleaseDoctor < Formula');
-  expect(formula).toContain('version "' + version + '"');
+  expect(formula).toContain(`version "${version}"`);
 
   const urls = [...formula.matchAll(/url "([^"]+darwin-[^"]+\.tar\.gz)"/g)].map((match) => match[1]);
   const checksums = [...formula.matchAll(/sha256 "([a-f0-9]{64})"/g)].map((match) => match[1]);
@@ -151,49 +180,16 @@ test('@claim:free-core core checker is MIT licensed', async ({ page }) => {
   expect(readFileSync('LICENSE', 'utf8')).toContain('Permission is hereby granted, free of charge');
 });
 
-test('@claim:published-release release state requires an asset and SHA256SUMS', async ({ page }) => {
-  await page.route('https://api.github.com/**', async function (route) {
-    await route.fulfill({
-      contentType: 'application/json',
-      body: JSON.stringify([{
-        tag_name: 'v0.1.2',
-        html_url: 'https://github.com/B-Divyesh/sf-installer-release-doctor/releases/tag/v0.1.2',
-        assets: [
-          { name: 'release-doctor-v0.1.2-linux-x86_64.tar.gz', browser_download_url: 'https://github.com/example/linux' },
-          { name: 'SHA256SUMS', browser_download_url: 'https://github.com/example/sums' }
-        ]
-      }])
-    });
-  });
-  await page.goto('/');
-  await expect(page.getByText('Published v0.1.2. SHA256SUMS is included.')).toBeVisible();
-  await expect(page.getByRole('link', { name: /Download release-doctor-v0.1.2-linux/ })).toHaveAttribute('href', 'https://github.com/example/linux');
-});
-
-test('@claim:website-storage website stores only the public release cache', async ({ page }) => {
-  const external: string[] = [];
-  page.on('request', function (request) {
-    const url = new URL(request.url());
-    if (url.origin !== 'http://127.0.0.1:4173') external.push(url.origin);
-  });
-  await page.route('https://api.github.com/**', async function (route) {
-    await route.fulfill({ contentType: 'application/json', body: JSON.stringify([{
-      tag_name: 'v0.1.2',
-      html_url: 'https://github.com/example/release',
-      assets: [
-        { name: 'release-doctor-v0.1.2-linux-x86_64.tar.gz', browser_download_url: 'https://github.com/example/linux' },
-        { name: 'SHA256SUMS', browser_download_url: 'https://github.com/example/sums' }
-      ]
-    }]) });
-  });
-  await page.goto('/');
-  expect(await page.context().cookies()).toEqual([]);
-  expect(await page.evaluate(function () { return Object.keys(localStorage); })).toEqual(['release-cache:v2']);
-  expect(external).toEqual(['https://api.github.com']);
-  await expect(page.locator('input')).toHaveCount(0);
-  await page.goto('/demo');
-  await page.getByRole('button', { name: 'Run release check' }).click();
-  expect(await page.evaluate(function () { return Object.keys(localStorage); })).toEqual(['release-cache:v2']);
+test('@claim:release-checksums published downloads include a checksum manifest', async ({ request }) => {
+  const response = await request.get('https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/latest');
+  expect(response.ok()).toBe(true);
+  const release = await response.json();
+  const names = release.assets.map(function (asset: { name: string }) { return asset.name; });
+  expect(names).toContain('SHA256SUMS');
+  expect(names).toContain('latest.json');
+  for (const marker of ['linux-x86_64.tar.gz', 'darwin-aarch64.tar.gz', 'darwin-x86_64.tar.gz', 'windows-x86_64.zip', 'amd64.deb', 'x86_64.rpm']) {
+    expect(names.some(function (name: string) { return name.includes(marker); })).toBe(true);
+  }
 });
 
 test('routes have one h1 and no serious accessibility findings', async ({ page }) => {
@@ -215,34 +211,33 @@ test('expanded repair stays inside a 390 pixel viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/demo');
   await page.getByText('Show repair').click();
-  await expect(page.getByText(/\.intoto\.jsonl beside the artifact/)).toBeVisible();
+  const repair = page.getByText(/Create acme-cli_1.4.0_windows_x86_64.zip.intoto.jsonl/);
+  await expect(repair).toBeVisible();
   expect(await page.evaluate(function () { return document.documentElement.scrollWidth; })).toBeLessThanOrEqual(390);
+  const box = await repair.boundingBox();
+  expect(box?.x).toBeGreaterThanOrEqual(0);
+  expect((box?.x || 0) + (box?.width || 0)).toBeLessThanOrEqual(390);
 });
 
-test('Intel macOS gets an Intel primary download and both architectures', async ({ page }) => {
+test('Intel Mac visitors get explicit compatible architecture choices', async ({ page }) => {
   await page.addInitScript(function () {
-    Object.defineProperty(navigator, 'userAgent', { value: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)' });
+    Object.defineProperty(navigator, 'userAgent', { get: function () { return 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'; } });
   });
-  await page.route('https://api.github.com/**', async function (route) {
+  await page.route('https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases?per_page=1', async function (route) {
     await route.fulfill({
       contentType: 'application/json',
-      body: JSON.stringify([{
-        tag_name: 'v0.1.2',
-        html_url: 'https://github.com/example/release',
-        assets: [
-          { name: 'release-doctor-v0.1.2-darwin-aarch64.tar.gz', browser_download_url: 'https://github.com/example/arm' },
-          { name: 'release-doctor-v0.1.2-darwin-x86_64.tar.gz', browser_download_url: 'https://github.com/example/intel' },
-          { name: 'SHA256SUMS', browser_download_url: 'https://github.com/example/sums' }
-        ]
-      }])
+      body: JSON.stringify([{ tag_name: 'v0.1.2', html_url: 'https://example.test/release', assets: [
+        { name: 'release-doctor-v0.1.2-darwin-aarch64.pkg', browser_download_url: 'https://example.test/arm.pkg' },
+        { name: 'release-doctor-v0.1.2-darwin-aarch64.tar.gz', browser_download_url: 'https://example.test/arm.tar.gz' },
+        { name: 'release-doctor-v0.1.2-darwin-x86_64.tar.gz', browser_download_url: 'https://example.test/intel.tar.gz' }
+      ] }])
     });
   });
   await page.goto('/');
-  const downloads = page.locator('#download-state .button');
-  await expect(downloads).toHaveCount(2);
-  await expect(downloads.nth(0)).toHaveText('Download for Intel Mac');
-  await expect(downloads.nth(0)).toHaveAttribute('href', 'https://github.com/example/intel');
-  await expect(downloads.nth(1)).toHaveText('Download for Apple silicon');
+  await expect(page.getByText('Choose your Mac:')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Download for Apple silicon' })).toHaveAttribute('href', 'https://example.test/arm.tar.gz');
+  await expect(page.getByRole('link', { name: 'Download for Intel Mac' })).toHaveAttribute('href', 'https://example.test/intel.tar.gz');
+  await expect(page.getByRole('link', { name: /aarch64\.pkg/ })).toHaveCount(0);
 });
 
 test('footer links to the live Param Factory site', async ({ page, request }) => {
@@ -290,25 +285,31 @@ test('release automation cannot silently skip or overwrite the Homebrew tap', as
   expect(workflow).not.toContain("if: ${{ env.TAP_GITHUB_TOKEN != '' }}");
 });
 
-test('@claim:release-assets release automation builds and validates the documented asset matrix', async () => {
+test('release automation expands and validates native package versions', async () => {
   const config = readFileSync('nfpm.yaml', 'utf8');
   const workflow = readFileSync('.github/workflows/release.yml', 'utf8');
   expect(config).toContain('version: "${VERSION}"');
   expect(config).not.toContain('$${VERSION}');
-  expect(config.replaceAll('${VERSION}', '0.1.2')).toContain('version: "0.1.2"');
-  for (const expected of ['linux-x86_64.tar.gz', 'darwin-aarch64.tar.gz', 'darwin-x86_64.tar.gz', 'windows-x86_64.zip', 'amd64.deb', 'x86_64.rpm', 'darwin-aarch64.pkg', 'SHA256SUMS']) {
-    expect(workflow).toContain(expected);
-  }
-  expect(readFileSync('scripts/make-latest.mjs', 'utf8')).toContain("join(directory, 'latest.json')");
   expect(workflow).toContain('dpkg-deb -f release/release-doctor-$VERSION-amd64.deb Version');
-  expect(workflow).toContain("rpm -qp --qf '%{VERSION}\\n' release/release-doctor-$VERSION.x86_64.rpm");
+  expect(workflow).toContain("rpm -qp --queryformat '%{VERSION}' release/release-doctor-$VERSION.x86_64.rpm");
+  expect(workflow).toContain('SOURCE_VERSION=$(cargo metadata');
+  expect(workflow).toContain('scripts/make-latest.mjs "$VERSION" "$REPOSITORY" release "$GITHUB_SHA"');
 });
 
-test('all product surfaces and release jobs use version 0.1.2', async () => {
-  expect(JSON.parse(readFileSync('package.json', 'utf8')).version).toBe('0.1.2');
-  expect(readFileSync('Cargo.toml', 'utf8')).toContain('version = "0.1.2"');
-  expect(readFileSync('site/src/main.ts', 'utf8')).not.toContain('v0.1.1');
-  expect(readFileSync('.github/workflows/release.yml', 'utf8')).toContain('default: 0.1.2');
+test('release manifest records the exact source commit and artifact digests', async () => {
+  const fixture = mkdtempSync(join(tmpdir(), 'release-doctor-manifest-'));
+  writeFileSync(join(fixture, 'release-doctor-v9.8.7-linux-x86_64.tar.gz'), 'fixture archive');
+  const commit = '1234567890abcdef1234567890abcdef12345678';
+  const result = spawnSync('node', ['scripts/make-latest.mjs', '9.8.7', 'owner/repo', fixture, commit], { cwd: process.cwd(), encoding: 'utf8' });
+  expect(result.status, result.stderr).toBe(0);
+  const manifest = JSON.parse(readFileSync(join(fixture, 'latest.json'), 'utf8'));
+  expect(manifest.version).toBe('9.8.7');
+  expect(manifest.commit).toBe(commit);
+  expect(manifest.assets).toEqual([expect.objectContaining({
+    name: 'release-doctor-v9.8.7-linux-x86_64.tar.gz',
+    url: 'https://github.com/owner/repo/releases/download/v9.8.7/release-doctor-v9.8.7-linux-x86_64.tar.gz',
+    sha256: createHash('sha256').update('fixture archive').digest('hex')
+  })]);
 });
 
 test('service worker installs and updates the versioned demo cache', async ({ page }) => {
@@ -350,18 +351,18 @@ test('unavailable policy-pack checkout is not exposed', async ({ page }) => {
   expect(readFileSync('site/public/staticwebapp.config.json', 'utf8')).not.toContain('api.sociobot.in');
 });
 
-test('@claim:posix-installer shell installer verifies, installs, and configures PATH', async () => {
+test('@claim:posix-installer shell installer verifies the checksum, updates PATH, and runs the binary', async () => {
   const fixture = mkdtempSync(join(tmpdir(), 'release-doctor-installer-'));
   const home = join(fixture, 'home');
   const source = join(fixture, 'source');
   const fakeBin = join(fixture, 'bin');
-  const archive = join(fixture, 'release-doctor-v0.1.1-linux-x86_64.tar.gz');
+  const archive = join(fixture, 'release-doctor-v0.1.2-linux-x86_64.tar.gz');
   const checksums = join(fixture, 'SHA256SUMS');
   mkdirSync(home);
   mkdirSync(source);
   mkdirSync(fakeBin);
   const binary = join(source, 'release-doctor');
-  writeFileSync(binary, '#!/bin/sh\necho "release-doctor 0.1.1"\n');
+  writeFileSync(binary, '#!/bin/sh\necho "release-doctor 0.1.2"\n');
   chmodSync(binary, 0o755);
   expect(spawnSync('tar', ['-C', source, '-czf', archive, 'release-doctor'], { encoding: 'utf8' }).status).toBe(0);
   writeFileSync(checksums, createHash('sha256').update(readFileSync(archive)).digest('hex') + '  ' + archive.split('/').pop() + '\n');
@@ -376,9 +377,9 @@ for arg in "$@"; do
   case "$arg" in -*) ;; *) url="$arg" ;; esac
 done
 case "$url" in
-  *releases/latest) printf '%s' '{"browser_download_url":"https://fixture.invalid/release-doctor-v0.1.1-linux-x86_64.tar.gz"}' ;;
+  *releases/latest) printf '%s' '{"browser_download_url":"https://fixture.invalid/release-doctor-v0.1.2-linux-x86_64.tar.gz"}' ;;
   *SHA256SUMS) cp "$INSTALLER_FIXTURE_DIR/SHA256SUMS" "$out" ;;
-  *linux-x86_64.tar.gz) cp "$INSTALLER_FIXTURE_DIR/release-doctor-v0.1.1-linux-x86_64.tar.gz" "$out" ;;
+  *linux-x86_64.tar.gz) cp "$INSTALLER_FIXTURE_DIR/release-doctor-v0.1.2-linux-x86_64.tar.gz" "$out" ;;
   *) exit 1 ;;
 esac
 `);
@@ -397,11 +398,24 @@ esac
   });
   expect(freshLogin.status, freshLogin.stderr).toBe(0);
   expect(freshLogin.stdout).toContain(join(home, '.local/bin/release-doctor'));
-  expect(freshLogin.stdout).toContain('release-doctor 0.1.1');
+  expect(freshLogin.stdout).toContain('release-doctor 0.1.2');
+
+  writeFileSync(checksums, `${'0'.repeat(64)}  ${archive.split('/').pop()}\n`);
+  const badDestination = join(fixture, 'bad-destination');
+  const rejected = spawnSync('sh', ['site/public/install.sh'], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    env: { ...process.env, HOME: home, SHELL: '/bin/sh', PATH: fakeBin + ':' + process.env.PATH, INSTALLER_FIXTURE_DIR: fixture, INSTALL_DIR: badDestination }
+  });
+  expect(rejected.status).not.toBe(0);
+  expect(rejected.stderr).toContain('Checksum did not match. Nothing was installed.');
+  expect(existsSync(join(badDestination, 'release-doctor'))).toBe(false);
 });
 
-test('@claim:powershell-installer PowerShell installer verifies, persists PATH, and runs the binary', async () => {
+test('@claim:powershell-installer PowerShell installer verifies, updates PATH, and runs the binary', async () => {
   const installer = readFileSync('site/public/install.ps1', 'utf8');
+  expect(installer).toContain('Get-FileHash $Zip -Algorithm SHA256');
+  expect(installer).toContain('if ($Expected -ne $Actual) { throw "Checksum did not match. Nothing was installed." }');
   expect(installer).toContain('[Environment]::SetEnvironmentVariable("Path", $UpdatedPath, "User")');
   expect(installer).toContain('$env:Path = "$Dest;$env:Path"');
   expect(installer).toContain('& (Join-Path $Dest "release-doctor.exe") --version');

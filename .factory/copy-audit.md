@@ -1,8 +1,8 @@
 # Landing-page copy audit
 
-Checked August 29, 2026 against the rendered 0.1.2 landing page. Counts treat hyphenated names and version strings as one word. Dynamic success and recovery states are included. No sentence exceeds 22 words. No banned word appears.
+Checked August 29, 2026 against the current landing-page source, including every release-loading state. Counts treat hyphenated terms as one word. No sentence exceeds 22 words. No banned word appears.
 
-| Sentence or actionable label | Words | Result |
+| Sentence or standalone line | Words | Result |
 |---|---:|---|
 | Check installer releases before upload | 5 | pass |
 | For CLI authors shipping signed releases across package channels without learning every policy. | 13 | pass |
@@ -35,15 +35,15 @@ Checked August 29, 2026 against the rendered 0.1.2 landing page. Counts treat hy
 | Read the privacy note | 4 | pass |
 | Install the local checker | 4 | pass |
 | Checking published builds… | 3 | pass |
-| Download release-doctor-v0.1.2-linux-x86_64.tar.gz | 2 | pass |
-| Download for Intel Mac | 4 | pass |
+| Choose your Mac: | 3 | pass |
 | Download for Apple silicon | 4 | pass |
-| Published v0.1.2. | 2 | pass |
+| Download for Intel Mac | 4 | pass |
+| Published `<version>`. | 2 | pass |
 | SHA256SUMS is included. | 3 | pass |
+| Build `<version>` is published. | 4 | pass |
+| Choose an asset on the GitHub Release page. | 8 | pass |
 | Downloads are being published. | 4 | pass |
 | Use the install command, or check the GitHub Releases page. | 10 | pass |
-| Build v0.1.2 is published. | 4 | pass |
-| Choose an asset on the GitHub Release page. | 8 | pass |
 | macOS and Windows builds are unsigned in v0.1.2. | 8 | pass |
 | Inspect checksums before installation. | 4 | pass |
 | Use the free checker today | 5 | pass |
