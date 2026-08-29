@@ -1,0 +1,415 @@
+{
+  "commit": "bd548deb21942910c639fb3e2c71ca5153e4235f",
+  "clone": "/tmp/ird-verification-10-clean-CethnV/repo",
+  "nodeModulesPresent": false,
+  "results": [
+    {
+      "id": "sample-blocker",
+      "command": "npm test -- --grep @claim:sample-blocker",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "   Compiling clap v4.6.6",
+        "   Compiling zip v4.6.1",
+        "   Compiling base64 v0.22.1",
+        "   Compiling installer-release-doctor v0.1.4 (/tmp/ird-verification-10-clean-CethnV/repo)",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 43.43s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "demo-private",
+      "command": "npm test -- --grep @claim:demo-private",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "demo-ephemeral",
+      "command": "npm test -- --grep @claim:demo-ephemeral",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "offline-demo",
+      "command": "npm test -- --grep @claim:offline-demo",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "cli-local",
+      "command": "npm test -- --grep @claim:cli-local",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "json-output",
+      "command": "npm test -- --grep @claim:json-output",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "exit-codes",
+      "command": "npm test -- --grep @claim:exit-codes",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "archive-safe",
+      "command": "npm test -- --grep @claim:archive-safe",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "archive-layout",
+      "command": "npm test -- --grep @claim:archive-layout",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "evidence-validation",
+      "command": "npm test -- --grep @claim:evidence-validation",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "channel-policy-checks",
+      "command": "npm test -- --grep @claim:channel-policy-checks",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "public-key-only",
+      "command": "npm test -- --grep @claim:public-key-only",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "read-only-check",
+      "command": "npm test -- --grep @claim:read-only-check",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "homebrew-tap",
+      "command": "npm test -- --grep @claim:homebrew-tap",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "windows-manifests",
+      "command": "npm test -- --grep @claim:windows-manifests",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "posix-installer",
+      "command": "npm test -- --grep @claim:posix-installer",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "powershell-installer",
+      "command": "npm test -- --grep @claim:powershell-installer",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "release-checksums",
+      "command": "npm test -- --grep @claim:release-checksums",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "release-identity",
+      "command": "npm test -- --grep @claim:release-identity",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "unsigned-builds",
+      "command": "npm test -- --grep @claim:unsigned-builds",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "no-checkout",
+      "command": "npm test -- --grep @claim:no-checkout",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "matrix-annotations",
+      "command": "npm test -- --grep @claim:matrix-annotations",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "website-storage",
+      "command": "npm test -- --grep @claim:website-storage",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    },
+    {
+      "id": "free-core",
+      "command": "npm test -- --grep @claim:free-core",
+      "status": 127,
+      "signal": null,
+      "vitestMissing": true,
+      "tail": [
+        "> installer-release-doctor@0.1.4 test:unit",
+        "> vitest run --config site/vitest.config.ts",
+        "",
+        "",
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s",
+        "     Running unittests src/main.rs (target/debug/deps/release_doctor-a104b11a8b4c7c7b)",
+        "     Running tests/cli_claims.rs (target/debug/deps/cli_claims-11488961a1c51695)",
+        "sh: 1: vitest: not found"
+      ]
+    }
+  ]
+}

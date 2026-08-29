@@ -1,0 +1,310 @@
+{
+  "testedAt": "2026-08-29T11:48:52.754Z",
+  "origin": "https://installer-release-doctor.sociobot.in",
+  "runs": [
+    {
+      "name": "desktop",
+      "width": 1366,
+      "height": 900,
+      "status": 200,
+      "headers": {
+        "cache-control": "no-cache",
+        "content-encoding": "br",
+        "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "content-type": "text/html",
+        "date": "Sat, 29 Aug 2026 11:48:52 GMT",
+        "etag": "\"81787882\"",
+        "last-modified": "Sat, 29 Aug 2026 11:11:32 GMT",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=10886400; includeSubDomains; preload",
+        "vary": "Accept-Encoding",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-xss-protection": "1; mode=block"
+      },
+      "semantics": {
+        "title": "Installer Release Doctor — Check installer releases",
+        "lang": "en",
+        "h1": [
+          "Check installer releases before upload"
+        ],
+        "main": 1,
+        "header": 1,
+        "nav": 2,
+        "footer": 1,
+        "overflow": 0
+      },
+      "firstFocus": {
+        "text": "Skip to main content",
+        "tag": "A",
+        "outline": "0px solid rgb(16, 16, 16)",
+        "box": {
+          "x": 8,
+          "y": -65.1953125,
+          "width": 216.65625,
+          "height": 48.796875,
+          "top": -65.1953125,
+          "right": 224.65625,
+          "bottom": -16.3984375,
+          "left": 8
+        }
+      },
+      "actionFocus": {
+        "outline": "0px solid rgb(16, 16, 16)",
+        "box": {
+          "x": 71.296875,
+          "y": 624.8125,
+          "width": 263.5625,
+          "height": 52.796875,
+          "top": 624.8125,
+          "right": 334.859375,
+          "bottom": 677.609375,
+          "left": 71.296875
+        }
+      },
+      "homeAxe": [],
+      "demo": {
+        "url": "https://installer-release-doctor.sociobot.in/?demo=1",
+        "h1": [
+          "Inspect the sample release"
+        ],
+        "banner": "Demo — sample data, nothing is saved\nReset demo\nLeave demo",
+        "blockerVisible": true,
+        "repairVisible": true,
+        "overflow": 0
+      },
+      "demoAxe": [],
+      "storage": {
+        "local": {
+          "release-cache:v2": "{\"saved\":1788004133228,\"data\":{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/378920284\",\"assets_url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/378920284/assets\",\"upload_url\":\"https://uploads.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/378920284/assets{?name,label}\",\"html_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/tag/v0.1.4\",\"id\":378920284,\"author\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"node_id\":\"RE_kwDOUG_W2M4Wld1c\",\"tag_name\":\"v0.1.4\",\"target_commitish\":\"main\",\"name\":\"v0.1.4\",\"draft\":false,\"immutable\":false,\"prerelease\":false,\"created_at\":\"2026-08-29T08:13:06Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"published_at\":\"2026-08-29T08:16:27Z\",\"assets\":[{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965871\",\"id\":534965871,\"node_id\":\"RA_kwDOUG_W2M4f4u5v\",\"name\":\"installer-release-doctor.rb\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/octet-stream\",\"state\":\"uploaded\",\"size\":854,\"digest\":\"sha256:2659835f156fe43c747d30558775c1529749e4c96f5b3cefbf022e4823eb9975\",\"download_count\":0,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/installer-release-doctor.rb\"},{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965868\",\"id\":534965868,\"node_id\":\"RA_kwDOUG_W2M4f4u5s\",\"name\":\"latest.json\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/json\",\"state\":\"uploaded\",\"size\":2124,\"digest\":\"sha256:8604b83510440d4c8074658329a3e788eb60b787aab5ee3fd9ebea7343638fe2\",\"download_count\":24,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/latest.json\"},{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965874\",\"id\":534965874,\"node_id\":\"RA_kwDOUG_W2M4f4u5y\",\"name\":\"release-doctor-0.1.4-amd64.deb\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/x-debian-package\",\"state\":\"uploaded\",\"size\":734868,\"digest\":\"sha256:3cd79d70f633f101518ba5487129da87edf2d3b17836b0dab7dcd9f0eb119a0d\",\"download_count\":21,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/release-doctor-0.1.4-amd64.deb\"},{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965870\",\"id\":534965870,\"node_id\":\"RA_kwDOUG_W2M4f4u5u\",\"name\":\"release-doctor-0.1.4.x86_64.rpm\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/x-redhat-package-manager\",\"state\":\"uploaded\",\"size\":752789,\"digest\":\"sha256:9dd2498b2cbc54fc7744234e81c948fec28bfd7e2ba7f4e85947c4660182d8d0\",\"download_count\":21,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/release-doctor-0.1.4.x86_64.rpm\"},{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965872\",\"id\":534965872,\"node_id\":\"RA_kwDOUG_W2M4f4u5w\",\"name\":\"release-doctor-v0.1.4-darwin-aarch64.pkg\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/octet-stream\",\"state\":\"uploaded\",\"size\":634390,\"digest\":\"sha256:6bce9e5098caf3659fdcab40d6670a46c7906e7619678598d167ebe47a5f3aeb\",\"download_count\":31,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/release-doctor-v0.1.4-darwin-aarch64.pkg\"},{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965873\",\"id\":534965873,\"node_id\":\"RA_kwDOUG_W2M4f4u5x\",\"name\":\"release-doctor-v0.1.4-darwin-aarch64.tar.gz\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/gzip\",\"state\":\"uploaded\",\"size\":632615,\"digest\":\"sha256:1088bde4abe544a06c4e510eaa57700977aface07b0808f982b5120b241dedb5\",\"download_count\":40,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/release-doctor-v0.1.4-darwin-aarch64.tar.gz\"},{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965867\",\"id\":534965867,\"node_id\":\"RA_kwDOUG_W2M4f4u5r\",\"name\":\"release-doctor-v0.1.4-darwin-x86_64.tar.gz\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/gzip\",\"state\":\"uploaded\",\"size\":703450,\"digest\":\"sha256:5af2314ee0154973e500c4fee5863e1486596b0fa185e0d64fd6a521bcf3e390\",\"download_count\":39,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/release-doctor-v0.1.4-darwin-x86_64.tar.gz\"},{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965866\",\"id\":534965866,\"node_id\":\"RA_kwDOUG_W2M4f4u5q\",\"name\":\"release-doctor-v0.1.4-linux-x86_64.tar.gz\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/gzip\",\"state\":\"uploaded\",\"size\":767930,\"digest\":\"sha256:70fc2de3fb3f3388845da1f7311f9f964776a86fef8e8e4b7b28bc69ef5e04f2\",\"download_count\":26,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/release-doctor-v0.1.4-linux-x86_64.tar.gz\"},{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965865\",\"id\":534965865,\"node_id\":\"RA_kwDOUG_W2M4f4u5p\",\"name\":\"release-doctor-v0.1.4-windows-x86_64.zip\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/zip\",\"state\":\"uploaded\",\"size\":673241,\"digest\":\"sha256:632e3ea8f0fc5f4c47f1f92b4701f96f6619f46dce8361eee1898d292632e5e4\",\"download_count\":34,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/release-doctor-v0.1.4-windows-x86_64.zip\"},{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965876\",\"id\":534965876,\"node_id\":\"RA_kwDOUG_W2M4f4u50\",\"name\":\"SHA256SUMS\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/octet-stream\",\"state\":\"uploaded\",\"size\":736,\"digest\":\"sha256:ddf59e81c730aad28b162ef15a8ec3df3d2340a84ee3eaffad49a2eac0eeb60c\",\"download_count\":29,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/SHA256SUMS\"}],\"tarball_url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/tarball/v0.1.4\",\"zipball_url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/zipball/v0.1.4\",\"body\":\"**Full Changelog**: https://github.com/B-Divyesh/sf-installer-release-doctor/compare/v0.1.3...v0.1.4\"}}"
+        },
+        "session": {},
+        "cookies": "",
+        "indexedDB": []
+      },
+      "undersized": [],
+      "moving": [],
+      "sw": {
+        "controller": true,
+        "scriptURL": "https://installer-release-doctor.sociobot.in/sw.js",
+        "state": "activated"
+      },
+      "offline": {
+        "ok": true,
+        "url": "https://installer-release-doctor.sociobot.in/?demo=1"
+      },
+      "requests": [
+        {
+          "method": "GET",
+          "url": "https://installer-release-doctor.sociobot.in/",
+          "type": "document"
+        },
+        {
+          "method": "GET",
+          "url": "https://installer-release-doctor.sociobot.in/assets/index-BOyNh1k8.js",
+          "type": "script"
+        },
+        {
+          "method": "GET",
+          "url": "https://installer-release-doctor.sociobot.in/assets/index-hDYz2hEL.css",
+          "type": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases?per_page=1",
+          "type": "fetch"
+        },
+        {
+          "method": "GET",
+          "url": "https://installer-release-doctor.sociobot.in/assets/release-inspection.webp",
+          "type": "image"
+        },
+        {
+          "method": "GET",
+          "url": "https://installer-release-doctor.sociobot.in/?demo=1",
+          "type": "document"
+        },
+        {
+          "method": "GET",
+          "url": "https://installer-release-doctor.sociobot.in/assets/index-BOyNh1k8.js",
+          "type": "script"
+        },
+        {
+          "method": "GET",
+          "url": "https://installer-release-doctor.sociobot.in/assets/index-hDYz2hEL.css",
+          "type": "stylesheet"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "name": "mobile-390",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "headers": {
+        "cache-control": "no-cache",
+        "content-encoding": "br",
+        "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "content-type": "text/html",
+        "date": "Sat, 29 Aug 2026 11:48:55 GMT",
+        "etag": "\"81787882\"",
+        "last-modified": "Sat, 29 Aug 2026 11:11:32 GMT",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=10886400; includeSubDomains; preload",
+        "vary": "Accept-Encoding",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-xss-protection": "1; mode=block"
+      },
+      "semantics": {
+        "title": "Installer Release Doctor — Check installer releases",
+        "lang": "en",
+        "h1": [
+          "Check installer releases before upload"
+        ],
+        "main": 1,
+        "header": 1,
+        "nav": 2,
+        "footer": 1,
+        "overflow": 0
+      },
+      "firstFocus": {
+        "text": "Skip to main content",
+        "tag": "A",
+        "outline": "0px solid rgb(16, 16, 16)",
+        "box": {
+          "x": 8,
+          "y": -65.1953125,
+          "width": 216.65625,
+          "height": 48.796875,
+          "top": -65.1953125,
+          "right": 224.65625,
+          "bottom": -16.3984375,
+          "left": 8
+        }
+      },
+      "actionFocus": {
+        "outline": "3px solid rgb(36, 71, 255)",
+        "box": {
+          "x": 22.5,
+          "y": 408.6875,
+          "width": 263.5625,
+          "height": 52.796875,
+          "top": 408.6875,
+          "right": 286.0625,
+          "bottom": 461.484375,
+          "left": 22.5
+        }
+      },
+      "homeAxe": [],
+      "demo": {
+        "url": "https://installer-release-doctor.sociobot.in/?demo=1",
+        "h1": [
+          "Inspect the sample release"
+        ],
+        "banner": "Demo — sample data, nothing is saved\nReset demo\nLeave demo",
+        "blockerVisible": true,
+        "repairVisible": true,
+        "overflow": 0
+      },
+      "demoAxe": [],
+      "storage": {
+        "local": {
+          "release-cache:v2": "{\"saved\":1788004136520,\"data\":{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/378920284\",\"assets_url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/378920284/assets\",\"upload_url\":\"https://uploads.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/378920284/assets{?name,label}\",\"html_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/tag/v0.1.4\",\"id\":378920284,\"author\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"node_id\":\"RE_kwDOUG_W2M4Wld1c\",\"tag_name\":\"v0.1.4\",\"target_commitish\":\"main\",\"name\":\"v0.1.4\",\"draft\":false,\"immutable\":false,\"prerelease\":false,\"created_at\":\"2026-08-29T08:13:06Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"published_at\":\"2026-08-29T08:16:27Z\",\"assets\":[{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965871\",\"id\":534965871,\"node_id\":\"RA_kwDOUG_W2M4f4u5v\",\"name\":\"installer-release-doctor.rb\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/octet-stream\",\"state\":\"uploaded\",\"size\":854,\"digest\":\"sha256:2659835f156fe43c747d30558775c1529749e4c96f5b3cefbf022e4823eb9975\",\"download_count\":0,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/installer-release-doctor.rb\"},{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965868\",\"id\":534965868,\"node_id\":\"RA_kwDOUG_W2M4f4u5s\",\"name\":\"latest.json\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/json\",\"state\":\"uploaded\",\"size\":2124,\"digest\":\"sha256:8604b83510440d4c8074658329a3e788eb60b787aab5ee3fd9ebea7343638fe2\",\"download_count\":24,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/latest.json\"},{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965874\",\"id\":534965874,\"node_id\":\"RA_kwDOUG_W2M4f4u5y\",\"name\":\"release-doctor-0.1.4-amd64.deb\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/x-debian-package\",\"state\":\"uploaded\",\"size\":734868,\"digest\":\"sha256:3cd79d70f633f101518ba5487129da87edf2d3b17836b0dab7dcd9f0eb119a0d\",\"download_count\":21,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/release-doctor-0.1.4-amd64.deb\"},{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965870\",\"id\":534965870,\"node_id\":\"RA_kwDOUG_W2M4f4u5u\",\"name\":\"release-doctor-0.1.4.x86_64.rpm\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/x-redhat-package-manager\",\"state\":\"uploaded\",\"size\":752789,\"digest\":\"sha256:9dd2498b2cbc54fc7744234e81c948fec28bfd7e2ba7f4e85947c4660182d8d0\",\"download_count\":21,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/release-doctor-0.1.4.x86_64.rpm\"},{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965872\",\"id\":534965872,\"node_id\":\"RA_kwDOUG_W2M4f4u5w\",\"name\":\"release-doctor-v0.1.4-darwin-aarch64.pkg\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/octet-stream\",\"state\":\"uploaded\",\"size\":634390,\"digest\":\"sha256:6bce9e5098caf3659fdcab40d6670a46c7906e7619678598d167ebe47a5f3aeb\",\"download_count\":31,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/release-doctor-v0.1.4-darwin-aarch64.pkg\"},{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965873\",\"id\":534965873,\"node_id\":\"RA_kwDOUG_W2M4f4u5x\",\"name\":\"release-doctor-v0.1.4-darwin-aarch64.tar.gz\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/gzip\",\"state\":\"uploaded\",\"size\":632615,\"digest\":\"sha256:1088bde4abe544a06c4e510eaa57700977aface07b0808f982b5120b241dedb5\",\"download_count\":40,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/release-doctor-v0.1.4-darwin-aarch64.tar.gz\"},{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965867\",\"id\":534965867,\"node_id\":\"RA_kwDOUG_W2M4f4u5r\",\"name\":\"release-doctor-v0.1.4-darwin-x86_64.tar.gz\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/gzip\",\"state\":\"uploaded\",\"size\":703450,\"digest\":\"sha256:5af2314ee0154973e500c4fee5863e1486596b0fa185e0d64fd6a521bcf3e390\",\"download_count\":39,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/release-doctor-v0.1.4-darwin-x86_64.tar.gz\"},{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965866\",\"id\":534965866,\"node_id\":\"RA_kwDOUG_W2M4f4u5q\",\"name\":\"release-doctor-v0.1.4-linux-x86_64.tar.gz\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/gzip\",\"state\":\"uploaded\",\"size\":767930,\"digest\":\"sha256:70fc2de3fb3f3388845da1f7311f9f964776a86fef8e8e4b7b28bc69ef5e04f2\",\"download_count\":26,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/release-doctor-v0.1.4-linux-x86_64.tar.gz\"},{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965865\",\"id\":534965865,\"node_id\":\"RA_kwDOUG_W2M4f4u5p\",\"name\":\"release-doctor-v0.1.4-windows-x86_64.zip\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/zip\",\"state\":\"uploaded\",\"size\":673241,\"digest\":\"sha256:632e3ea8f0fc5f4c47f1f92b4701f96f6619f46dce8361eee1898d292632e5e4\",\"download_count\":34,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/release-doctor-v0.1.4-windows-x86_64.zip\"},{\"url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/assets/534965876\",\"id\":534965876,\"node_id\":\"RA_kwDOUG_W2M4f4u50\",\"name\":\"SHA256SUMS\",\"label\":\"\",\"uploader\":{\"login\":\"github-actions[bot]\",\"id\":41898282,\"node_id\":\"MDM6Qm90NDE4OTgyODI=\",\"avatar_url\":\"https://avatars.githubusercontent.com/in/15368?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/github-actions%5Bbot%5D\",\"html_url\":\"https://github.com/apps/github-actions\",\"followers_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/followers\",\"following_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/subscriptions\",\"organizations_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/orgs\",\"repos_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/repos\",\"events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/github-actions%5Bbot%5D/received_events\",\"type\":\"Bot\",\"user_view_type\":\"public\",\"site_admin\":false},\"content_type\":\"application/octet-stream\",\"state\":\"uploaded\",\"size\":736,\"digest\":\"sha256:ddf59e81c730aad28b162ef15a8ec3df3d2340a84ee3eaffad49a2eac0eeb60c\",\"download_count\":29,\"created_at\":\"2026-08-29T08:16:27Z\",\"updated_at\":\"2026-08-29T08:16:27Z\",\"browser_download_url\":\"https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/SHA256SUMS\"}],\"tarball_url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/tarball/v0.1.4\",\"zipball_url\":\"https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/zipball/v0.1.4\",\"body\":\"**Full Changelog**: https://github.com/B-Divyesh/sf-installer-release-doctor/compare/v0.1.3...v0.1.4\"}}"
+        },
+        "session": {},
+        "cookies": "",
+        "indexedDB": []
+      },
+      "undersized": [],
+      "moving": [],
+      "sw": {
+        "controller": true,
+        "scriptURL": "https://installer-release-doctor.sociobot.in/sw.js",
+        "state": "activated"
+      },
+      "offline": {
+        "ok": true,
+        "url": "https://installer-release-doctor.sociobot.in/?demo=1"
+      },
+      "requests": [
+        {
+          "method": "GET",
+          "url": "https://installer-release-doctor.sociobot.in/",
+          "type": "document"
+        },
+        {
+          "method": "GET",
+          "url": "https://installer-release-doctor.sociobot.in/assets/index-BOyNh1k8.js",
+          "type": "script"
+        },
+        {
+          "method": "GET",
+          "url": "https://installer-release-doctor.sociobot.in/assets/index-hDYz2hEL.css",
+          "type": "stylesheet"
+        },
+        {
+          "method": "GET",
+          "url": "https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases?per_page=1",
+          "type": "fetch"
+        },
+        {
+          "method": "GET",
+          "url": "https://installer-release-doctor.sociobot.in/assets/release-inspection-640.webp",
+          "type": "image"
+        },
+        {
+          "method": "GET",
+          "url": "https://installer-release-doctor.sociobot.in/?demo=1",
+          "type": "document"
+        },
+        {
+          "method": "GET",
+          "url": "https://installer-release-doctor.sociobot.in/assets/index-BOyNh1k8.js",
+          "type": "script"
+        },
+        {
+          "method": "GET",
+          "url": "https://installer-release-doctor.sociobot.in/assets/index-hDYz2hEL.css",
+          "type": "stylesheet"
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "/privacy": {
+    "status": 200,
+    "title": "Privacy — Installer Release Doctor",
+    "h1": [
+      "Your release artifacts stay local"
+    ],
+    "axe": [],
+    "errors": [],
+    "overflow": 0
+  },
+  "/terms": {
+    "status": 200,
+    "title": "Terms — Installer Release Doctor",
+    "h1": [
+      "Terms for using the checker"
+    ],
+    "axe": [],
+    "errors": [],
+    "overflow": 0
+  },
+  "/definitely-missing-qa-path": {
+    "status": 404,
+    "title": "Page not found — Installer Release Doctor",
+    "h1": [
+      "Page not found"
+    ],
+    "axe": [],
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 ()"
+    ],
+    "overflow": 0
+  }
+}
