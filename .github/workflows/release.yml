@@ -30,6 +30,8 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
   linux:
     needs: verify
     runs-on: ubuntu-latest
