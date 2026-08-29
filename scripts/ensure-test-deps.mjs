@@ -2,9 +2,14 @@ import { existsSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 
-const vitestEntry = resolve('node_modules', 'vitest', 'vitest.mjs');
+const requiredEntries = [
+  resolve('node_modules', 'vitest', 'vitest.mjs'),
+  resolve('node_modules', 'vite', 'bin', 'vite.js'),
+  resolve('node_modules', '@playwright', 'test', 'cli.js')
+];
+const missingEntries = () => requiredEntries.filter((entry) => !existsSync(entry));
 
-if (!existsSync(vitestEntry)) {
+if (missingEntries().length > 0) {
   const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
   process.stdout.write('Locked web test dependencies are missing; running npm ci.\n');
   const result = spawnSync(npm, ['ci', '--no-audit', '--no-fund'], {
@@ -17,6 +22,6 @@ if (!existsSync(vitestEntry)) {
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
 
-if (!existsSync(vitestEntry)) {
-  throw new Error('npm ci completed without the locked Vitest dependency.');
+if (missingEntries().length > 0) {
+  throw new Error(`npm ci completed without required locked test dependencies: ${missingEntries().join(', ')}`);
 }

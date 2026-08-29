@@ -33,8 +33,13 @@ try {
   });
   if (result.error) throw result.error;
   if (result.status !== 0) process.exit(result.status ?? 1);
-  if (!existsSync(join(checkout, 'node_modules', 'vitest', 'vitest.mjs'))) {
-    throw new Error('The exact claim command passed without installing its locked Vitest dependency.');
+  const requiredEntries = [
+    join(checkout, 'node_modules', 'vitest', 'vitest.mjs'),
+    join(checkout, 'node_modules', 'vite', 'bin', 'vite.js'),
+    join(checkout, 'node_modules', '@playwright', 'test', 'cli.js')
+  ];
+  if (requiredEntries.some((entry) => !existsSync(entry))) {
+    throw new Error('The exact claim command passed without installing its complete locked web test toolchain.');
   }
 } finally {
   rmSync(cloneRoot, { recursive: true, force: true });
