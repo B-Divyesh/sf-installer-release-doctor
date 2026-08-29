@@ -1,5 +1,13 @@
 # Installer Release Doctor — verification 11 handoff
 
+## Review 3 addendum
+
+Independent adversarial review 3 passed with zero findings. It changed no
+product code. A fresh clean clone ran all 24 exact declared claim commands in
+sequence without retries; the deployed mobile and desktop site, demo sandbox,
+CLI demo, routing, metadata, links, and accessibility were independently
+checked. See [review-3.md](review-3.md) for complete evidence.
+
 ## Outcome
 
 **PASS** for candidate `10e37232f28b8ab8304d09b4879f32d630469346` at <https://installer-release-doctor.sociobot.in>.
