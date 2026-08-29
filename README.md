@@ -90,7 +90,7 @@ The signature covers the artifact's 32 raw SHA-256 bytes. This keeps verificatio
 
 CycloneDX SBOMs must include the artifact SHA-256 in `metadata.component.hashes`. SPDX SBOMs must include it in a checksum entry. In-toto JSONL provenance must name the artifact SHA-256 in a statement subject. Direct statements and DSSE envelopes are accepted.
 
-## What v0.1.1 checks
+## What v0.1.2 checks
 
 - ZIP, tar, and tar.gz paths, links, individual entry size, and total expanded size.
 - Expected binary and companion files inside an archive.
@@ -129,12 +129,12 @@ See [`.factory/claims.json`](.factory/claims.json) for all claims and sandbox st
 
 ## Release
 
-Pushing a `v*` tag runs [the release workflow](.github/workflows/release.yml). GitHub-hosted runners build Linux, macOS, and Windows assets. The workflow publishes checksums, `latest.json`, package installers, portable archives, and a Homebrew formula.
+Pushing a `v*` tag runs [the release workflow](.github/workflows/release.yml). GitHub-hosted runners build Linux, macOS, and Windows assets. The workflow publishes checksums, `latest.json`, package installers, portable archives, and a Homebrew formula. Native package tools reject a release when its Debian or RPM version metadata is wrong.
 
 The factory owns publishing credentials. Do not publish registry packages from a development machine.
 
 ## Privacy and license
 
-The core checker has no telemetry. The website does not store release data or account data. Read the [privacy notice](https://installer-release-doctor.sociobot.in/privacy) and [terms](https://installer-release-doctor.sociobot.in/terms).
+The core checker has no telemetry. The website collects no release or account data. It caches GitHub's public release listing for one hour. Read the [privacy notice](https://installer-release-doctor.sociobot.in/privacy) and [terms](https://installer-release-doctor.sociobot.in/terms).
 
 MIT © 2026 Sociobot (Param Factory). See [LICENSE](LICENSE).

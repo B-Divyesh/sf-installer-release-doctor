@@ -7,7 +7,7 @@ on:
       version:
         description: Release version without the v prefix
         required: true
-        default: 0.1.1
+        default: 0.1.2
 permissions:
   contents: write
 jobs:
@@ -32,7 +32,7 @@ jobs:
         with:
           targets: x86_64-unknown-linux-musl,x86_64-unknown-linux-gnu
       - name: Install musl compiler
-        run: sudo apt-get update && sudo apt-get install -y musl-tools
+        run: sudo apt-get update && sudo apt-get install -y musl-tools rpm
       - name: Install nFPM
         run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@v2.43.4
       - name: Build binaries
@@ -49,6 +49,12 @@ jobs:
           tar -C release/x64 -czf release/release-doctor-v$VERSION-linux-x86_64.tar.gz release-doctor
           VERSION=$VERSION "$(go env GOPATH)/bin/nfpm" package --config nfpm.yaml --packager deb --target release/release-doctor-$VERSION-amd64.deb
           VERSION=$VERSION "$(go env GOPATH)/bin/nfpm" package --config nfpm.yaml --packager rpm --target release/release-doctor-$VERSION.x86_64.rpm
+          test "$(dpkg-deb -f release/release-doctor-$VERSION-amd64.deb Package)" = release-doctor
+          test "$(dpkg-deb -f release/release-doctor-$VERSION-amd64.deb Version)" = "$VERSION"
+          test "$(dpkg-deb -f release/release-doctor-$VERSION-amd64.deb Architecture)" = amd64
+          test "$(rpm -qp --qf '%{NAME}\n' release/release-doctor-$VERSION.x86_64.rpm)" = release-doctor
+          test "$(rpm -qp --qf '%{VERSION}\n' release/release-doctor-$VERSION.x86_64.rpm)" = "$VERSION"
+          test "$(rpm -qp --qf '%{ARCH}\n' release/release-doctor-$VERSION.x86_64.rpm)" = x86_64
           rm -rf release/x64
       - uses: actions/upload-artifact@v4
         with: {name: linux-assets, path: release/*}

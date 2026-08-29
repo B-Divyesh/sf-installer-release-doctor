@@ -1,6 +1,6 @@
 [package]
 name = "installer-release-doctor"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 description = "Check installer artifacts before release channels reject them"
 license = "MIT"

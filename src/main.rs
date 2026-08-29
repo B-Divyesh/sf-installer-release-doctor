@@ -1340,6 +1340,52 @@ mod tests {
     }
 
     #[test]
+    fn reports_documented_check_scope() {
+        let root = evidence_fixture();
+        let report = diagnose(
+            &root.path().join("release-doctor.yml"),
+            &root.path().join("artifacts"),
+        )
+        .unwrap();
+        let checks = report
+            .findings
+            .iter()
+            .map(|finding| finding.check.as_str())
+            .collect::<std::collections::BTreeSet<_>>();
+        for expected in [
+            "artifact",
+            "archive-safety",
+            "archive-layout",
+            "required-file",
+            "signature",
+            "sbom",
+            "provenance",
+            "checksum",
+            "package-id",
+            "architecture",
+            "upgrade-path",
+        ] {
+            assert!(checks.contains(expected), "missing check: {expected}");
+        }
+
+        let opaque = tempfile::tempdir().unwrap();
+        let artifacts = opaque.path().join("artifacts");
+        fs::create_dir(&artifacts).unwrap();
+        fs::write(artifacts.join("sample.deb"), b"opaque package").unwrap();
+        fs::write(
+            opaque.path().join("release-doctor.yml"),
+            "product: {name: sample, version: 1.0.0, binary: sample}\nchecks: {}\nchannels:\n  - {name: apt, format: deb, artifact: sample.deb}\n",
+        )
+        .unwrap();
+        let report = diagnose(&opaque.path().join("release-doctor.yml"), &artifacts).unwrap();
+        assert!(report.findings.iter().any(|finding| {
+            finding.check == "archive-safety"
+                && finding.level == Level::Warning
+                && finding.message.contains("opaque")
+        }));
+    }
+
+    #[test]
     fn rejects_empty_evidence_companions() {
         let root = evidence_fixture();
         let artifacts = root.path().join("artifacts");
