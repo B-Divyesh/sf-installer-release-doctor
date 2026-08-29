@@ -1,0 +1,14 @@
+200	Skip to main content	https://installer-release-doctor.sociobot.in/#main
+200	Open the checker home page	https://installer-release-doctor.sociobot.in/
+200	Demo	https://installer-release-doctor.sociobot.in/demo
+200	Install	https://installer-release-doctor.sociobot.in/#install
+200	Privacy	https://installer-release-doctor.sociobot.in/privacy
+200	Try it with sample data	https://installer-release-doctor.sociobot.in/?demo=1
+200	Download release-doctor-v0.1.4-linux-x86_64.tar.gz	https://github.com/B-Divyesh/sf-installer-release-doctor/releases/download/v0.1.4/release-doctor-v0.1.4-linux-x86_64.tar.gz
+200	Terms	https://installer-release-doctor.sociobot.in/terms
+200	Built by Param Factory (external site)	https://sociobot.in/
+200	Skip to main content	https://installer-release-doctor.sociobot.in/demo#main
+200	Skip to main content	https://installer-release-doctor.sociobot.in/privacy#main
+SKIP	privacy@sociobot.in	mailto:privacy@sociobot.in
+200	Skip to main content	https://installer-release-doctor.sociobot.in/terms#main
+404	Skip to main content	https://installer-release-doctor.sociobot.in/verification-8-not-found#main

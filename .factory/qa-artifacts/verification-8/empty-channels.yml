@@ -1,0 +1,6 @@
+policy_version: 2026-08-01
+product:
+  name: Empty CLI
+  version: 1.0.0
+  binary: empty
+channels: []

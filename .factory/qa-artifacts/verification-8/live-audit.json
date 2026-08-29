@@ -1,0 +1,571 @@
+{
+  "base": "https://installer-release-doctor.sociobot.in",
+  "checkedAt": "2026-08-29T08:43:05.597Z",
+  "routes": [
+    {
+      "path": "/",
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "status": 200,
+      "headers": {
+        "cache-control": "no-cache",
+        "content-encoding": "br",
+        "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "content-type": "text/html",
+        "date": "Sat, 29 Aug 2026 08:43:05 GMT",
+        "etag": "\"38240436\"",
+        "last-modified": "Sat, 29 Aug 2026 08:21:03 GMT",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=10886400; includeSubDomains; preload",
+        "vary": "Accept-Encoding",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-xss-protection": "1; mode=block"
+      },
+      "errors": [],
+      "axeViolations": [],
+      "dom": {
+        "title": "Installer Release Doctor — Check installer releases",
+        "lang": "en",
+        "h1Count": 1,
+        "h1": "Check installer releases before upload",
+        "mainCount": 1,
+        "headingOutline": [
+          "H1:Check installer releases before upload",
+          "H2:Sample release report",
+          "H2:Inspect a release in three steps",
+          "H3:Describe channels",
+          "H3:Run local checks",
+          "H3:Repair blockers",
+          "H2:Checks are read-only",
+          "H2:Install the local checker",
+          "H3:macOS and Linux",
+          "H3:Windows PowerShell",
+          "H3:Homebrew",
+          "H2:Use the free checker today"
+        ],
+        "missingAlt": 0,
+        "overflow": 0,
+        "smallTargets": []
+      }
+    },
+    {
+      "path": "/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "headers": {
+        "cache-control": "no-cache",
+        "content-encoding": "br",
+        "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "content-type": "text/html",
+        "date": "Sat, 29 Aug 2026 08:43:07 GMT",
+        "etag": "\"38240436\"",
+        "last-modified": "Sat, 29 Aug 2026 08:21:03 GMT",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=10886400; includeSubDomains; preload",
+        "vary": "Accept-Encoding",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-xss-protection": "1; mode=block"
+      },
+      "errors": [],
+      "axeViolations": [],
+      "dom": {
+        "title": "Installer Release Doctor — Check installer releases",
+        "lang": "en",
+        "h1Count": 1,
+        "h1": "Check installer releases before upload",
+        "mainCount": 1,
+        "headingOutline": [
+          "H1:Check installer releases before upload",
+          "H2:Sample release report",
+          "H2:Inspect a release in three steps",
+          "H3:Describe channels",
+          "H3:Run local checks",
+          "H3:Repair blockers",
+          "H2:Checks are read-only",
+          "H2:Install the local checker",
+          "H3:macOS and Linux",
+          "H3:Windows PowerShell",
+          "H3:Homebrew",
+          "H2:Use the free checker today"
+        ],
+        "missingAlt": 0,
+        "overflow": 0,
+        "smallTargets": []
+      }
+    },
+    {
+      "path": "/demo",
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "status": 200,
+      "headers": {
+        "cache-control": "public, must-revalidate, max-age=30",
+        "content-encoding": "br",
+        "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "content-type": "text/html",
+        "date": "Sat, 29 Aug 2026 08:43:09 GMT",
+        "etag": "\"38240436\"",
+        "last-modified": "Sat, 29 Aug 2026 08:21:03 GMT",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=10886400; includeSubDomains; preload",
+        "vary": "Accept-Encoding",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-xss-protection": "1; mode=block"
+      },
+      "errors": [],
+      "axeViolations": [],
+      "dom": {
+        "title": "Demo — Installer Release Doctor",
+        "lang": "en",
+        "h1Count": 1,
+        "h1": "Inspect the sample release",
+        "mainCount": 1,
+        "headingOutline": [
+          "H1:Inspect the sample release",
+          "H2:11 checks",
+          "H2:Run the same demo in the CLI"
+        ],
+        "missingAlt": 0,
+        "overflow": 0,
+        "smallTargets": []
+      }
+    },
+    {
+      "path": "/demo",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "headers": {
+        "cache-control": "public, must-revalidate, max-age=30",
+        "content-encoding": "br",
+        "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "content-type": "text/html",
+        "date": "Sat, 29 Aug 2026 08:43:11 GMT",
+        "etag": "\"38240436\"",
+        "last-modified": "Sat, 29 Aug 2026 08:21:03 GMT",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=10886400; includeSubDomains; preload",
+        "vary": "Accept-Encoding",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-xss-protection": "1; mode=block"
+      },
+      "errors": [],
+      "axeViolations": [],
+      "dom": {
+        "title": "Demo — Installer Release Doctor",
+        "lang": "en",
+        "h1Count": 1,
+        "h1": "Inspect the sample release",
+        "mainCount": 1,
+        "headingOutline": [
+          "H1:Inspect the sample release",
+          "H2:11 checks",
+          "H2:Run the same demo in the CLI"
+        ],
+        "missingAlt": 0,
+        "overflow": 0,
+        "smallTargets": []
+      }
+    },
+    {
+      "path": "/privacy",
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "status": 200,
+      "headers": {
+        "cache-control": "public, must-revalidate, max-age=30",
+        "content-encoding": "br",
+        "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "content-type": "text/html",
+        "date": "Sat, 29 Aug 2026 08:43:13 GMT",
+        "etag": "\"38240436\"",
+        "last-modified": "Sat, 29 Aug 2026 08:21:03 GMT",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=10886400; includeSubDomains; preload",
+        "vary": "Accept-Encoding",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-xss-protection": "1; mode=block"
+      },
+      "errors": [],
+      "axeViolations": [],
+      "dom": {
+        "title": "Privacy — Installer Release Doctor",
+        "lang": "en",
+        "h1Count": 1,
+        "h1": "Your release artifacts stay local",
+        "mainCount": 1,
+        "headingOutline": [
+          "H1:Your release artifacts stay local",
+          "H2:Local checker",
+          "H2:Website",
+          "H2:Contact"
+        ],
+        "missingAlt": 0,
+        "overflow": 0,
+        "smallTargets": []
+      }
+    },
+    {
+      "path": "/privacy",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "headers": {
+        "cache-control": "public, must-revalidate, max-age=30",
+        "content-encoding": "br",
+        "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "content-type": "text/html",
+        "date": "Sat, 29 Aug 2026 08:43:13 GMT",
+        "etag": "\"38240436\"",
+        "last-modified": "Sat, 29 Aug 2026 08:21:03 GMT",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=10886400; includeSubDomains; preload",
+        "vary": "Accept-Encoding",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-xss-protection": "1; mode=block"
+      },
+      "errors": [],
+      "axeViolations": [],
+      "dom": {
+        "title": "Privacy — Installer Release Doctor",
+        "lang": "en",
+        "h1Count": 1,
+        "h1": "Your release artifacts stay local",
+        "mainCount": 1,
+        "headingOutline": [
+          "H1:Your release artifacts stay local",
+          "H2:Local checker",
+          "H2:Website",
+          "H2:Contact"
+        ],
+        "missingAlt": 0,
+        "overflow": 0,
+        "smallTargets": []
+      }
+    },
+    {
+      "path": "/terms",
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "status": 200,
+      "headers": {
+        "cache-control": "public, must-revalidate, max-age=30",
+        "content-encoding": "br",
+        "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "content-type": "text/html",
+        "date": "Sat, 29 Aug 2026 08:43:15 GMT",
+        "etag": "\"38240436\"",
+        "last-modified": "Sat, 29 Aug 2026 08:21:03 GMT",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=10886400; includeSubDomains; preload",
+        "vary": "Accept-Encoding",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-xss-protection": "1; mode=block"
+      },
+      "errors": [],
+      "axeViolations": [],
+      "dom": {
+        "title": "Terms — Installer Release Doctor",
+        "lang": "en",
+        "h1Count": 1,
+        "h1": "Terms for using the checker",
+        "mainCount": 1,
+        "headingOutline": [
+          "H1:Terms for using the checker",
+          "H2:License",
+          "H2:No release guarantee",
+          "H2:Liability"
+        ],
+        "missingAlt": 0,
+        "overflow": 0,
+        "smallTargets": []
+      }
+    },
+    {
+      "path": "/terms",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "headers": {
+        "cache-control": "public, must-revalidate, max-age=30",
+        "content-encoding": "br",
+        "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "content-type": "text/html",
+        "date": "Sat, 29 Aug 2026 08:43:16 GMT",
+        "etag": "\"38240436\"",
+        "last-modified": "Sat, 29 Aug 2026 08:21:03 GMT",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=10886400; includeSubDomains; preload",
+        "vary": "Accept-Encoding",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-xss-protection": "1; mode=block"
+      },
+      "errors": [],
+      "axeViolations": [],
+      "dom": {
+        "title": "Terms — Installer Release Doctor",
+        "lang": "en",
+        "h1Count": 1,
+        "h1": "Terms for using the checker",
+        "mainCount": 1,
+        "headingOutline": [
+          "H1:Terms for using the checker",
+          "H2:License",
+          "H2:No release guarantee",
+          "H2:Liability"
+        ],
+        "missingAlt": 0,
+        "overflow": 0,
+        "smallTargets": []
+      }
+    },
+    {
+      "path": "/verification-8-not-found",
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "status": 404,
+      "headers": {
+        "cache-control": "public, must-revalidate, max-age=30",
+        "content-length": "2642",
+        "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "content-type": "text/html",
+        "date": "Sat, 29 Aug 2026 08:43:18 GMT",
+        "etag": "\"38240436\"",
+        "last-modified": "Sat, 29 Aug 2026 08:21:03 GMT",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=10886400; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-xss-protection": "1; mode=block"
+      },
+      "errors": [
+        "console: Failed to load resource: the server responded with a status of 404 ()"
+      ],
+      "axeViolations": [],
+      "dom": {
+        "title": "Page not found — Installer Release Doctor",
+        "lang": "en",
+        "h1Count": 1,
+        "h1": "Page not found",
+        "mainCount": 1,
+        "headingOutline": [
+          "H1:Page not found"
+        ],
+        "missingAlt": 0,
+        "overflow": 0,
+        "smallTargets": []
+      }
+    },
+    {
+      "path": "/verification-8-not-found",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 404,
+      "headers": {
+        "cache-control": "public, must-revalidate, max-age=30",
+        "content-length": "2642",
+        "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "content-type": "text/html",
+        "date": "Sat, 29 Aug 2026 08:43:19 GMT",
+        "etag": "\"38240436\"",
+        "last-modified": "Sat, 29 Aug 2026 08:21:03 GMT",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=10886400; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-xss-protection": "1; mode=block"
+      },
+      "errors": [
+        "console: Failed to load resource: the server responded with a status of 404 ()"
+      ],
+      "axeViolations": [],
+      "dom": {
+        "title": "Page not found — Installer Release Doctor",
+        "lang": "en",
+        "h1Count": 1,
+        "h1": "Page not found",
+        "mainCount": 1,
+        "headingOutline": [
+          "H1:Page not found"
+        ],
+        "missingAlt": 0,
+        "overflow": 0,
+        "smallTargets": []
+      }
+    }
+  ],
+  "firstRead": {
+    "h1": "Check installer releases before upload",
+    "h1Visible": true,
+    "whoVisible": true,
+    "actionVisible": true,
+    "outcomeVisible": true,
+    "h1Box": {
+      "x": 71.296875,
+      "y": 230.921875,
+      "width": 631.140625,
+      "height": 179.109375
+    },
+    "whoBox": {
+      "x": 71.296875,
+      "y": 434.03125,
+      "width": 631.140625,
+      "height": 100.78125
+    },
+    "actionBox": {
+      "x": 71.296875,
+      "y": 558.8125,
+      "width": 263.5625,
+      "height": 52.796875
+    },
+    "outcomeBox": {
+      "x": 354.859375,
+      "y": 563.515625,
+      "width": 236,
+      "height": 43.375
+    }
+  },
+  "keyboard": {
+    "sequence": [
+      {
+        "text": "Skip to main content",
+        "href": "#main",
+        "outline": "rgb(36, 71, 255) solid 3px",
+        "outlineOffset": "3px"
+      },
+      {
+        "text": "IR/DRInstallerRelease Doctor",
+        "href": "/",
+        "outline": "rgb(36, 71, 255) solid 3px",
+        "outlineOffset": "3px"
+      },
+      {
+        "text": "Demo",
+        "href": "/demo",
+        "outline": "rgb(36, 71, 255) solid 3px",
+        "outlineOffset": "3px"
+      },
+      {
+        "text": "Install",
+        "href": "/#install",
+        "outline": "rgb(36, 71, 255) solid 3px",
+        "outlineOffset": "3px"
+      },
+      {
+        "text": "Privacy",
+        "href": "/privacy",
+        "outline": "rgb(36, 71, 255) solid 3px",
+        "outlineOffset": "3px"
+      },
+      {
+        "text": "Try it with sample data",
+        "href": "/?demo=1",
+        "outline": "rgb(36, 71, 255) solid 3px",
+        "outlineOffset": "3px"
+      },
+      {
+        "text": "release-doctor checkexit 1PASS homebrew  archive-layout   Binary and license fou",
+        "href": null,
+        "outline": "rgb(36, 71, 255) solid 3px",
+        "outlineOffset": "3px"
+      }
+    ],
+    "routeFocus": {
+      "tag": "H1",
+      "text": "Inspect the sample release"
+    }
+  },
+  "demo": {
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://installer-release-doctor.sociobot.in/demo",
+        "postData": null
+      },
+      {
+        "method": "GET",
+        "url": "https://installer-release-doctor.sociobot.in/assets/index-BHmGkVlP.js",
+        "postData": null
+      },
+      {
+        "method": "GET",
+        "url": "https://installer-release-doctor.sociobot.in/assets/index-52zNTPoZ.css",
+        "postData": null
+      }
+    ],
+    "offOriginRequests": [],
+    "errors": [],
+    "before": {
+      "cookies": "",
+      "localStorage": {},
+      "sessionStorage": {},
+      "dbs": []
+    },
+    "afterReset": {
+      "cookies": "",
+      "localStorage": {},
+      "sessionStorage": {},
+      "dbs": []
+    },
+    "focusedAfterRun": {
+      "tag": "BUTTON",
+      "text": "Run release check"
+    },
+    "repair": "Create acme-cli_1.4.0_windows_x86_64.zip.intoto.jsonl beside the artifact.",
+    "expandedOverflow": 0,
+    "banner": true
+  },
+  "reducedMotion": {
+    "elapsedMs": 68,
+    "mediaMatches": true
+  },
+  "offline": {
+    "active": "https://installer-release-doctor.sociobot.in/sw.js",
+    "controller": "https://installer-release-doctor.sociobot.in/sw.js",
+    "caches": [
+      "release-doctor-v9"
+    ],
+    "status": 200,
+    "title": "Demo — Installer Release Doctor",
+    "banner": true
+  }
+}

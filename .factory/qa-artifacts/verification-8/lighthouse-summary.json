@@ -1,0 +1,49 @@
+{
+  "categories": {
+    "performance": 99,
+    "accessibility": 100,
+    "best-practices": 100,
+    "seo": 100
+  },
+  "metrics": {
+    "FCP": "1.0 s",
+    "LCP": "1.5 s",
+    "TBT": "130 ms",
+    "CLS": "0",
+    "SI": "1.0 s"
+  },
+  "transfer": "Total size was 111 KiB",
+  "requests": [
+    {
+      "url": "https://installer-release-doctor.sociobot.in/",
+      "transferSize": 1173,
+      "resourceType": "Document"
+    },
+    {
+      "url": "https://installer-release-doctor.sociobot.in/assets/index-BHmGkVlP.js",
+      "transferSize": 5589,
+      "resourceType": "Script"
+    },
+    {
+      "url": "https://installer-release-doctor.sociobot.in/assets/index-52zNTPoZ.css",
+      "transferSize": 3236,
+      "resourceType": "Stylesheet"
+    },
+    {
+      "url": "https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases?per_page=1",
+      "transferSize": 3585,
+      "resourceType": "Fetch"
+    },
+    {
+      "url": "https://installer-release-doctor.sociobot.in/assets/release-inspection.webp",
+      "transferSize": 99221,
+      "resourceType": "Image"
+    },
+    {
+      "url": "https://installer-release-doctor.sociobot.in/favicon.svg",
+      "transferSize": 388,
+      "resourceType": "Other"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,41 @@
+policy_version: 2026-08-01
+product:
+  name: Acme CLI
+  version: 1.4.0
+  binary: acme
+checks:
+  require_signature: false
+  require_sbom: false
+  require_provenance: false
+  require_checksums: false
+channels:
+  - name: dot-only
+    artifact: acme-cli_1.4.0_windows_x86_64.zip
+    format: zip
+    package:
+      identifier: "."
+      architecture: x86_64
+  - name: trailing-dot
+    artifact: acme-cli_1.4.0_windows_x86_64.zip
+    format: zip
+    package:
+      identifier: "foo."
+      architecture: x86_64
+  - name: leading-dot
+    artifact: acme-cli_1.4.0_windows_x86_64.zip
+    format: zip
+    package:
+      identifier: ".foo"
+      architecture: x86_64
+  - name: repeated-dot
+    artifact: acme-cli_1.4.0_windows_x86_64.zip
+    format: zip
+    package:
+      identifier: "com..acme"
+      architecture: x86_64
+  - name: uppercase
+    artifact: acme-cli_1.4.0_windows_x86_64.zip
+    format: zip
+    package:
+      identifier: "Com.Acme.Cli"
+      architecture: x86_64

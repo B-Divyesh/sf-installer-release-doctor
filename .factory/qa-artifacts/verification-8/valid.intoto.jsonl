@@ -1,0 +1,1 @@
+{"_type":"https://in-toto.io/Statement/v1","subject":[{"name":"acme-cli_1.4.0_windows_x86_64.zip","digest":{"sha256":"72f0da333168f736893e41756aaabe226a218354505f50b1cd797cd74f7f7589"}}],"predicateType":"https://slsa.dev/provenance/v1","predicate":{}}

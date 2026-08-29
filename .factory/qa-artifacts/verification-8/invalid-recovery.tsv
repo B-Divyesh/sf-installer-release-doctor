@@ -1,0 +1,5 @@
+malformed	2	release-doctor: invalid YAML manifest: product: invalid type: sequence, expected struct Product at line 1 column 10
+empty-channels	2	release-doctor: manifest has no channels. Add at least one channel entry.
+missing-artifacts	2	release-doctor: artifact directory not found at /tmp/ird-boundary-artifacts.iBLLAw/not-there. Build or copy artifacts there first.
+opaque-normal	0	RELEASE DOCTOR  v0.1.4  policy 2026-08-01 Opaque CLI 1.0.0 ------------------------------------------------------------------------ PASS  windows-msi  artifact         Found opaque.msi. WARN  windows-msi  archive-safety   This package forma
+opaque-strict	1	RELEASE DOCTOR  v0.1.4  policy 2026-08-01 Opaque CLI 1.0.0 ------------------------------------------------------------------------ PASS  windows-msi  artifact         Found opaque.msi. WARN  windows-msi  archive-safety   This package forma

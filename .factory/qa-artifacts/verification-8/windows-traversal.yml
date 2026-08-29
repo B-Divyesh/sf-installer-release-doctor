@@ -1,0 +1,17 @@
+policy_version: 2026-08-01
+product:
+  name: Boundary CLI
+  version: 1.0.0
+  binary: outside.exe
+checks:
+  require_signature: false
+  require_sbom: false
+  require_provenance: false
+  require_checksums: false
+channels:
+  - name: windows-portable
+    artifact: windows-traversal.zip
+    format: zip
+    package:
+      identifier: com.acme.cli
+      architecture: x86_64

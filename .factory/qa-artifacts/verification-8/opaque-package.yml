@@ -1,0 +1,17 @@
+policy_version: 2026-08-01
+product:
+  name: Opaque CLI
+  version: 1.0.0
+  binary: opaque
+checks:
+  require_signature: false
+  require_sbom: false
+  require_provenance: false
+  require_checksums: false
+channels:
+  - name: windows-msi
+    artifact: opaque.msi
+    format: msi
+    package:
+      identifier: com.acme.opaque
+      architecture: x86_64

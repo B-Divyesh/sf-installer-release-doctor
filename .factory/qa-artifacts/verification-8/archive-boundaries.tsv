@@ -1,0 +1,3 @@
+parent	1	fail: Unsafe archive entry: ..\outside.exe.
+drive	1	fail: Unsafe archive entry: C:\temp\tool.exe.
+unc	1	fail: Unsafe archive entry: \\server\share\tool.exe.

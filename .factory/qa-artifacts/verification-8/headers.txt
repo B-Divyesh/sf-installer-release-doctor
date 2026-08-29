@@ -1,0 +1,168 @@
+URL /
+HTTP/2 200
+content-type: text/html
+cache-control: no-cache
+etag: "38240436"
+last-modified: Sat, 29 Aug 2026 08:21:03 GMT
+content-length: 1787
+strict-transport-security: max-age=10886400; includeSubDomains; preload
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+permissions-policy: camera=(), microphone=(), geolocation=()
+content-security-policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+
+URL /demo
+HTTP/2 200
+content-type: text/html
+cache-control: public, must-revalidate, max-age=30
+etag: "38240436"
+last-modified: Sat, 29 Aug 2026 08:21:03 GMT
+content-length: 1787
+strict-transport-security: max-age=10886400; includeSubDomains; preload
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+permissions-policy: camera=(), microphone=(), geolocation=()
+content-security-policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+
+URL /privacy
+HTTP/2 200
+content-type: text/html
+cache-control: public, must-revalidate, max-age=30
+etag: "38240436"
+last-modified: Sat, 29 Aug 2026 08:21:03 GMT
+content-length: 1787
+strict-transport-security: max-age=10886400; includeSubDomains; preload
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+permissions-policy: camera=(), microphone=(), geolocation=()
+content-security-policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+
+URL /terms
+HTTP/2 200
+content-type: text/html
+cache-control: public, must-revalidate, max-age=30
+etag: "38240436"
+last-modified: Sat, 29 Aug 2026 08:21:03 GMT
+content-length: 1787
+strict-transport-security: max-age=10886400; includeSubDomains; preload
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+permissions-policy: camera=(), microphone=(), geolocation=()
+content-security-policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+
+URL /verification-8-not-found
+HTTP/2 404
+content-type: text/html
+cache-control: public, must-revalidate, max-age=30
+etag: "38240436"
+last-modified: Sat, 29 Aug 2026 08:21:03 GMT
+content-length: 2642
+strict-transport-security: max-age=10886400; includeSubDomains; preload
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+permissions-policy: camera=(), microphone=(), geolocation=()
+content-security-policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+
+URL /assets/index-BHmGkVlP.js
+HTTP/2 200
+content-type: text/javascript
+cache-control: public, max-age=31536000, immutable
+etag: "38240436"
+last-modified: Sat, 29 Aug 2026 08:21:03 GMT
+content-length: 15164
+strict-transport-security: max-age=10886400; includeSubDomains; preload
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+permissions-policy: camera=(), microphone=(), geolocation=()
+content-security-policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+
+URL /assets/index-52zNTPoZ.css
+HTTP/2 200
+content-type: text/css
+cache-control: public, max-age=31536000, immutable
+etag: "38240436"
+last-modified: Sat, 29 Aug 2026 08:21:03 GMT
+content-length: 10902
+strict-transport-security: max-age=10886400; includeSubDomains; preload
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+permissions-policy: camera=(), microphone=(), geolocation=()
+content-security-policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+
+URL /assets/release-inspection-640.webp
+HTTP/2 200
+content-type: image/webp
+cache-control: public, max-age=31536000, immutable
+etag: "38240436"
+last-modified: Sat, 29 Aug 2026 08:21:03 GMT
+content-length: 27532
+strict-transport-security: max-age=10886400; includeSubDomains; preload
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+permissions-policy: camera=(), microphone=(), geolocation=()
+content-security-policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+
+URL /sw.js
+HTTP/2 200
+content-type: text/javascript
+cache-control: no-cache
+etag: "38240436"
+last-modified: Sat, 29 Aug 2026 08:21:03 GMT
+content-length: 1350
+strict-transport-security: max-age=10886400; includeSubDomains; preload
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+permissions-policy: camera=(), microphone=(), geolocation=()
+content-security-policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+
+URL /install.sh
+HTTP/2 200
+content-type: text/plain
+cache-control: public, must-revalidate, max-age=30
+etag: "38240436"
+last-modified: Sat, 29 Aug 2026 08:21:03 GMT
+content-length: 2261
+strict-transport-security: max-age=10886400; includeSubDomains; preload
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+permissions-policy: camera=(), microphone=(), geolocation=()
+content-security-policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+
+URL /install.ps1
+HTTP/2 200
+content-type: text/plain
+cache-control: public, must-revalidate, max-age=30
+etag: "38240436"
+last-modified: Sat, 29 Aug 2026 08:21:03 GMT
+content-length: 2409
+strict-transport-security: max-age=10886400; includeSubDomains; preload
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+permissions-policy: camera=(), microphone=(), geolocation=()
+content-security-policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+
+URL /robots.txt
+HTTP/2 200
+content-type: text/plain
+cache-control: public, must-revalidate, max-age=30
+etag: "38240436"
+last-modified: Sat, 29 Aug 2026 08:21:03 GMT
+content-length: 90
+strict-transport-security: max-age=10886400; includeSubDomains; preload
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+permissions-policy: camera=(), microphone=(), geolocation=()
+content-security-policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+
+URL /sitemap.xml
+HTTP/2 200
+content-type: text/xml
+cache-control: public, must-revalidate, max-age=30
+etag: "38240436"
+last-modified: Sat, 29 Aug 2026 08:21:03 GMT
+content-length: 406
+strict-transport-security: max-age=10886400; includeSubDomains; preload
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+permissions-policy: camera=(), microphone=(), geolocation=()
+content-security-policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'

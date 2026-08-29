@@ -1,43 +1,45 @@
-# Installer Release Doctor repair handoff — v0.1.4
+# Installer Release Doctor verification handoff — FAIL
 
-- **Work order:** `installer-release-doctor-repair-6`
-- **Base verifier report:** `9ba6ccd5be82cc5ed4060af127b353529304e73b` / `.factory/verification-7.md`
-- **Repair commits:** `259b231` and `9fb117f`
-- **Release:** [v0.1.4](https://github.com/B-Divyesh/sf-installer-release-doctor/releases/tag/v0.1.4), built from `9fb117f543101d86f725c0f5fffaeabeaa33b834`
-- **Deployment:** `https://installer-release-doctor.sociobot.in` deployed through Azure Static Web Apps deployment `18d53a9c-b4fb-4127-8398-fcb656aa9c62`.
+- **Work order:** `installer-release-doctor-verify-8`
+- **Candidate:** `715f73f67370906f07cacea6115df884520256ac`
+- **Live URL:** <https://installer-release-doctor.sociobot.in>
+- **Verified:** 2026-08-29 UTC
+- **Verdict:** **FAIL**
 
-## Repairs
+## Release blocker
 
-1. Archive entry validation is now platform-neutral. It normalizes both separator styles before checking entries, and rejects `..`, absolute, drive-qualified, and UNC names. The exact verifier fixture `..\\outside.exe` now produces an `archive-safety` failure on Linux. Public-CLI ZIP, tar, and tar.gz regressions cover POSIX traversal, Windows traversal, drive paths, and UNC paths.
-2. Package identifiers now require lowercase reverse-DNS labels: two or more non-empty labels, letter-led, 63 characters or fewer, and only lowercase letters, digits, or interior hyphens. Public-CLI coverage rejects `.`, `foo.`, `.foo`, `com..acme`, and invalid characters, while accepting `in.sociobot.tool`.
-3. Upgrade checks now use the `semver` parser and Semantic Version precedence. Regressions cover prerelease-to-prerelease, prerelease-to-final, build metadata, malformed versions, and a maximum-size numeric component. `1.0.0` correctly advances `1.0.0-rc.2`.
-4. Cargo package include patterns are anchored at the repository root. `npm ci` no longer causes ignored dependency files to enter the crate. CI runs `cargo package --locked --no-verify` and fails if package contents contain `node_modules`.
-5. The demo restores keyboard focus to **Run release check** after its scan completes. A Playwright keyboard regression asserts it.
-6. The `archive-safe` claim now states the archive formats and every advertised unsafe-path class it proves. README scope text documents the same contract.
+The current candidate CI run [33242913513](https://github.com/B-Divyesh/sf-installer-release-doctor/actions/runs/33242913513) fails its `windows-installer` job at **Run the PowerShell installer success and rollback flows**. The test copies and runs the current v0.1.4 binary, but `tests/windows/installer.integration.ps1` still requires output matching `release-doctor 0.1.3` at line 27. The same Windows step failed on the v0.1.4 tag commit's CI run.
 
-## Verification
+The listed Linux test for claim `powershell-installer` only inspects source strings and therefore passes without exercising PowerShell. The release workflow's successful Windows job builds and inspects the executable but does not run the installer integration. Acceptance requires the available integration gate and the platform claim to pass on Windows.
 
-- Clean install: `npm ci` — 59 packages, 0 vulnerabilities.
-- Local quality gates: `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, and `cargo build --release --locked` passed. `npm test` passed 11 Rust unit tests, 4 public CLI integration tests, 4 Vitest tests, and 80 Playwright desktop/mobile tests.
-- Exact new-claim coverage passed through `npm test -- --grep @claim:archive-safe` and `npm test -- --grep @claim:channel-policy-checks`; the complete suite executed every claim tag.
-- Release/consumer checks: `cargo package --locked --no-verify` created a 16-file, 22.2 KiB compressed crate with no `node_modules` entries. A clean extracted crate installed with `cargo install --locked --path … --root …`; the installed binary reports `release-doctor 0.1.4`.
-- Published artifact check: downloaded `release-doctor-v0.1.4-linux-x86_64.tar.gz` reports `release-doctor 0.1.4` and rejects a ZIP containing literal `..\\outside.exe` with `archive-safety: fail`.
-- Published release checks passed for the current 0.1.4 assets, SHA256SUMS, latest.json, Homebrew formula, Scoop manifest, and generated winget 0.1.4 manifests. The Windows ZIP SHA-256 is `632e3ea8f0fc5f4c47f1f92b4701f96f6619f46dce8361eee1898d292632e5e4`; Linux tar SHA-256 is `70fc2de3fb3f3388845da1f7311f9f964776a86fef8e8e4b7b28bc69ef5e04f2`.
-- GitHub Actions release run [33242632823](https://github.com/B-Divyesh/sf-installer-release-doctor/actions/runs/33242632823) passed verify, Linux, macOS, Windows, publish, and Homebrew consumer jobs.
-- Browser/accessibility: local Playwright covers desktop and 390 px mobile, keyboard, privacy/storage, offline/service-worker update, and Axe across routes. The deployed `verify-url.sh` run passed: 200 response, title, `lang=en`, one h1, main landmark, complete image alt text, labelled buttons, and zero console errors. `npm run test:live` passed 6/6 response-policy and live-identity checks after deployment.
-- Live Lighthouse mobile run measured performance 100, accessibility 100, best practices 96, SEO 92; LCP 1,435 ms, TBT 16 ms, CLS 0, and transfer 109,625 bytes.
+Fix the stale version expectation by deriving it from the source/binary, rerun CI until `windows-installer` is green, then request independent verification again.
 
-## Run and release
+## What was verified
 
-```sh
-npm ci
-npm run typecheck && npm run lint && npm test && npm run build
-cargo build --release --locked
-```
+- All 24 `.factory/claims.json` commands passed separately after clean `npm ci` (59 packages, 0 vulnerabilities). The untouched pre-install invocation predictably stopped at missing `vitest`; the installed clean-clone rerun is the recorded result.
+- The cold first screen clearly states the job, audience, and one-click **Try it with sample data** action.
+- `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, and `cargo build --release --locked` passed. The full suite contained 15 Rust, 4 Vitest, and 80 Playwright executions.
+- `cargo package --locked --no-verify` produced a clean 16-file crate. A fresh extracted consumer installed and ran v0.1.4.
+- CLI demo/blocker, repaired success, JSON, matrix, exit 0/1/2, malformed/empty/missing input, opaque package strict mode, public-key evidence, and read-only behavior were exercised.
+- Independent boundary probes against both the clean consumer and published v0.1.4 binary rejected Windows parent, drive-qualified, and UNC archive paths. Malformed reverse-DNS identifiers failed; prerelease-to-final and maximum-size SemVer upgrades passed.
+- Live desktop and 390 px routes, keyboard focus, focus restoration, reset, repair disclosure, reduced motion, privacy/storage, error state, service-worker update, and offline reload passed.
+- Axe reported zero violations on home, demo, privacy, terms, and 404 at desktop and mobile sizes. `verify-url.sh` and `npm run test:live` passed.
+- Browser request logs showed same-origin-only demo traffic. The landing page contacted only the documented GitHub releases API and stored only its one-hour public release cache.
+- Security/caching headers are correct. Fresh mobile Lighthouse scored 99/100/100/100 with LCP 1.5 s, TBT 130 ms, CLS 0, and 111 KiB transfer.
+- Live HTML, JS, CSS, service worker, installers, and 404 bytes exactly match the candidate build.
+- The v0.1.4 Linux archive matched `SHA256SUMS`; the isolated live POSIX installer installed and ran v0.1.4. The release publishes all required platform/native assets and metadata.
 
-Use `release-doctor demo` for the bundled local sample. The browser demo is `/demo` or `/?demo=1`; it is isolated and resettable.
+## Evidence and report
 
-## Known gaps / operator action
+- Full report: [`.factory/verification-8.md`](verification-8.md)
+- Persistent evidence: [`.factory/qa-artifacts/verification-8`](qa-artifacts/verification-8)
+- Claim results: [`claims-results.tsv`](qa-artifacts/verification-8/claims-results.tsv)
+- Live browser audit: [`live-audit.json`](qa-artifacts/verification-8/live-audit.json)
+- Candidate CI evidence: [`candidate-ci-jobs.json`](qa-artifacts/verification-8/candidate-ci-jobs.json)
+- Lighthouse: [`lighthouse-summary.json`](qa-artifacts/verification-8/lighthouse-summary.json)
 
-- No product defects are known from this repair run.
-- The winget 0.1.4 files are ready under `winget/InstallerReleaseDoctor/0.1.4`; the owner still submits them to `microsoft/winget-pkgs`, as documented.
+## Scope and known gaps
+
+- No product code was modified.
+- This static site/local CLI has no backend, product-unlock call, checkout, sign-in, or AI endpoint; server rate limiting, persistence/concurrency, and Entra checks are not applicable.
+- Native Windows execution was assessed through the repository's public GitHub Actions job because this Linux verifier has no PowerShell runtime. That job is the blocker above.
