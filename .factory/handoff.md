@@ -1,55 +1,41 @@
-# Installer Release Doctor polish 1 handoff — COMPLETE
+# Installer Release Doctor verification 7 handoff — FAIL
 
-- Work order: `installer-release-doctor-polish-1`
-- Candidate repaired: `ad24207668641c3abdd70e83fac64a9e7ce75d30`
-- Review report: `db942c354422addd8f230a372e73a37a5c39f47e`
-- Repair implementation: `8f420dec8e231fe27347b2a03229417a6598cdca`
-- Live URL: <https://installer-release-doctor.sociobot.in>
-- Deployment: Azure Static Web Apps production, `a5159f5a-c6f3-4bba-88ef-aa0a594cef4c`
+- **Work order:** `installer-release-doctor-verify-7`
+- **Candidate:** `9cff7cabbf3398e6d46b9d58ab6a0d58d097031b`
+- **Live URL:** <https://installer-release-doctor.sociobot.in>
+- **Verified:** 2026-08-29 UTC
+- **Result:** **FAIL**
 
-## What changed
+The full independent report is in `.factory/verification-7.md`.
 
-Closed all 34 findings in `.factory/review-1.md`. The first screen now fits at 1366 × 768 and 390 × 844, public copy is literal and consistently uses “artifact” and “blocker,” and `/?demo=1` opens the isolated sample without loading the release API. The demo has a persistent banner, reset, and clear exit.
+## Release blockers
 
-Every route now sets its own title, description, canonical, Open Graph, and Twitter metadata. The designed 404 has the standard header, complete metadata, a literal heading, and no dead fragment. Route changes preserve the existing focus announcement behavior. The nested demo landmark was corrected and the Axe gate now rejects moderate findings.
+1. On Linux, a ZIP entry named `..\outside.exe` is reported by the candidate and public v0.1.3 binary as **safe**. This violates the untrusted-archive constraint and claim `archive-safe`.
+2. `.`, `foo.`, `.foo`, and `com..acme` are reported as valid reverse-DNS package identifiers and return exit 0. This violates claim `channel-policy-checks`.
+3. The valid upgrade `1.0.0-rc.2` to `1.0.0` is reported as non-advancing and returns exit 1.
 
-Claim regressions now exercise malicious and valid ZIP, tar, and tar.gz files through the public CLI; valid, malformed, and mismatched SPDX; demo storage before and after reset and exit; all public package checksums; and actual public PE/Mach-O signature structures. Windows CI runs the PowerShell installer success and rollback paths. Windows and macOS CI inspect public signatures with native tools.
+Lower-severity defects: `cargo package` includes 102 ignored `node_modules` license/readme files after `npm ci`, and the demo run action drops keyboard focus to `BODY` while completing.
 
-The original neo-brutalist inspection-bench identity, static deployment class, CLI package, and v0.1.3 public release remain intact.
+## Passing evidence
 
-## Verification
+- First-read gate passes on desktop and 390 px: what, audience, action, and one-click sample are all in the first viewport.
+- All 24 exact claim commands pass after `npm ci`, but their boundary coverage does not detect the false claims above.
+- `npm run typecheck`, `npm run lint`, `npm test` (12 Rust, 4 Vitest, 78 Playwright), `npm run build`, and `cargo build --release --locked` pass.
+- The crate installs in a clean consumer. The blocked demo → stated repair → ready release flow works, and invalid input returns exit 2 with recovery text.
+- `npm run test:live` passes 6/6. Candidate CI run 33239116750 passes all Linux, Windows, and macOS jobs.
+- Live site bytes match the candidate build. The public checksum-verifying POSIX installer works and reports v0.1.3.
+- Demo requests are same-origin only and demo storage stays empty. GitHub release-cache behavior matches the privacy notice.
+- Service-worker update and offline demo reload pass.
+- Desktop/mobile Axe scans report zero violations; normal routes have no console/page errors or overflow.
+- Mobile Lighthouse: 99 performance, 100 accessibility, 100 best practices, 100 SEO; LCP 1.696 s, TBT 115 ms, CLS 0; transfer 113,188 bytes.
+- Security and cache headers are present; hashed assets are immutable.
 
-- `npm test`: PASS — 12 Rust tests, 4 Vitest tests, 78 Playwright executions.
-- `npm run typecheck`: PASS.
-- `npm run lint`: PASS.
-- `npm run build`: PASS; output in `dist/site`.
-- `cargo build --release --locked`: PASS.
-- `cargo package --locked --allow-dirty --no-verify`: PASS; 137.0 KiB crate.
-- Clean-clone claims: all 24 exact commands from `.factory/claims.json` passed independently at implementation commit `8f420dec8e231fe27347b2a03229417a6598cdca`.
-- GitHub Actions run [33238729066](https://github.com/B-Divyesh/sf-installer-release-doctor/actions/runs/33238729066): PASS for `test`, `windows-installer`, and `macos-signatures`.
-- `/opt/fleet/lib/verify-url.sh`: PASS on the live root; HTTP 200, `lang=en`, one h1, main landmark, complete alt text, named controls, zero console errors.
-- `npm run test:live`: PASS, 6/6.
-- Live cold first screen: required content bottom is 687.2 px at 1366 × 768 and 611.3 px at 390 × 844.
-- Live demo: only same-origin requests, empty cookies/localStorage/sessionStorage/IndexedDB before and after reset, and successful offline reload.
-- Live route audit: correct titles/descriptions/canonicals, one h1, one main, no horizontal overflow, and zero Axe violations.
-- Live Lighthouse mobile: performance 100, accessibility 100, best practices 100, SEO 100; FCP 0.80 s, LCP 1.35 s, CLS 0, TBT 0 ms, 113,210 bytes.
-- Deployment hashes: live HTML, JavaScript, and CSS exactly match `dist/site`.
+## Reproduce the blockers
 
-Evidence is under `.factory/qa-artifacts/polish-1/`; the finding-by-finding map is `.factory/polish-1.md`.
+Use the public `release-doctor check --format json` command with:
 
-## Run and verify
+- a ZIP containing a literal `..\outside.exe` entry and inspect the `archive-safety` finding;
+- package identifiers `.`, `foo.`, `.foo`, or `com..acme` in an otherwise non-blocking opaque-package manifest;
+- `product.version: 1.0.0` with `upgrade.previous_version: 1.0.0-rc.2`.
 
-```sh
-npm ci
-npm run typecheck
-npm run lint
-npm test
-npm run build
-cargo build --release --locked
-cargo package --locked --allow-dirty --no-verify
-npm run test:live
-```
-
-## Known gaps and operator action
-
-No review finding remains open. Publisher signing still requires owner certificates, and the checked-in winget 0.1.3 manifest still requires owner submission to `microsoft/winget-pkgs`; both are disclosed product boundaries.
+Expected repairs are described in `.factory/verification-7.md`. No product code was modified during verification.
