@@ -1281,6 +1281,9 @@ mod tests {
         let artifacts = root.path().join("artifacts");
         let manifest = root.path().join("release-doctor.yml");
         let report = diagnose(&manifest, &artifacts).unwrap();
+        for check in ["archive-layout", "required-file"] {
+            assert_eq!(evidence_finding(&report, check).level, Level::Pass);
+        }
         for check in ["signature", "sbom", "provenance"] {
             assert_eq!(evidence_finding(&report, check).level, Level::Pass);
         }
@@ -1354,5 +1357,40 @@ mod tests {
         }
         assert_eq!(report.summary.passed, 0);
         assert_eq!(report.summary.failures, 3);
+    }
+
+    #[test]
+    fn channel_policy_checks_reject_invalid_release_metadata() {
+        let root = tempfile::tempdir().unwrap();
+        let artifacts = root.path().join("artifacts");
+        fs::create_dir(&artifacts).unwrap();
+        fs::write(artifacts.join("acme.deb"), b"opaque package").unwrap();
+        fs::write(artifacts.join("SHA256SUMS"), "deadbeef  acme.deb\n").unwrap();
+        fs::write(
+            root.path().join("release-doctor.yml"),
+            concat!(
+                "product: {name: Acme, version: 1.0.0, binary: acme}\n",
+                "checks: {require_checksums: true}\n",
+                "channels:\n",
+                "  - name: apt\n",
+                "    artifact: acme.deb\n",
+                "    format: deb\n",
+                "    package: {identifier: invalid_identifier, architecture: mystery}\n",
+                "    upgrade: {previous_version: 1.0.0}\n",
+            ),
+        )
+        .unwrap();
+
+        let report = diagnose(&root.path().join("release-doctor.yml"), &artifacts).unwrap();
+        let levels = report
+            .findings
+            .iter()
+            .map(|finding| (finding.check.as_str(), &finding.level))
+            .collect::<BTreeMap<_, _>>();
+        assert_eq!(levels.get("artifact"), Some(&&Level::Pass));
+        assert_eq!(levels.get("archive-safety"), Some(&&Level::Warning));
+        for check in ["checksum", "package-id", "architecture", "upgrade-path"] {
+            assert_eq!(levels.get(check), Some(&&Level::Fail), "{check}");
+        }
     }
 }

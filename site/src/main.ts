@@ -1,6 +1,7 @@
 import './styles.css';
 import './a11y.css';
 import { channelStatus, sampleReport, type Finding } from './report';
+import { downloadChoices, type ReleaseAsset } from './release';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
 const titles: Record<string, string> = {
@@ -16,7 +17,7 @@ function shell(content: string, demo = false) {
   return banner +
     '<header class="site-header"><a class="wordmark" href="/" data-link aria-label="Installer Release Doctor home"><span aria-hidden="true">IR/DR</span><b>Installer<br>Release Doctor</b></a><nav aria-label="Main navigation"><a href="/demo" data-link>Demo</a><a href="/#install">Install</a><a href="/privacy" data-link>Privacy</a></nav></header>' +
     '<main id="main" tabindex="-1">' + content + '</main>' +
-    '<footer><p><strong>Installer Release Doctor</strong><br>Check installer artifacts before upload.</p><nav aria-label="Footer navigation"><a href="/privacy" data-link>Privacy</a><a href="/terms" data-link>Terms</a><a href="https://sociobot.in/" rel="external">Built by Param Factory <span class="sr-only">(external site)</span></a></nav><p>v0.1.1 · build 2026.08</p></footer>';
+    '<footer><p><strong>Installer Release Doctor</strong><br>Check installer artifacts before upload.</p><nav aria-label="Footer navigation"><a href="/privacy" data-link>Privacy</a><a href="/terms" data-link>Terms</a><a href="https://sociobot.in/" rel="external">Built by Param Factory <span class="sr-only">(external site)</span></a></nav><p>v0.1.2 · build 2026.08</p></footer>';
 }
 
 function icon(kind: string) {
@@ -35,7 +36,7 @@ function home() {
     '<section class="preview section" aria-labelledby="preview-title"><div class="section-label">01 / LIVE PREVIEW</div><div><h2 id="preview-title">Find the blocker before CI does</h2><p>One manifest describes the release. Each result names the failed check and the next repair.</p></div><div class="terminal" tabindex="0" aria-label="Sample release-doctor output"><div class="terminal-bar"><span>release-doctor check</span><span>exit 1</span></div><pre><code><span class="term-pass">PASS</span> homebrew  archive-layout   Binary and license found.\n<span class="term-fail">FAIL</span> winget    provenance       Provenance companion is missing.\n      repair: Create the .intoto.jsonl companion.\n<span class="term-warn">WARN</span> apt       package-metadata Maintainer URL is not set.\n────────────────────────────────────────────────────────\n2 of 3 channels ready · 1 warning · 1 failure</code></pre></div></section>' +
     '<section class="section how" aria-labelledby="how-title"><div class="section-label">02 / HOW IT WORKS</div><div><h2 id="how-title">Inspect a release in three steps</h2><ol class="steps"><li><span>1</span><div><h3>Describe channels</h3><p>List each artifact and its required evidence in one YAML manifest.</p></div></li><li><span>2</span><div><h3>Run local checks</h3><p>The CLI reads archives safely. Signature checks use the public key in your manifest.</p></div></li><li><span>3</span><div><h3>Repair blockers</h3><p>Use the channel matrix or GitHub Actions annotations before upload.</p></div></li></ol></div></section>' +
     '<section class="section boundaries" aria-labelledby="boundaries-title"><div class="section-label">03 / BOUNDARIES</div><div><h2 id="boundaries-title">The checker stays in its lane</h2><p>It checks files you already built. A default check reports findings without changing those files.</p><a href="/privacy" data-link>Read the privacy note</a></div></section>' +
-    '<section id="install" class="section install" aria-labelledby="install-title"><div class="section-label">04 / INSTALL</div><div><h2 id="install-title">Install the local checker</h2><div id="download-state" aria-live="polite"><p>Checking published builds…</p></div><div class="install-tabs"><div><h3>macOS and Linux</h3><code>curl -fsSL https://installer-release-doctor.sociobot.in/install.sh | sh</code></div><div><h3>Windows PowerShell</h3><code>irm https://installer-release-doctor.sociobot.in/install.ps1 | iex</code></div><div><h3>Homebrew</h3><code>brew install B-Divyesh/installer-release-doctor/installer-release-doctor</code></div></div><p class="fine">macOS and Windows builds are unsigned in v0.1.1. Inspect checksums before installation.</p></div></section>' +
+    '<section id="install" class="section install" aria-labelledby="install-title"><div class="section-label">04 / INSTALL</div><div><h2 id="install-title">Install the local checker</h2><div id="download-state" aria-live="polite"><p>Checking published builds…</p></div><div class="install-tabs"><div><h3>macOS and Linux</h3><code>curl -fsSL https://installer-release-doctor.sociobot.in/install.sh | sh</code></div><div><h3>Windows PowerShell</h3><code>irm https://installer-release-doctor.sociobot.in/install.ps1 | iex</code></div><div><h3>Homebrew</h3><code>brew install B-Divyesh/installer-release-doctor/installer-release-doctor</code></div></div><p class="fine">macOS and Windows builds are unsigned in v0.1.2. Inspect checksums before installation.</p></div></section>' +
     '<section class="section availability" aria-labelledby="availability-title"><div class="section-label">05 / AVAILABILITY</div><div><h2 id="availability-title">Use the free checker today</h2><p>The local checker is available now. It checks release evidence before you upload.</p><p class="fine">Company policy packs are not offered from this site until checkout is available.</p></div></section>'
   );
 }
@@ -115,9 +116,12 @@ async function loadRelease() {
       if (!release) throw new Error('not published');
       localStorage.setItem('release-cache:v1', JSON.stringify({ saved: Date.now(), data: release }));
     }
-    const hint = /Windows/i.test(navigator.userAgent) ? 'windows' : /Mac/i.test(navigator.userAgent) ? 'darwin' : 'linux';
-    const asset = release.assets.find(function (item: { name: string }) { return item.name.toLowerCase().includes(hint); });
-    element.innerHTML = asset ? '<a class="button primary" href="' + asset.browser_download_url + '">Download ' + asset.name + '</a><p>Published ' + release.tag_name + '. SHA256SUMS is included.</p>' : '<p>Build ' + release.tag_name + ' is published. Choose an asset on the <a href="' + release.html_url + '">GitHub Release page.</a></p>';
+    const choices = downloadChoices(release.assets as ReleaseAsset[], navigator.userAgent);
+    const downloads = choices.map(function (choice) {
+      return '<a class="button ' + (choice.primary ? 'primary' : 'secondary') + '" href="' + choice.asset.browser_download_url + '">' + choice.label + '</a>';
+    }).join('');
+    const macLabel = /Mac/i.test(navigator.userAgent) && choices.length ? '<p><strong>Choose your Mac:</strong></p>' : '';
+    element.innerHTML = choices.length ? macLabel + '<div class="download-choices">' + downloads + '</div><p>Published ' + release.tag_name + '. SHA256SUMS is included.</p>' : '<p>Build ' + release.tag_name + ' is published. Choose an asset on the <a href="' + release.html_url + '">GitHub Release page.</a></p>';
   } catch {
     element.innerHTML = '<p><strong>Downloads are being published.</strong><br>Use the install command, or check the <a href="https://github.com/B-Divyesh/sf-installer-release-doctor/releases">GitHub Releases page.</a></p>';
   }

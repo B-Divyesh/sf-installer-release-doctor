@@ -17,7 +17,8 @@ jobs:
         run: brew install B-Divyesh/installer-release-doctor/installer-release-doctor
       - name: Exercise the installed binary
         run: |
-          release-doctor --version | grep '0.1.1'
+          EXPECTED=$(curl -fsSL https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases/latest | jq -r '.tag_name | ltrimstr("v")')
+          release-doctor --version | grep "release-doctor $EXPECTED"
           set +e
           release-doctor demo --format json > demo.json
           status=$?

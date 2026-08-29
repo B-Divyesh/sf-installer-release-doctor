@@ -1,10 +1,12 @@
 # Changelog
 
-## Unreleased
+## 0.1.2 — 2026-08-29
 
-- Publish the documented Homebrew tap and verify it on a clean macOS runner.
-- Fail releases when the tap cannot be updated, and update existing formulas safely.
-- Add claim tests for public-key-only verification and read-only checks.
+- Validate Debian and RPM identity and version metadata before publishing.
+- Stamp the source commit into `latest.json` for release identity checks.
+- Offer explicit Apple silicon and Intel downloads on macOS.
+- Keep long repair paths inside the 390 px demo layout.
+- Add tagged regression coverage for every public product claim.
 
 ## 0.1.1 — 2026-08-28
 

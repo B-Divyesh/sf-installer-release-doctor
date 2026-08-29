@@ -1,7 +1,7 @@
 name: release-doctor
 arch: amd64
 platform: linux
-version: "$${VERSION}"
+version: "${VERSION}"
 section: utils
 priority: optional
 maintainer: Param Factory <hello@sociobot.in>
