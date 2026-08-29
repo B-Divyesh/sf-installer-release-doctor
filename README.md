@@ -49,7 +49,7 @@ scoop install installer-release-doctor
 
 A winget manifest for `0.1.3` is ready in [`winget/InstallerReleaseDoctor/0.1.3`](winget/InstallerReleaseDoctor/0.1.3). It is not yet published in winget; the owner must submit it after verification.
 
-The release also includes `.deb`, `.rpm`, a `.pkg`, and portable archives. Downloads have no publisher signature; macOS binaries may use ad hoc signatures. Check `SHA256SUMS` before installing an artifact.
+The release also includes `.deb`, `.rpm`, a `.pkg`, and portable archives. Downloads have no publisher signature; macOS binaries may use ad hoc signatures. For the unsigned `.pkg`, use Finder's **Open** action from the file context menu. Check `SHA256SUMS` before installing an artifact.
 
 ## Use
 

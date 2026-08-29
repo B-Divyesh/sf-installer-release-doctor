@@ -1,0 +1,249 @@
+{
+  "base": "https://installer-release-doctor.sociobot.in",
+  "generatedAt": "2026-08-29T06:38:07.691Z",
+  "firstScreen": {
+    "desktop": {
+      "viewport": {
+        "name": "desktop",
+        "width": 1366,
+        "height": 768
+      },
+      "bounds": {
+        "h1": {
+          "x": 71.296875,
+          "y": 230.921875,
+          "width": 631.140625,
+          "height": 179.109375,
+          "top": 230.921875,
+          "right": 702.4375,
+          "bottom": 410.03125,
+          "left": 71.296875
+        },
+        ".hero .lede": {
+          "x": 71.296875,
+          "y": 434.03125,
+          "width": 631.140625,
+          "height": 100.78125,
+          "top": 434.03125,
+          "right": 702.4375,
+          "bottom": 534.8125,
+          "left": 71.296875
+        },
+        ".hero-actions a": {
+          "x": 71.296875,
+          "y": 558.8125,
+          "width": 263.5625,
+          "height": 52.796875,
+          "top": 558.8125,
+          "right": 334.859375,
+          "bottom": 611.609375,
+          "left": 71.296875
+        },
+        ".hero-actions span": {
+          "x": 354.859375,
+          "y": 563.515625,
+          "width": 236,
+          "height": 43.375,
+          "top": 563.515625,
+          "right": 590.859375,
+          "bottom": 606.890625,
+          "left": 354.859375
+        },
+        ".plain-facts li:nth-child(1)": {
+          "x": 71.296875,
+          "y": 629.609375,
+          "width": 201.671875,
+          "height": 24.796875,
+          "top": 629.609375,
+          "right": 272.96875,
+          "bottom": 654.40625,
+          "left": 71.296875
+        },
+        ".plain-facts li:nth-child(2)": {
+          "x": 296.96875,
+          "y": 629.609375,
+          "width": 307.625,
+          "height": 24.796875,
+          "top": 629.609375,
+          "right": 604.59375,
+          "bottom": 654.40625,
+          "left": 296.96875
+        },
+        ".plain-facts li:nth-child(3)": {
+          "x": 71.296875,
+          "y": 662.40625,
+          "width": 211.296875,
+          "height": 24.796875,
+          "top": 662.40625,
+          "right": 282.59375,
+          "bottom": 687.203125,
+          "left": 71.296875
+        }
+      },
+      "allFit": true,
+      "errors": []
+    },
+    "mobile": {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "bounds": {
+        "h1": {
+          "x": 22.5,
+          "y": 197.59375,
+          "width": 345,
+          "height": 108.28125,
+          "top": 197.59375,
+          "right": 367.5,
+          "bottom": 305.875,
+          "left": 22.5
+        },
+        ".hero .lede": {
+          "x": 22.5,
+          "y": 322.875,
+          "width": 345,
+          "height": 68.8125,
+          "top": 322.875,
+          "right": 367.5,
+          "bottom": 391.6875,
+          "left": 22.5
+        },
+        ".hero-actions a": {
+          "x": 22.5,
+          "y": 408.6875,
+          "width": 263.5625,
+          "height": 52.796875,
+          "top": 408.6875,
+          "right": 286.0625,
+          "bottom": 461.484375,
+          "left": 22.5
+        },
+        ".hero-actions span": {
+          "x": 22.5,
+          "y": 469.484375,
+          "width": 236,
+          "height": 43.375,
+          "top": 469.484375,
+          "right": 258.5,
+          "bottom": 512.859375,
+          "left": 22.5
+        },
+        ".plain-facts li:nth-child(1)": {
+          "x": 22.5,
+          "y": 528.859375,
+          "width": 345,
+          "height": 24.796875,
+          "top": 528.859375,
+          "right": 367.5,
+          "bottom": 553.65625,
+          "left": 22.5
+        },
+        ".plain-facts li:nth-child(2)": {
+          "x": 22.5,
+          "y": 557.65625,
+          "width": 345,
+          "height": 24.796875,
+          "top": 557.65625,
+          "right": 367.5,
+          "bottom": 582.453125,
+          "left": 22.5
+        },
+        ".plain-facts li:nth-child(3)": {
+          "x": 22.5,
+          "y": 586.453125,
+          "width": 345,
+          "height": 24.796875,
+          "top": 586.453125,
+          "right": 367.5,
+          "bottom": 611.25,
+          "left": 22.5
+        }
+      },
+      "allFit": true,
+      "errors": []
+    }
+  },
+  "routes": {
+    "/": {
+      "status": 200,
+      "title": "Installer Release Doctor — Check installer releases",
+      "description": "Check installer archives and release evidence before publishing packages.",
+      "canonical": "https://installer-release-doctor.sociobot.in/",
+      "h1": [
+        "Check installer releases before upload"
+      ],
+      "main": 1,
+      "errors": [],
+      "axeViolations": []
+    },
+    "/demo": {
+      "status": 200,
+      "title": "Demo — Installer Release Doctor",
+      "description": "Inspect a bundled installer release with one blocker and a specific repair.",
+      "canonical": "https://installer-release-doctor.sociobot.in/demo",
+      "h1": [
+        "Inspect the sample release"
+      ],
+      "main": 1,
+      "errors": [],
+      "axeViolations": []
+    },
+    "/privacy": {
+      "status": 200,
+      "title": "Privacy — Installer Release Doctor",
+      "description": "Learn what the local checker and website read, store, and request.",
+      "canonical": "https://installer-release-doctor.sociobot.in/privacy",
+      "h1": [
+        "Your release artifacts stay local"
+      ],
+      "main": 1,
+      "errors": [],
+      "axeViolations": []
+    },
+    "/terms": {
+      "status": 200,
+      "title": "Terms — Installer Release Doctor",
+      "description": "Read the license, warranty, and release responsibilities for the checker.",
+      "canonical": "https://installer-release-doctor.sociobot.in/terms",
+      "h1": [
+        "Terms for using the checker"
+      ],
+      "main": 1,
+      "errors": [],
+      "axeViolations": []
+    },
+    "/missing": {
+      "status": 404,
+      "title": "Page not found — Installer Release Doctor",
+      "description": "The requested Installer Release Doctor page was not found.",
+      "canonical": "https://installer-release-doctor.sociobot.in/404",
+      "h1": [
+        "Page not found"
+      ],
+      "main": 1,
+      "errors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ],
+      "axeViolations": []
+    }
+  },
+  "demo": {
+    "sameOriginOnly": true,
+    "storageBeforeReset": {
+      "local": [],
+      "session": [],
+      "cookies": "",
+      "databases": []
+    },
+    "storageAfterReset": {
+      "local": [],
+      "session": [],
+      "cookies": "",
+      "databases": []
+    },
+    "offlineHeading": "Inspect the sample release",
+    "axeViolations": []
+  }
+}
