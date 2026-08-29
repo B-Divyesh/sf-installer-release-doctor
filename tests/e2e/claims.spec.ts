@@ -157,9 +157,9 @@ test('@claim:homebrew-tap resolves to a valid current formula', async ({ request
   expect(latestResponse.ok()).toBe(true);
   const latest = await latestResponse.json();
   const version = latest.tag_name.replace(/^v/, '');
-  const response = await request.get('https://raw.githubusercontent.com/B-Divyesh/homebrew-installer-release-doctor/main/Formula/installer-release-doctor.rb?v=' + encodeURIComponent(version));
+  const response = await request.get('https://api.github.com/repos/B-Divyesh/homebrew-installer-release-doctor/contents/Formula/installer-release-doctor.rb?ref=main', githubApiOptions);
   expect(response.ok()).toBe(true);
-  const formula = await response.text();
+  const formula = Buffer.from((await response.json()).content, 'base64').toString('utf8');
   expect(formula).toContain('class InstallerReleaseDoctor < Formula');
   expect(formula).toContain(`version "${version}"`);
 
@@ -289,6 +289,12 @@ test('routes have one h1 and no serious accessibility findings', async ({ page }
   const errors: string[] = [];
   page.on('console', function (message) { if (message.type() === 'error') errors.push(message.text()); });
   page.on('pageerror', function (error) { errors.push(error.message); });
+  await page.route('https://api.github.com/repos/B-Divyesh/sf-installer-release-doctor/releases?per_page=1', async function (route) {
+    await route.fulfill({ contentType: 'application/json', body: JSON.stringify([{ tag_name: 'v0.1.3', html_url: 'https://example.test/release', assets: [
+      { name: 'release-doctor-v0.1.3-linux-x86_64.tar.gz', browser_download_url: 'https://example.test/linux.tar.gz' },
+      { name: 'SHA256SUMS', browser_download_url: 'https://example.test/sums' }
+    ] }]) });
+  });
   for (const route of ['/', '/demo', '/privacy', '/terms', '/missing']) {
     await page.goto(route);
     await expect(page.locator('h1')).toHaveCount(1);

@@ -1,0 +1,10 @@
+PackageIdentifier: Sociobot.InstallerReleaseDoctor
+PackageVersion: 0.1.3
+PackageLocale: en-US
+Publisher: Sociobot
+PackageName: Installer Release Doctor
+License: MIT
+ShortDescription: Check installer artifacts before release channels reject them.
+PackageUrl: https://installer-release-doctor.sociobot.in
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0
