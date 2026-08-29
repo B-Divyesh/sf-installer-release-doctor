@@ -1,0 +1,173 @@
+{
+  "commit": "4275735af497b6b0b2b80097e989807879ea9eae",
+  "results": [
+    {
+      "id": "sample-blocker",
+      "command": "npm test -- --grep @claim:sample-blocker",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:57:01.713Z",
+      "durationSeconds": 15.7
+    },
+    {
+      "id": "demo-private",
+      "command": "npm test -- --grep @claim:demo-private",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:57:17.426Z",
+      "durationSeconds": 7.5
+    },
+    {
+      "id": "demo-ephemeral",
+      "command": "npm test -- --grep @claim:demo-ephemeral",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:57:24.925Z",
+      "durationSeconds": 9.1
+    },
+    {
+      "id": "offline-demo",
+      "command": "npm test -- --grep @claim:offline-demo",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:57:34.041Z",
+      "durationSeconds": 6.6
+    },
+    {
+      "id": "cli-local",
+      "command": "npm test -- --grep @claim:cli-local",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:57:40.622Z",
+      "durationSeconds": 6.7
+    },
+    {
+      "id": "json-output",
+      "command": "npm test -- --grep @claim:json-output",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:57:47.280Z",
+      "durationSeconds": 6
+    },
+    {
+      "id": "exit-codes",
+      "command": "npm test -- --grep @claim:exit-codes",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:57:53.273Z",
+      "durationSeconds": 6.2
+    },
+    {
+      "id": "archive-safe",
+      "command": "npm test -- --grep @claim:archive-safe",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:57:59.457Z",
+      "durationSeconds": 5.9
+    },
+    {
+      "id": "archive-layout",
+      "command": "npm test -- --grep @claim:archive-layout",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:58:05.392Z",
+      "durationSeconds": 6
+    },
+    {
+      "id": "evidence-validation",
+      "command": "npm test -- --grep @claim:evidence-validation",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:58:11.362Z",
+      "durationSeconds": 6.2
+    },
+    {
+      "id": "channel-policy-checks",
+      "command": "npm test -- --grep @claim:channel-policy-checks",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:58:17.538Z",
+      "durationSeconds": 6
+    },
+    {
+      "id": "public-key-only",
+      "command": "npm test -- --grep @claim:public-key-only",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:58:23.579Z",
+      "durationSeconds": 6.1
+    },
+    {
+      "id": "read-only-check",
+      "command": "npm test -- --grep @claim:read-only-check",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:58:29.713Z",
+      "durationSeconds": 6
+    },
+    {
+      "id": "homebrew-tap",
+      "command": "npm test -- --grep @claim:homebrew-tap",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:58:35.677Z",
+      "durationSeconds": 6.7
+    },
+    {
+      "id": "windows-manifests",
+      "command": "npm test -- --grep @claim:windows-manifests",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:58:42.400Z",
+      "durationSeconds": 6.3
+    },
+    {
+      "id": "posix-installer",
+      "command": "npm test -- --grep @claim:posix-installer",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:58:48.680Z",
+      "durationSeconds": 6
+    },
+    {
+      "id": "powershell-installer",
+      "command": "npm test -- --grep @claim:powershell-installer",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:58:54.692Z",
+      "durationSeconds": 6
+    },
+    {
+      "id": "release-checksums",
+      "command": "npm test -- --grep @claim:release-checksums",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:59:00.706Z",
+      "durationSeconds": 8.2
+    },
+    {
+      "id": "release-identity",
+      "command": "npm test -- --grep @claim:release-identity",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:59:08.867Z",
+      "durationSeconds": 7.7
+    },
+    {
+      "id": "unsigned-builds",
+      "command": "npm test -- --grep @claim:unsigned-builds",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:59:16.617Z",
+      "durationSeconds": 7.6
+    },
+    {
+      "id": "no-checkout",
+      "command": "npm test -- --grep @claim:no-checkout",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:59:24.250Z",
+      "durationSeconds": 6.9
+    },
+    {
+      "id": "matrix-annotations",
+      "command": "npm test -- --grep @claim:matrix-annotations",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:59:31.127Z",
+      "durationSeconds": 6.6
+    },
+    {
+      "id": "website-storage",
+      "command": "npm test -- --grep @claim:website-storage",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:59:37.703Z",
+      "durationSeconds": 7
+    },
+    {
+      "id": "free-core",
+      "command": "npm test -- --grep @claim:free-core",
+      "status": "pass",
+      "startedAt": "2026-08-29T10:59:44.702Z",
+      "durationSeconds": 6.7
+    }
+  ]
+}

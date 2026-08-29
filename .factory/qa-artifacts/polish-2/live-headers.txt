@@ -1,0 +1,15 @@
+HTTP/2 200 
+content-type: text/html
+date: Sat, 29 Aug 2026 11:01:56 GMT
+cache-control: no-cache
+etag: "97625953"
+last-modified: Sat, 29 Aug 2026 11:01:15 GMT
+content-length: 1787
+strict-transport-security: max-age=10886400; includeSubDomains; preload
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-xss-protection: 1; mode=block
+x-dns-prefetch-control: off
+permissions-policy: camera=(), microphone=(), geolocation=()
+content-security-policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+

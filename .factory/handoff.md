@@ -1,109 +1,65 @@
-# Review 2 handoff — Installer Release Doctor
+# Installer Release Doctor — polish round 2 handoff
 
-This reviewer made no product-code changes. The committed report is
-`.factory/review-2.md`.
+## Outcome
 
-Verification used fresh 390 px and desktop Chromium contexts against the live
-site, a fresh remote clone at `b79cf9f2837a05335514b6088904c9274ee7138a`, all
-24 declared claim commands, isolated retries, `npm test`, and `npm run build`.
+Every finding in `.factory/review-1.md` and `.factory/review-2.md` is resolved and rechecked. The repair preserves the Rust single-binary CLI, static Vite deployment, and neo-brutalist release-inspection-bench visual system.
 
-The review verdict is **FAIL**. Remaining blockers:
+- Work order: `installer-release-doctor-polish-2`
+- Implementation commits: `efd0e2c`, `4275735`
+- Deployment: `b5960aa7-1282-4439-819c-34b3aad4d784`
+- Live URL: <https://installer-release-doctor.sociobot.in>
+- Public release: v0.1.4 (existing binaries were not changed or republished)
 
-1. **F-2-1:** the landing demo requires a second click before it displays its
-   completed sample report.
-2. **F-2-2:** `demo-ephemeral` and `offline-demo` have a preview-server reuse
-   race when claim commands run consecutively. They pass alone but are not a
-   stable claim gate.
+## What changed
 
-Next: preload the demo report and make filtered claim runs own stable preview
-servers; then repeat the complete review from a new clone.
+The `/?demo=1` and `/demo` routes now arrive with the Acme CLI report already complete. The first 390 × 844 screen shows the blocked winget status, missing provenance result, and **Show repair** control. The optional replay action is **Run release check again**. **Reset demo** restores this completed in-memory sample and closes opened details; **Leave demo** discards it and returns home.
 
-# Installer Release Doctor repair handoff — PASS
+Playwright invocations now use a unique process-scoped port, `--strictPort`, and `reuseExistingServer: false`. `npm run test:claims:sequential` reads `.factory/claims.json`, runs every exact command in order without retries, and can write machine-readable evidence. CI runs this sweep after the full suite.
 
-## Independent verifier outcome (verification 9) — PASS
+The claims manifest, demo contract, README, copy audit, and 85-character verb-first catalog description now describe the observed behavior. `.factory/polish-2.md` maps all 36 cumulative finding IDs to changes and evidence.
 
-Independent QA on 2026-08-29 accepted candidate `0e750a43058e255e27bbe0b7c510a4fe6d1d2b05` at <https://installer-release-doctor.sociobot.in>. All 24 required claim commands passed from a clean checkout; `npm test`, typecheck, lint, production build, live Playwright suite, release build, package/install consumer test, direct demo/privacy/accessibility checks, response-header checks, and public Linux checksum check passed. The live static assets exactly match the candidate build. No defects were found. Full evidence: [`.factory/verification-9.md`](verification-9.md).
+## Verification
 
-- **Work order:** `installer-release-doctor-repair-7`
-- **Failed candidate:** `715f73f67370906f07cacea6115df884520256ac`
-- **Verifier report:** `010999723c93449a1e3194ab98f28d3a583df9ae` (`.factory/verification-8.md`)
-- **Repair commits:** `0e576a6` and `9fad097`
-- **Version:** `0.1.4`
-- **Live URL:** <https://installer-release-doctor.sociobot.in>
-- **Completed:** 2026-08-29 UTC
+From clean no-local clone `/tmp/ird-polish2-clean-S8GQbk/repo` at `4275735af497b6b0b2b80097e989807879ea9eae`:
 
-## Release blocker repaired
+- `npm ci`: 59 packages, 0 vulnerabilities.
+- `npm run test:claims:sequential`: all 24 exact claim commands passed consecutively in 169.7 seconds; evidence is `.factory/qa-artifacts/polish-2/clean-claim-results.json`.
 
-The verifier's only release blocker was reproduced before editing. The release build reported `release-doctor 0.1.4`, while `tests/windows/installer.integration.ps1` required `release-doctor 0.1.3`; the equivalent assertion exited 1. GitHub Actions run [33242913513](https://github.com/B-Divyesh/sf-installer-release-doctor/actions/runs/33242913513), job `99075198060`, showed the same line-27 exception.
+From the working checkout:
 
-The Windows integration now:
+- `npm run typecheck`: pass.
+- `npm run lint`: pass with warnings denied.
+- `npm test`: pass — 11 Rust unit, 4 Rust CLI integration, 4 Vitest, and 80 Playwright executions.
+- `npm run build`: pass; output is `dist/site`.
+- `cargo build --release --locked`: pass.
+- `cargo package --locked --allow-dirty --no-verify`: pass; 16 files, 82.1 KiB unpacked and 22.2 KiB compressed.
+- Production assets: JavaScript 15,286 bytes raw / 5.62 kB gzip; CSS 11,278 bytes raw / 3.11 kB gzip; mobile hero 27,532 bytes.
+- `npm run test:live`: 6/6 pass after deployment.
 
-- reads the current version from `cargo metadata`;
-- requires the built executable to report the same version;
-- names the fixture archive from that version;
-- serves matching release metadata instead of a hard-coded tag;
-- installs through the shipped `site/public/install.ps1`;
-- checks the user PATH, current-process PATH, and executed version;
-- corrupts `SHA256SUMS`, retries against the successful destination, and proves the installed executable remains byte-for-byte unchanged and runnable;
-- restores both PATH scopes and removes its fixture; and
-- emits the verified version and rollback result in the Actions log.
+The Playwright suite covers the first-screen copy at 1366 × 768 and 390 × 844; one-click sample completion; reset/exit isolation; cookies, local/session storage, and IndexedDB; same-origin demo requests; offline reload; service-worker updates; keyboard focus; reduced motion; touch targets; real routes, titles, metadata, legal links, and 404 behavior; responsive overflow; and Axe scans.
 
-The release workflow now runs this same PowerShell success and rollback integration before inspecting or packaging the Windows executable. The claim regression also rejects a hard-coded semantic version and requires the integration in both CI and release workflows.
+## Live evidence
 
-## Windows platform evidence
-
-GitHub Actions run [33245057493](https://github.com/B-Divyesh/sf-installer-release-doctor/actions/runs/33245057493) passed on repair commit `9fad097`:
-
-- Linux `test`: PASS, job [99080988050](https://github.com/B-Divyesh/sf-installer-release-doctor/actions/runs/33245057493/job/99080988050).
-- macOS `macos-signatures`: PASS, job [99080988127](https://github.com/B-Divyesh/sf-installer-release-doctor/actions/runs/33245057493/job/99080988127).
-- Windows `windows-installer`: PASS, job [99080988144](https://github.com/B-Divyesh/sf-installer-release-doctor/actions/runs/33245057493/job/99080988144).
-- The Windows log records: `Verified PowerShell installer success for release-doctor 0.1.4 with user and current-process PATH updates.`
-- It also records: `Verified checksum rejection preserved the installed release-doctor 0.1.4 binary.`
-- The following public executable Authenticode inspection passed in the same job, preserving the unsigned-installer claim coverage.
-
-## Local verification
-
-The repair used a clean `npm ci`: 59 packages installed, 0 audit vulnerabilities.
-
-- `npm run typecheck`: PASS.
-- `npm run lint`: PASS (`cargo fmt --check`; locked Clippy with warnings denied).
-- `npm test`: PASS — 11 Rust unit tests, 4 public CLI integration tests, 4 Vitest tests, and 80 Playwright executions across desktop and 390px projects.
-- All 24 claim-tagged regressions ran in the complete Playwright suite. The repaired `@claim:powershell-installer` test passed in both browser projects.
-- `npm run build`: PASS; production output is `dist/site`.
-- Production sizes: JavaScript 15,164 bytes raw / 5.60 kB gzip; CSS 10,902 bytes raw / 3.04 kB gzip; mobile hero 27,532 bytes.
-- `cargo build --release --locked`: PASS; executable reports `release-doctor 0.1.4`.
-- `cargo package --locked --allow-dirty`: PASS; 16 intended files, 81.9 KiB unpacked / 22.2 KiB compressed.
-- Clean extracted-crate consumer install: PASS; installed executable reports v0.1.4. Its bundled demo returned the documented blocker status 1 and one failure.
-- `npm run test:live`: PASS, 6/6 across desktop and 390px.
-
-The full browser suite covers the one-click demo, blocker and repair output, reset and exit isolation, no demo persistence, same-origin demo requests, release-cache-only landing storage, offline demo reload, service-worker install/update, keyboard entry/reset and focus restoration, reduced motion, route metadata, internal links, responsive layout, target sizes, and Axe scans for every route.
-
-## Deployment and live verification
-
-`npm run build:site` was deployed with the static work-order path:
+The static work-order deploy command was:
 
 ```sh
 /opt/fleet/lib/deploy-static.sh installer-release-doctor /work/repo/dist/site
 ```
 
-Azure Static Web Apps deployment `b105662f-6cc8-402e-8166-15fc04c7bceb` completed successfully. The custom domain returned HTTPS 200.
+Azure deployment `b5960aa7-1282-4439-819c-34b3aad4d784` succeeded and the custom domain returned HTTPS 200.
 
-- `/opt/fleet/lib/verify-url.sh`: PASS — title, `lang=en`, one h1, main landmark, complete alt text, labelled buttons, desktop and 390px screenshots, and zero console/page errors. Evidence: `.factory/qa-artifacts/repair-7-live/verify-url`.
-- Live mobile Lighthouse: Performance 100, Accessibility 100, Best Practices 100, SEO 100; FCP 0.88 s, LCP 1.45 s, TBT 29 ms, CLS 0, transfer 113,183 bytes. Evidence: `.factory/qa-artifacts/repair-7-live/lighthouse-mobile.json`.
-- Live response policy: HTTPS 200; CSP, HSTS, `nosniff`, strict-origin referrer policy, and camera/microphone/geolocation denial present. A deliberate missing route returned HTTP 404 with the designed recovery document.
-- Local and live SHA-256 values match for `index.html`, hashed JS/CSS, `sw.js`, `install.sh`, `install.ps1`, and `404.html`.
-- The live POSIX installer downloaded the public v0.1.4 release, verified its checksum, installed into an isolated directory, and executed `release-doctor 0.1.4`.
-- The latest public release remains v0.1.4 with Linux, Windows, both macOS architectures, `.deb`, `.rpm`, unsigned `.pkg`, formula, `SHA256SUMS`, and `latest.json` assets.
-
-The existing v0.1.4 binaries were not republished: they were already correct and independently verified. Republishing from an untagged repair commit would break the tested tag/source identity. The repaired current-version Windows flow instead ran against the newly built v0.1.4 executable in the passing CI job, and the release workflow now gates future packaging with the same test.
-
-## Privacy, accessibility, and scope
-
-- No product runtime behavior, stored-data behavior, visual design, brief, CLI policy logic, or published executable changed.
-- No analytics, third-party script/font, billing request, AI request, sign-in, or backend was added.
-- Keyboard, screen-reader semantics, contrast, touch targets, reduced motion, and 200% responsive foundations remain covered by the passing browser suite.
-- The product remains a Rust single-binary CLI with a static Vite site and the original `cli-installers` deployment class.
+- Cold audit: `.factory/qa-artifacts/polish-2/live/audit.json`.
+- First-screen screenshots: `live/cold-desktop.png`, `live/cold-mobile.png`.
+- Immediate demo screenshots: `live/demo-mobile-first-screen.png`, `live/demo-mobile-repair.png`.
+- Demo first-screen bounds: completed status y=510–553, blocked stamp y=583–623, blocker message y=734–784, repair control y=788–832 within 844 px.
+- Demo request log stayed same-origin; cookies, localStorage, sessionStorage, and IndexedDB stayed empty before and after reset; offline reload restored the demo h1.
+- Every audited route reported one h1, one main landmark, route-specific metadata, no horizontal overflow, and zero Axe violations.
+- `/opt/fleet/lib/verify-url.sh`: load 594 ms; title, `lang=en`, h1, main, alt text, and button labels passed; zero console/page errors. Evidence: `live-verify/verify.json`.
+- A deliberate missing route returned HTTP 404 with the designed recovery page.
+- Security response headers include CSP, HSTS, `nosniff`, strict-origin referrer policy, and camera/microphone/geolocation denial. Evidence: `live-headers.txt`.
+- Lighthouse mobile: performance 100, accessibility 100, best practices 100, SEO 100; FCP 0.80 s, LCP 1.65 s, TBT 0 ms, CLS 0, transfer 113,293 bytes. Evidence: `lighthouse-live.json`.
+- Local and live SHA-256 values match for `index.html`, `sw.js`, `install.sh`, `install.ps1`, and `404.html`.
 
 ## Known gaps and operator action
 
-No release-blocking gaps remain. Windows and macOS artifacts remain intentionally unsigned, as disclosed. No operator action is required for this repair.
+No review finding or product defect is left open. Windows and macOS downloads remain intentionally without publisher signatures, with possible macOS ad hoc signatures, as disclosed and tested. No operator action is required for this repair.
