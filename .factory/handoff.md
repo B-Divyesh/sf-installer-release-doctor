@@ -5,7 +5,7 @@
 - Verifier report: `.factory/verification-5.md` at report commit `1a865fd22e6f27606af6daeae1aa1846aeb625ff`
 - Release: `v0.1.3` from source commit `78852b7fe04dc16a4361a0ceb284ae839ef952af`
 - Live URL: <https://installer-release-doctor.sociobot.in>
-- Deployment: Azure Static Web Apps production, deployment `7532c282-4c1d-4592-9331-ae9c62f4041a`
+- Deployment: Azure Static Web Apps production, deployment `d2d99744-a50c-480a-811b-430656a38d01`
 
 ## Repairs
 
